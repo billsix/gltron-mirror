@@ -13,7 +13,6 @@
 extern void SystemHidePointer();
 extern void SystemUnhidePointer();
 extern void SystemReshapeFunc(void(*reshape)(int, int));
-extern int SystemWriteBMP(char *filename, int x, int y, unsigned char *pixels);
 extern void SystemSetGamma(float r, float g, float b);
 
 void nebu_Video_Init(void); // test ok
