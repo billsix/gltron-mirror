@@ -22,6 +22,7 @@ void nebu_Video_SetWindowMode(int x, int y, int w, int h); // test ok
 void nebu_Video_SetDisplayMode(int flags); // test ok
 int nebu_Video_Create(char *name); // test ok
 void nebu_Video_Destroy(int id); // test ok
+void nebu_Video_GetDimension(int *x, int *y);
 
 void nebu_Video_WarpPointer(int x, int y);
 void nebu_Video_CheckErrors(const char *where);

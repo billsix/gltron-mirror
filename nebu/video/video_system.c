@@ -27,6 +27,12 @@ void nebu_Video_SetWindowMode(int x, int y, int w, int h) {
   height = h;
 }
 
+void nebu_Video_GetDimension(int *x, int *y)
+{
+	*x = width;
+	*y = height;
+}
+
 void nebu_Video_SetDisplayMode(int f) {
   int bitdepth, zdepth;
 

@@ -4,7 +4,9 @@
 #include "video/nebu_camera.h"
 #include "base/nebu_system.h"
 #include "base/nebu_vector.h"
+#include "base/nebu_math.h"
 
+#include <math.h>
 #include "GL/glew.h"
 
 extern void display(void);
@@ -31,10 +33,28 @@ void solidShaderStart(void) {
 	glColor3f(1,1,1);
 }
 
+void wireFrameSetup(void)
+{
+	glColor3f(1,0,0);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+}
+void wireFrameCleaup(void)
+{
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+}
+
 void testSolidShader(void)
 {
 	pShader = nebu_Shader_Create();
 	pShader->setup = solidShaderStart;
+}
+
+
+void testWireFrameShader(void)
+{
+	pShader = nebu_Shader_Create();
+	pShader->setup = wireFrameSetup;
+	pShader->cleanup = wireFrameCleaup;
 }
 
 void setupScene(void)
@@ -50,12 +70,22 @@ void setupScene(void)
 		vec3 lookat;
 
 		pCamera = nebu_Camera_Create();
-		eye.v[0] = 2; eye.v[1] = 1; eye.v[2] = 7;
+		eye.v[0] = 0; eye.v[1] = 0; eye.v[2] = 100;
 		up.v[0] = 0; up.v[1] = 1; up.v[2] = 0;
 		lookat.v[0] = 0; lookat.v[1] = 0; lookat.v[2] = 0;
 		nebu_Camera_SetupEyeUpLookAt(pCamera, &eye, &up, &lookat);
 		nebu_Scene_SetCamera(pScene, pCamera);		
 	}
+}
+
+
+void doPerspective(float fov, float ratio, float znear, float zfar) {
+  float top;
+  float left;
+
+  top = tanf( fov * PI / 360.0 ) * znear;
+  left = - top * ratio;
+  glFrustum(left, -left, -top, top, znear, zfar);
 }
 
 int main(int argc, char *argv[])
@@ -67,13 +97,16 @@ int main(int argc, char *argv[])
 	nebu_Video_SetDisplayMode(SYSTEM_32_BIT | SYSTEM_RGBA | SYSTEM_DOUBLE | SYSTEM_STENCIL | SYSTEM_DEPTH);
 	window_id = nebu_Video_Create("nebutest");
 
+	glViewport(0,0,800,600);
+	glMatrixMode(GL_PROJECTION);
+	doPerspective(90, 4.0f/3.0f, 0.1f, 1000);
 	// setup emtpy scene
 	setupScene();
 
 	// test: mesh handling
 	testMesh();
-	// test: solid shading
-	testSolidShader();
+	// test: wire frame shading
+	testWireFrameShader();
 
 	// add both to scene
 	nebu_Scene_AddObject(pScene, pShader, pMesh);

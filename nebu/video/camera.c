@@ -50,6 +50,8 @@ void nebu_Camera_GetRotationMatrix(nebu_Matrix4D *matrix,
 }
 
 void nebu_Camera_LookAt(const nebu_Camera *pCamera) {
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 	doLookAt(pCamera->vEye.v, pCamera->vLookAt.v , pCamera->vUp.v);
 }
 

@@ -60,7 +60,7 @@ function drawHUD(width, height, score, ai, speed_digital, speed_analog, booster,
 		c_pushMatrix()
 		c_translate(config.Buster.x, config.Buster.y, 0)
 		c_drawHUDMask(eHUD.MaskTurbo, 19)
-		drawBar(wall_buster, settings.wall_buster_min / settings.wall_buster_max, HUDBuster.rect, HUDBuster.ranges)
+		-- drawBar(wall_buster, settings.wall_buster_min / settings.wall_buster_max, HUDBuster.rect, HUDBuster.ranges)
 		c_drawHUDMask(-1,-1)
 		c_popMatrix()
 	end

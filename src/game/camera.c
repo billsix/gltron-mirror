@@ -143,6 +143,7 @@ void playerCamera(PlayerVisual *pV, Player *p) {
 	float tdest[3];
 	float phi, chi, r;
 	float x, y;
+	int mouse_dx, mouse_dy;
 	Camera *cam;
 	Data *data;
 	/* first, process all movement commands */
@@ -160,11 +161,13 @@ void playerCamera(PlayerVisual *pV, Player *p) {
 		dt = game2->time.dt;
 	}
 
+
 	cam = p->camera;
 	data = p->data;
 	getPositionFromData(&x, &y, data);
 
 	if(cam->type.freedom[CAM_FREE_R]) {
+		// mouse buttons let you zoom in/out
 		if(gInput.mouse1 == 1)
 			cam->movement[CAM_R] += (cam->movement[CAM_R]-CLAMP_R_MIN+1) * dt / 300.0f;
 		if(gInput.mouse2 == 1)
@@ -172,19 +175,18 @@ void playerCamera(PlayerVisual *pV, Player *p) {
 		writeCamDefaults(cam, CAM_R);
 	}
 
-	if(cam->type.freedom[CAM_FREE_PHI]) {
-		int sign = 1;
-		if(getSettingi("invert_mouse_x") == 1)
-			sign = -1;
-		cam->movement[CAM_PHI] += sign * (- gInput.mousex) * MOUSE_CX;
-		writeCamDefaults(cam, CAM_CHI);
-	}
-	if(cam->type.freedom[CAM_FREE_CHI]) {
-		int sign = 1;
-		if(getSettingi("invert_mouse_y") == 1)
-			sign = -1;
-		cam->movement[CAM_CHI] += sign * gInput.mousey * MOUSE_CY;
+	nebu_Input_Mouse_GetDelta(&mouse_dx, &mouse_dy);
+	if(cam->type.freedom[CAM_FREE_PHI] && mouse_dx != 0) {
+		// mouse x axis lets you rotate horizontally
+		int sign = getSettingi("invert_mouse_x") ? -1 : 1;
+		cam->movement[CAM_PHI] += sign * (- mouse_dx) * MOUSE_CX;
 		writeCamDefaults(cam, CAM_PHI);
+	}
+	if(cam->type.freedom[CAM_FREE_CHI] && mouse_dy != 0) {
+		// mouse y axis lets you rotate vertically
+		int sign = getSettingi("invert_mouse_y") ? -1 : 1;
+		cam->movement[CAM_CHI] += sign * mouse_dy * MOUSE_CY;
+		writeCamDefaults(cam, CAM_CHI);
 	}
 	/* done with mouse movement, now clamp the camera to legal values */
 	clampCam(cam);
@@ -282,10 +284,6 @@ void doCameraMovement(void) {
 		else
 			playerCamera(pV, p);
 	}
-
-	/* mouse events consumed */
-	gInput.mousex = 0;
-	gInput.mousey = 0;
 }
 
 void nextCameraType(void) {

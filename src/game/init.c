@@ -127,6 +127,4 @@ void initInput(void) {
 
 	gInput.mouse1 = 0;
 	gInput.mouse2 = 0;
-	gInput.mousex = 0;
-	gInput.mousey = 0;
 }

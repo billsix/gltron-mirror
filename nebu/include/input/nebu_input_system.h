@@ -75,9 +75,10 @@ enum {
 };
 
 void nebu_Input_Init(void);
-
-void SystemGrabInput();
-void SystemUngrabInput();
+void nebu_Input_Mouse_GetDelta(int *dx, int *dy);
+void nebu_Input_Mouse_WarpToOrigin();
+void nebu_Input_Grab();
+void nebu_Input_Ungrab();
 
 char* SystemGetKeyName(int key);
 
