@@ -138,7 +138,7 @@ void observerCamera(PlayerVisual *pV, Player *player) {
 	cam->target[2] = RECOGNIZER_HEIGHT - 2;
 }  
 
-void playerCamera(PlayerVisual *pV, Player *p) {
+void playerCamera(PlayerVisual *pV, Player *p, int player) {
 	float dest[3];
 	float tdest[3];
 	float phi, chi, r;
@@ -166,30 +166,32 @@ void playerCamera(PlayerVisual *pV, Player *p) {
 	data = p->data;
 	getPositionFromData(&x, &y, data);
 
-	if(cam->type.freedom[CAM_FREE_R]) {
-		// mouse buttons let you zoom in/out
-		if(gInput.mouse1 == 1)
-			cam->movement[CAM_R] += (cam->movement[CAM_R]-CLAMP_R_MIN+1) * dt / 300.0f;
-		if(gInput.mouse2 == 1)
-			cam->movement[CAM_R] -= (cam->movement[CAM_R]-CLAMP_R_MIN+1) * dt / 300.0f;
-		writeCamDefaults(cam, CAM_R);
+	if(game->pauseflag != PAUSE_GAME_RUNNING || !getSettingi("mouse_lock_ingame"))
+	{
+		if(cam->type.freedom[CAM_FREE_R]) {
+			// mouse buttons let you zoom in/out
+			if(gInput.mouse1 == 1)
+				cam->movement[CAM_R] += (cam->movement[CAM_R]-CLAMP_R_MIN+1) * dt / 300.0f;
+			if(gInput.mouse2 == 1)
+				cam->movement[CAM_R] -= (cam->movement[CAM_R]-CLAMP_R_MIN+1) * dt / 300.0f;
+			writeCamDefaults(cam, CAM_R);
+		}
+		nebu_Input_Mouse_GetDelta(&mouse_dx, &mouse_dy);
+		if(cam->type.freedom[CAM_FREE_PHI] && mouse_dx != 0) {
+			// mouse x axis lets you rotate horizontally
+			int sign = getSettingi("mouse_invert_x") ? -1 : 1;
+			cam->movement[CAM_PHI] += sign * (- mouse_dx) * MOUSE_CX;
+			writeCamDefaults(cam, CAM_PHI);
+		}
+		if(cam->type.freedom[CAM_FREE_CHI] && mouse_dy != 0) {
+			// mouse y axis lets you rotate vertically
+			int sign = getSettingi("mouse_invert_y") ? -1 : 1;
+			cam->movement[CAM_CHI] += sign * mouse_dy * MOUSE_CY;
+			writeCamDefaults(cam, CAM_CHI);
+		}
+		/* done with mouse movement, now clamp the camera to legal values */
+		clampCam(cam);
 	}
-
-	nebu_Input_Mouse_GetDelta(&mouse_dx, &mouse_dy);
-	if(cam->type.freedom[CAM_FREE_PHI] && mouse_dx != 0) {
-		// mouse x axis lets you rotate horizontally
-		int sign = getSettingi("invert_mouse_x") ? -1 : 1;
-		cam->movement[CAM_PHI] += sign * (- mouse_dx) * MOUSE_CX;
-		writeCamDefaults(cam, CAM_PHI);
-	}
-	if(cam->type.freedom[CAM_FREE_CHI] && mouse_dy != 0) {
-		// mouse y axis lets you rotate vertically
-		int sign = getSettingi("invert_mouse_y") ? -1 : 1;
-		cam->movement[CAM_CHI] += sign * mouse_dy * MOUSE_CY;
-		writeCamDefaults(cam, CAM_CHI);
-	}
-	/* done with mouse movement, now clamp the camera to legal values */
-	clampCam(cam);
 
 	phi = cam->movement[CAM_PHI] + cam->movement[CAM_PHI_OFFSET];
 	chi = cam->movement[CAM_CHI];
@@ -243,17 +245,19 @@ void playerCamera(PlayerVisual *pV, Player *p) {
 		break;
 	case CAM_TYPE_OFFSET: /* AMR-cam */
 		{
-			static float px=0,py=0;
+			static float px[4]= { 0, 0, 0, 0 };
+			static float py[4] = { 0, 0, 0, 0 };
 			float dx,dy,tx,ty,gs,d;
+	
 			gs=getSettingf("grid_size");
 			tx=(x-gs/2)*(1+15/gs)+gs/2; /* Scale position of cycle */
 			ty=(y-gs/2)*(1+15/gs)+gs/2;
 
-			dx=px-tx;
-			dy=py-ty;
+			dx=px[player]-tx;
+			dy=py[player]-ty;
 			d=1.3f * sqrtf(dx*dx+dy*dy); /* Find distance between old viewpoint and scaled cycle pos */
-			px=dest[0] =  tx + CAM_CIRCLE_DIST * dx/d; /* Set viewpoint a fixed distance from */
-			py=dest[1] =  ty + CAM_CIRCLE_DIST * dy/d; /* scaled pos, preserving angle */
+			px[player] = dest[0] = tx + CAM_CIRCLE_DIST * dx/d; /* Set viewpoint a fixed distance from */
+			py[player] = dest[1] = ty + CAM_CIRCLE_DIST * dy/d; /* scaled pos, preserving angle */
 
 			dx=(tx-x)*(tx-x); /* find distance between scaled and actual */
 			dy=(ty-y)*(ty-y); /* cycle positions... */
@@ -282,7 +286,7 @@ void doCameraMovement(void) {
 		if(p->data->speed == SPEED_GONE)
 			observerCamera(pV, p);
 		else
-			playerCamera(pV, p);
+			playerCamera(pV, p, i);
 	}
 }
 
