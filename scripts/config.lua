@@ -75,7 +75,7 @@ settings.windowMode = 1
 -- other settings (not available via menu)
 settings.show_gl_logo = 1
 
-settings.fov = 105
+settings.fov = 90
 settings.znear = 0.5
 settings.light_cycles = 1
 settings.turn_cycle = 1
