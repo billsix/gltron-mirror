@@ -38,7 +38,9 @@ void artpack_LoadSurfaces(void)
 		"hud-ai.png",
 		"hud-map.png",
 		"hud-scores.png",
-		"hud-fps.png"
+		"hud-fps.png",
+		"hud-buster.png",
+		"hud-mask-buster.png"
 	};
 	int i;
 	for(i = 0; i < eHUDElementCount; i++)

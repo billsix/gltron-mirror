@@ -158,6 +158,8 @@ enum {
 	eHUDMap,
 	eHUDScores,
 	eHUDFPS,
+	eHUDBuster,
+	eHUDMaskBuster,
 	eHUDElementCount
 };
 
