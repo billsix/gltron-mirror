@@ -5,6 +5,7 @@
 #include "base/nebu_system.h"
 #include "base/nebu_vector.h"
 #include "base/nebu_math.h"
+#include "input/nebu_input_system.h"
 
 #include <math.h>
 #include "GL/glew.h"
@@ -27,6 +28,29 @@ void testMesh(void)
 	nebu_Mesh_3ds_FreeFile(pFile);
 
 	nebu_Scene_AddMesh(pScene, pMesh);
+}
+
+void keyboard(int state, int key, int x, int y)
+{
+	if(key == 27)
+	{
+		nebu_System_ExitLoop(0);
+	}
+}
+
+void mouseMotion(int x, int y)
+{
+	int dx, dy;
+	nebu_Input_Mouse_GetDelta(&dx, &dy);
+	if(dx || dy)
+	{
+		nebu_Camera_Rotate(pScene->pCamera,
+			NEBU_CAMERA_ROTATE_AROUND_EYE |
+			NEBU_CAMERA_FIXED_UP,
+			(float)dx, (float)dy);
+		nebu_Input_Mouse_WarpToOrigin();
+		nebu_System_PostRedisplay();
+	}
 }
 
 void solidShaderStart(void) {
@@ -78,7 +102,6 @@ void setupScene(void)
 	}
 }
 
-
 void doPerspective(float fov, float ratio, float znear, float zfar) {
   float top;
   float left;
@@ -97,9 +120,12 @@ int main(int argc, char *argv[])
 	nebu_Video_SetDisplayMode(SYSTEM_32_BIT | SYSTEM_RGBA | SYSTEM_DOUBLE | SYSTEM_STENCIL | SYSTEM_DEPTH);
 	window_id = nebu_Video_Create("nebutest");
 
+	nebu_Input_Mouse_WarpToOrigin();
+	nebu_Input_Grab();
+
 	glViewport(0,0,800,600);
 	glMatrixMode(GL_PROJECTION);
-	doPerspective(90, 4.0f/3.0f, 0.1f, 1000);
+	doPerspective(45, 4.0f/3.0f, 0.1f, 1000);
 	// setup emtpy scene
 	setupScene();
 
@@ -110,9 +136,13 @@ int main(int argc, char *argv[])
 
 	// add both to scene
 	nebu_Scene_AddObject(pScene, pShader, pMesh);
+	nebu_System_PostRedisplay();
 
 	nebu_System_SetCallback_Display(display);
+	nebu_System_SetCallback_Key(keyboard);
+	nebu_System_SetCallback_MouseMotion(mouseMotion);
 	nebu_System_SetCallback_Idle(idle);
+	
 	nebu_System_MainLoop();
 	nebu_Video_Destroy(window_id);
 
