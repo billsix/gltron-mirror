@@ -8,19 +8,6 @@
 /* FIXME: "ignored playMenuFX" */
 void playMenuFX(int foo) { }
 
-void guiProjection(int x, int y) {
-  nebu_Video_CheckErrors("gui.c guiProj - start");
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  /*glOrtho(0, 0, x, y, -1, 1); */
-  nebu_Video_CheckErrors("gui.c guiProj - proj");
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  glViewport(gScreen->vp_x, gScreen->vp_y,
-	     x, y);
-  nebu_Video_CheckErrors("gui.c guiProj - end");
-}
-
 void drawGuiBackground(void) {
   nebu_Video_CheckErrors("gui background start");
 
