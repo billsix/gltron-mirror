@@ -110,7 +110,6 @@ extern void exitGame(void);
 extern void gameMouse(int buttons, int state, int x, int y);
 extern void video_ResetData(void);
 extern void resetPlayerData(void);
-extern void video_LoadLevel(void);
 
 extern void initCamera(Camera *cam, Data *data, int type);
 

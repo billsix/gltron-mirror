@@ -1,6 +1,8 @@
 #include "video/video.h"
+#include "video/recognizer.h"
+#include "game/game.h"
 #include "input/input.h"
-
+#include "video/nebu_console.h"
 #include "base/nebu_math.h"
 
 static void writeCamDefaults(Camera *cam, int type) {

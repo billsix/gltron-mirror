@@ -2,11 +2,13 @@
 #include <float.h>
 
 #include "video/video.h"
+#include "video/recognizer.h"
 #include "game/game.h"
 #include "audio/audio.h"
 #include "Nebu_scripting.h"
 #include "Nebu_base.h"
 #include "Nebu_input.h"
+#include "video/nebu_console.h"
 
 /*! \fn int processEvent(GameEvent* e)
   handle events, e.g.

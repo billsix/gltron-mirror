@@ -1,4 +1,5 @@
 #include "game/gltron.h"
+#include "video/recognizer.h"
 
 static int startTime = 0;
 static int frames = 0;
