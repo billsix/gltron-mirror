@@ -58,6 +58,16 @@ void SystemMouse(int buttons, int state, int x, int y) {
 		current->mouse(buttons, state, x, y);
 }
 
+
+int nebu_Input_GetKeyState(int key)
+{
+	int numKeys;
+	if(SDL_GetKeyState(&numKeys)[key])
+		return NEBU_INPUT_KEYSTATE_DOWN;
+	else
+		return NEBU_INPUT_KEYSTATE_UP;
+}
+
 void nebu_Input_Mouse_GetDelta(int *x, int *y)
 {
 	int wx, wy;
