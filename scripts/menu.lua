@@ -426,6 +426,13 @@ Menu = {
       read = function() return settings.show_2d; end,
       store = function(value) settings.show_2d = value; end
    },
+   Fov = {
+      type = MenuC.type.list, caption = "Field of View",
+      labels = { "very narrow", "narrow", "normal", "wide", "ultra-wide", "fish-eye" },
+      values = { 60, 75, 90, 105, 120, 165 },
+      read = function() return settings.fov; end,
+      store = function(value) settings.fov = value; end
+   },
 
    -- Screen
 	Resolution = {
@@ -632,7 +639,7 @@ Menu.VideoMenu.items = {
 Menu.DetailsMenu.items = {
    "Filtering", "AlphaTrails", "Halos", "Reflections",
     -- "Lightcycles",
-    "Recognizer", "Lod"
+    "Recognizer", "Lod", "Fov"
 }
 
 Menu.HudMenu.items = {
