@@ -221,7 +221,7 @@ void playerCamera(PlayerVisual *pV, Player *p, int player) {
 	dest[2] = r * cosf(chi);
 
 	/* ok, now let's calculate the new camera destination coordinates */
-	/* also, perform some camera dependant movement */
+	/* also, perform some camera dependent movement */
 	switch(cam->type.type) {
 	case CAM_TYPE_CIRCLING: /* Andi-cam */
 		cam->movement[CAM_PHI] += CAM_SPEED * game2->time.dt;
