@@ -45,7 +45,7 @@ void displayGui(void) {
   if(!scripting_IsNil())
   {
 	  scripting_Pop();
-	  _32bit_warning_Display();
+	  // _32bit_warning_Display();
 	  return;
   }
 
