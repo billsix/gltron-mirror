@@ -1,0 +1,2 @@
+cd /gltron/
+exec bash
