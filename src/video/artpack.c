@@ -25,7 +25,7 @@ void initArtpacks(void) {
     fprintf(stderr, "[fatal] no art files found...exiting\n");
     exit(1); /* OK: critical, installation corrupt */
   }
-  
+
   i = 1;
   for(p = artList; p->next != NULL; p = p->next) {
       scripting_RunFormat("artpacks[%d] = \"%s\"", i, (char*) p->data);
@@ -59,7 +59,7 @@ void artpack_LoadSurfaces(void)
 		gpTokenHUD[i] = resource_GetToken(path, eRT_2d);
 		if(!gpTokenHUD[i])
 		{
-			fprintf(stderr, "fatal: failed loading %s, exiting...\n", pHUDNames[i]);
+			fprintf(stderr, "fatal: failed loading art %s, exiting...\n", pHUDNames[i]);
 			exit(1); /* OK: critical, installation corrupt */
 		}
 		free(path);
@@ -95,7 +95,7 @@ void loadArt(void) {
 	fprintf(stderr, "[status] done loading textures...\n");
 	initFonts();
 	fprintf(stderr, "[status] done loading fonts...\n");
-	
+
 	artpack_LoadSurfaces();
 
 	video_LoadLevel();
@@ -107,5 +107,3 @@ void reloadArt(void) {
   deleteTextures(gScreen);
   loadArt();
 }
-    
-
