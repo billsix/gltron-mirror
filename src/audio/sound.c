@@ -5,6 +5,7 @@
 #include "scripting/nebu_scripting.h"
 #include "audio/sound_glue.h"
 #include "configuration/settings.h"
+#include <stdlib.h>
 
 #define NUM_GAME_FX 3
 

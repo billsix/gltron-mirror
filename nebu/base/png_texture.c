@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include <string.h>
 
 #if !defined(WIN32) && !defined(macintosh)
 #include <unistd.h>

@@ -60,7 +60,7 @@ int c_resetCamera(lua_State *L) {
 		cam = & gPlayerVisuals[i].camera;
 		data = game->player[i].data;
 
-		camType = (game->player[i].ai->active == AI_COMPUTER) ? 
+		camType = (game->player[i].ai->active == AI_COMPUTER) ?
 			0 : getSettingi("camType");
 		initCamera(cam, data, camType);
 	}
@@ -82,13 +82,13 @@ int c_update_settings_cache(lua_State *L) {
 	return 0;
 }
 
-int c_update_audio_volume(lua_State *L) { 
+int c_update_audio_volume(lua_State *L) {
 	Sound_setMusicVolume(getSettingf("musicVolume"));
 	Sound_setFxVolume(getSettingf("fxVolume"));
 	return 0;
 }
 
-int c_startGame(lua_State *L) { 
+int c_startGame(lua_State *L) {
 	game2->mode = GAME_SINGLE;
 	game_ResetData();
 	video_ResetData();
@@ -125,7 +125,7 @@ int c_reloadLevel(lua_State *L) {
 	video_ResetData(); // already called by reloadArt()
 	return 0;
 }
-  
+
 int c_configureKeyboard(lua_State *L) {
 	nebu_System_ExitLoop(eSRC_GUI_Prompt);
 	return 0;
@@ -207,7 +207,7 @@ int c_loadDirectory(lua_State *L) {
 
 static char art_dir_default[PATH_MAX];
 static char art_dir_artpack[PATH_MAX];
-static char *art_dirs[2];
+static const char *art_dirs[2];
 
 int c_setArtPath(lua_State *l)
 {

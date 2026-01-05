@@ -8,17 +8,10 @@
 #include "base/util.h"
 #include "base/nebu_debug_memory.h"
 
-int main(int argc, char *argv[] ) {
+int main(int argc, const char *argv[] ) {
 	nebu_debug_memory_CheckLeaksOnExit();
 	initSubsystems(argc, argv);
 	runScript(PATH_SCRIPTS, "main.lua");
 	exitSubsystems();
   return 0;
 }
-
-
-
-
-
-
-
