@@ -1,7 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
 
 dnl initialisation
-AC_INIT(src/gltron.c)
+AC_INIT
+AC_CONFIG_SRCDIR([src/gltron.c])
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE(gltron, 0.71-beta-6)
@@ -23,14 +24,14 @@ dnl CXXFLAGS=""
 dnl CPPFLAGS=""
 
 AC_ARG_ENABLE(warn,
-AC_HELP_STRING([--enable-warn],[Enable compiler warnings @<:@default=off@:>@]),
+AS_HELP_STRING([--enable-warn],[Enable compiler warnings @<:@default=off@:>@]),
 	enable_warn=$enableval, enable_warn=no)
 if test "x$enable_warn" = xyes; then
 	CFLAGS="$CFLAGS -Wall -Werror"
 fi
 
 AC_ARG_ENABLE(debug,
-AC_HELP_STRING([--enable-debug],[Enable debugging @<:@default=off@:>@]),
+AS_HELP_STRING([--enable-debug],[Enable debugging @<:@default=off@:>@]),
 	enable_debug=$enableval, enable_debug=off)
 if test "x$enable_debug" = xyes; then
 	CFLAGS="$CFLAGS -g3"
@@ -38,7 +39,7 @@ if test "x$enable_debug" = xyes; then
 fi
 
 AC_ARG_ENABLE(profile,
-AC_HELP_STRING([--enable-profile],[Enable profiling @<:@default=off@:>@]),
+AS_HELP_STRING([--enable-profile],[Enable profiling @<:@default=off@:>@]),
 	enable_profile=$enableval, enable_profile=off)
 if test "x$enable_profile" = xyes; then
 	if test "x$GCC" = xyes; then
@@ -49,7 +50,7 @@ if test "x$enable_profile" = xyes; then
 fi
 
 AC_ARG_ENABLE(optimize,
-AC_HELP_STRING([--enable-optimize=@<:@level@:>@],[Enable optimization @<:@default=s@:>@]),
+AS_HELP_STRING([--enable-optimize=@<:@level@:>@],[Enable optimization @<:@default=s@:>@]),
 	enable_optmize=$enableval, enable_optimize=s)
 dnl this is always true
 if test "x$enable_optimize" ; then
@@ -69,25 +70,25 @@ dnl AC_CHECK_LIB(physfs, PHYSFS_init,, AC_MSG_ERROR(physfs is not installed))
 
 dnl local data dir setup
 AC_ARG_ENABLE(localdata,
-AC_HELP_STRING([--enable-localdata],[Use local data directory @<:@default=no@:>@]),
+AS_HELP_STRING([--enable-localdata],[Use local data directory @<:@default=no@:>@]),
 	CPPFLAGSA="$CPPFLAGSA -DLOCAL_DATA",
 	CPPFLAGSA="$CPPFLAGSA -DDATA_DIR=\\\"\$(datadir)/\$(PACKAGE)\\\"")
 
 dnl snapshot dir setup
 AC_ARG_WITH(snapshot-dir,
-AC_HELP_STRING([--with-snapshot-dir=@<:@path@:>@],[Snapshot directory @<:@default=~@:>@]),
+AS_HELP_STRING([--with-snapshot-dir=@<:@path@:>@],[Snapshot directory @<:@default=~@:>@]),
 	CPPFLAGSA="$CPPFLAGSA -DSNAP_DIR=\\\"$withval\\\"",
 	CPPFLAGSA="$CPPFLAGSA -DSNAP_DIR=\\\"~\\\"")
 
 dnl preferences dir setup
 AC_ARG_WITH(preferences-dir,
-AC_HELP_STRING([--with-preferences-dir=@<:@path@:>@],[Preferences directory @<:@default=~@:>@]),
+AS_HELP_STRING([--with-preferences-dir=@<:@path@:>@],[Preferences directory @<:@default=~@:>@]),
 	CPPFLAGSA="$CPPFLAGSA -DPREF_DIR=\\\"$withval\\\"",
 	CPPFLAGSA="$CPPFLAGSA -DPREF_DIR=\\\"~\\\"")
 
 dnl sound set-up
 AC_ARG_ENABLE(sound,
-AC_HELP_STRING([--disable-sound],[Don't compile in sound @<:@default=off@:>@]),
+AS_HELP_STRING([--disable-sound],[Don't compile in sound @<:@default=off@:>@]),
    use_sound=no, use_sound=yes)
 if test "x$use_sound" = xyes; then
 	AC_CHECK_LIB(smpeg, main,, AC_MSG_WARN(smpeg not found - music playback may not work correctly))
@@ -110,7 +111,7 @@ fi
 
 dnl network set-up
 AC_ARG_ENABLE(network,
-AC_HELP_STRING([--enable-network],[Experimental network mode @<:@default=off@:>@]),
+AS_HELP_STRING([--enable-network],[Experimental network mode @<:@default=off@:>@]),
 	enable_network=$enableval, enable_network=off)
 if test "x$enable_network" = xyes; then
 	AC_CHECK_LIB(SDL_net, SDLNet_Init,
@@ -124,7 +125,15 @@ fi
 dnl CXXFLAGS="$CFLAGS"
 
 dnl header checks
-AC_HEADER_STDC
+m4_warn([obsolete],
+[The preprocessor macro 'STDC_HEADERS' is obsolete.
+  Except in unusual embedded environments, you can safely include all
+  C89 headers unconditionally.])dnl
+# Autoupdate added the next two lines to ensure that your configure
+# script's behavior did not change.  They are probably safe to remove.
+AC_CHECK_INCLUDES_DEFAULT
+AC_PROG_EGREP
+
 AC_CHECK_HEADERS(unistd.h)
 
 AC_CHECK_HEADERS(GL/gl.h, have_gl_h=true, have_gl_h=false)
@@ -146,7 +155,7 @@ AC_CHECK_FUNCS(strstr mkstemp)
 
 CPPFLAGS="$CPPFLAGS $CPPFLAGSA"
 
-AC_OUTPUT([Makefile \
+AC_CONFIG_FILES([Makefile \
 	lib3ds/Makefile \
 	lua5/Makefile \
 	lua5/include/Makefile \
@@ -189,3 +198,4 @@ AC_OUTPUT([Makefile \
 	scripts/Makefile \
 	levels/Makefile \
 	])
+AC_OUTPUT
