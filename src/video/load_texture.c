@@ -15,6 +15,7 @@ void freeTextureData(texture *tex) {
 texture* loadTextureData(const char *filename) {
 	texture *tex = NULL;
 	char *path;
+        printf("%s \n", filename);
 	path = nebu_FS_GetPath(PATH_ART, filename);
 	if(path != NULL) {
 		tex = LOAD_TEX(path);
