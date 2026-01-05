@@ -4,14 +4,11 @@
 
 #include "stdlib.h"
 
-const char* getHome() {
-  return getenv("HOME");
-}
+const char* getHome() { return getenv("HOME"); }
 
-void dirSetup(const char *executable) {
+void dirSetup(const char* executable) {
 #ifdef LOCAL_DATA
-	goto_installpath(executable);
+  goto_installpath(executable);
 #endif
   initDirectories();
 }
-

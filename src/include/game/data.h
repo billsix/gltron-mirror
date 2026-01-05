@@ -2,7 +2,7 @@
 #define DATA_H
 
 /* general data structures */
-  
+
 typedef enum EGameType {
   GAME_SINGLE = 1,
 #ifdef RECORD

@@ -6,5 +6,3 @@ void disableSkyboxTexture(void);
 void drawSkybox(float d);
 
 #endif /* SKYBOX_H */
-
-

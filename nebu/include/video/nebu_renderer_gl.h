@@ -18,16 +18,16 @@
 
 extern void initRenderer();
 extern void printRendererInfo();
-extern void renderQuad(Quad *q);
-extern void renderTris(Tris *q);
+extern void renderQuad(Quad* q);
+extern void renderTris(Tris* q);
 extern void clearState();
 
 typedef struct GLstate {
-  int tex_id; /* current texture */
+  int tex_id;       /* current texture */
   int tex_env_mode; /* current texture env mode */
-  int binds; /* texture bind changes - used for statistics only */
-  int mod_changes;   /* mode changes - used for statistics only */
-  int type_mask; /* which modes to change */
+  int binds;        /* texture bind changes - used for statistics only */
+  int mod_changes;  /* mode changes - used for statistics only */
+  int type_mask;    /* which modes to change */
 } GLstate;
 
 typedef struct Renderer {
@@ -36,6 +36,6 @@ typedef struct Renderer {
 } Renderer;
 
 extern Renderer renderer;
-extern GLstate *state;
+extern GLstate* state;
 
 #endif

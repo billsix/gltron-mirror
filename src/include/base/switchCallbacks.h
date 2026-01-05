@@ -15,6 +15,6 @@ extern Callbacks _32bit_warningCallbacks;
 void game_Callbacks_ExitCurrent(void);
 void game_Callbacks_InitCurrent(void);
 
-void setCallback(const char *name);
+void setCallback(const char* name);
 
 #endif

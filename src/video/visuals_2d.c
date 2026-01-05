@@ -8,91 +8,82 @@
 
 /* draw a 2d map */
 
-void draw2D( nebu_Rect *pRect ) {
-	// TODO: modify for nebu_rect
-	// get rid of the viewport requirement
-	// assume rasonly is set, push/pop matrices
-	int i;
+void draw2D(nebu_Rect* pRect) {
+  // TODO: modify for nebu_rect
+  // get rid of the viewport requirement
+  // assume rasonly is set, push/pop matrices
+  int i;
 
-	float grid_width = box2_Width(& game2->level->boundingBox);
-	float grid_height = box2_Height(& game2->level->boundingBox);
+  float grid_width = box2_Width(&game2->level->boundingBox);
+  float grid_height = box2_Height(&game2->level->boundingBox);
 
-	glPushMatrix();
-	glTranslatef( (float)pRect->x, (float)pRect->y, 0);
-	glScalef(pRect->width / grid_width, pRect->height / grid_height, 1);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glPushMatrix();
+  glTranslatef((float)pRect->x, (float)pRect->y, 0);
+  glScalef(pRect->width / grid_width, pRect->height / grid_height, 1);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glColor3f(1, 1, 1);
-	glBegin(GL_LINES);
-	for(i = 0; i < game2->level->nBoundaries; i++) {
-		vec2 v;
-		segment2 *s = game2->level->boundaries + i;
-		vec2_Add(&v, & s->vStart, & s->vDirection);
-		glVertex2fv(s->vStart.v);
-		glVertex2fv(v.v);
-	}
-	glEnd();
+  glColor3f(1, 1, 1);
+  glBegin(GL_LINES);
+  for (i = 0; i < game2->level->nBoundaries; i++) {
+    vec2 v;
+    segment2* s = game2->level->boundaries + i;
+    vec2_Add(&v, &s->vStart, &s->vDirection);
+    glVertex2fv(s->vStart.v);
+    glVertex2fv(v.v);
+  }
+  glEnd();
 
-	for(i = 0; i < game->players; i++) {
-		Player *p = &game->player[i];
-		PlayerVisual *pV = gPlayerVisuals + i;
-		segment2* trail;
-		float x, y;
+  for (i = 0; i < game->players; i++) {
+    Player* p = &game->player[i];
+    PlayerVisual* pV = gPlayerVisuals + i;
+    segment2* trail;
+    float x, y;
 
-		getPositionFromData(&x, &y, p->data);
-		
-		// fixme: check if trails vanish
-		if (p->data->trail_height <= 0) {
-			continue;
-		}
+    getPositionFromData(&x, &y, p->data);
 
-		if (p->data->trail_height < TRAIL_HEIGHT) {
-			/* 
-				if player crashed but the trail hasn't disappeared yet, fade
-				the trail on the 2d map as it disappears.
-			*/
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    // fixme: check if trails vanish
+    if (p->data->trail_height <= 0) {
+      continue;
+    }
 
-			glColor4f(pV->pColorAlpha[0], pV->pColorAlpha[1], pV->pColorAlpha[2],
-					p->data->trail_height / TRAIL_HEIGHT);
-		} else {
-			glBlendFunc(GL_ONE, GL_ONE);
-			glColor3fv(pV->pColorAlpha);
-		}
+    if (p->data->trail_height < TRAIL_HEIGHT) {
+      /*
+              if player crashed but the trail hasn't disappeared yet, fade
+              the trail on the 2d map as it disappears.
+      */
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-		glPointSize(2);
-		glBegin(GL_POINTS);
-		glVertex2f( x, y );
-		glEnd();
+      glColor4f(pV->pColorAlpha[0], pV->pColorAlpha[1], pV->pColorAlpha[2],
+                p->data->trail_height / TRAIL_HEIGHT);
+    } else {
+      glBlendFunc(GL_ONE, GL_ONE);
+      glColor3fv(pV->pColorAlpha);
+    }
 
-		glBegin(GL_LINES);
-		for(trail = p->data->trails; trail != p->data->trails + p->data->trailOffset; trail++)
-		{
-			glVertex2f(trail->vStart.v[0], 
-				trail->vStart.v[1]
-				);
-			glVertex2f(trail->vStart.v[0] + trail->vDirection.v[0], 
-				trail->vStart.v[1] + trail->vDirection.v[1]
-				);
-		}
-		if(trail != p->data->trails)
-		{
-			trail--;
-			glVertex2f(trail->vStart.v[0] + trail->vDirection.v[0], 
-				trail->vStart.v[1] + trail->vDirection.v[1]
-				);
-			glVertex2f( floorf(x), floorf(y));
-		}
-		else
-		{
-			glVertex2f(trail->vStart.v[0], 
-				trail->vStart.v[1]
-				);
-			glVertex2f( floorf(x), floorf(y));
-		}
-			
-	#if 0
+    glPointSize(2);
+    glBegin(GL_POINTS);
+    glVertex2f(x, y);
+    glEnd();
+
+    glBegin(GL_LINES);
+    for (trail = p->data->trails;
+         trail != p->data->trails + p->data->trailOffset; trail++) {
+      glVertex2f(trail->vStart.v[0], trail->vStart.v[1]);
+      glVertex2f(trail->vStart.v[0] + trail->vDirection.v[0],
+                 trail->vStart.v[1] + trail->vDirection.v[1]);
+    }
+    if (trail != p->data->trails) {
+      trail--;
+      glVertex2f(trail->vStart.v[0] + trail->vDirection.v[0],
+                 trail->vStart.v[1] + trail->vDirection.v[1]);
+      glVertex2f(floorf(x), floorf(y));
+    } else {
+      glVertex2f(trail->vStart.v[0], trail->vStart.v[1]);
+      glVertex2f(floorf(x), floorf(y));
+    }
+
+#if 0
 		// draw AI debug lines
 		glColor3f(1,1,1);
 		glVertex2f(p->ai->front.vStart.v[0],
@@ -116,11 +107,10 @@ void draw2D( nebu_Rect *pRect ) {
 			p->ai->backleft.vDirection.v[0],
 			p->ai->backleft.vStart.v[1] + 
 			p->ai->backleft.vDirection.v[1]);
-	#endif
-		glEnd();
-	}
-	glDisable(GL_BLEND);
+#endif
+    glEnd();
+  }
+  glDisable(GL_BLEND);
 
-	glPopMatrix();
+  glPopMatrix();
 }
-	

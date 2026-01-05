@@ -16,36 +16,33 @@
 #include "configuration/configuration.h"
 
 void loadLevel(void) {
-	char *path, *level;
+  char *path, *level;
 
-	scripting_GetGlobal("settings", "current_level", NULL);
-	scripting_GetStringResult(&level);
-	fprintf(stderr, "[status] loading level '%s'\n", level);
+  scripting_GetGlobal("settings", "current_level", NULL);
+  scripting_GetStringResult(&level);
+  fprintf(stderr, "[status] loading level '%s'\n", level);
 
-	path = getPath(PATH_LEVEL, level);
-	free(level);
-	if(path) {
-		scripting_RunFile(path);
-		free(path);
-	}
-	else
-	{
-		printf("[fatal] can't get valid path for level\n");
-		exit(1); // fatal
-	}
+  path = getPath(PATH_LEVEL, level);
+  free(level);
+  if (path) {
+    scripting_RunFile(path);
+    free(path);
+  } else {
+    printf("[fatal] can't get valid path for level\n");
+    exit(1);  // fatal
+  }
 }
 
 void GameMode_Idle(void) {
-	Sound_idle();
-	Time_Idle();
-	if(game2->time.dt == 0)
-		return;
-	Game_Idle();
-	Video_Idle();
-	Input_Idle();
-	Scripting_Idle();
-	nebu_Time_FrameDelay(5);
-	nebu_System_PostRedisplay();
+  Sound_idle();
+  Time_Idle();
+  if (game2->time.dt == 0) return;
+  Game_Idle();
+  Video_Idle();
+  Input_Idle();
+  Scripting_Idle();
+  nebu_Time_FrameDelay(5);
+  nebu_System_PostRedisplay();
 }
 
 void enterGame(void) { /* called when game mode is entered */
@@ -55,16 +52,16 @@ void enterGame(void) { /* called when game mode is entered */
   nebu_Input_Mouse_WarpToOrigin();
   game2->time.offset = nebu_Time_GetElapsed() - game2->time.current;
   Audio_EnableEngine();
- 
-	// disable booster, wallbuster and cam offset
-	{
-		int i;
-		for(i = 0; i < game->players; i++) {
-			game->player[i].data->boost_enabled = 0;
-			game->player[i].data->wall_buster_enabled = 0;
-			gPlayerVisuals[i].camera.movement[CAM_PHI_OFFSET] = 0;
-		}
-	}
+
+  // disable booster, wallbuster and cam offset
+  {
+    int i;
+    for (i = 0; i < game->players; i++) {
+      game->player[i].data->boost_enabled = 0;
+      game->player[i].data->wall_buster_enabled = 0;
+      gPlayerVisuals[i].camera.movement[CAM_PHI_OFFSET] = 0;
+    }
+  }
 
   /* fprintf(stderr, "init game\n"); */
 }
@@ -75,29 +72,28 @@ void exitGame(void) {
 }
 
 void gameMouse(int buttons, int state, int x, int y) {
-	if(state == SYSTEM_MOUSEPRESSED) {
-		if(buttons == SYSTEM_MOUSEBUTTON_LEFT) gInput.mouse1 = 1;
-		if(buttons == SYSTEM_MOUSEBUTTON_RIGHT) gInput.mouse2 = 1;
-	} else if(state == SYSTEM_MOUSERELEASED) {
-		if(buttons == SYSTEM_MOUSEBUTTON_LEFT) gInput.mouse1 = 0;
-		if(buttons == SYSTEM_MOUSEBUTTON_RIGHT) gInput.mouse2 = 0;
-	}
+  if (state == SYSTEM_MOUSEPRESSED) {
+    if (buttons == SYSTEM_MOUSEBUTTON_LEFT) gInput.mouse1 = 1;
+    if (buttons == SYSTEM_MOUSEBUTTON_RIGHT) gInput.mouse2 = 1;
+  } else if (state == SYSTEM_MOUSERELEASED) {
+    if (buttons == SYSTEM_MOUSEBUTTON_LEFT) gInput.mouse1 = 0;
+    if (buttons == SYSTEM_MOUSEBUTTON_RIGHT) gInput.mouse2 = 0;
+  }
 
   /*
-  if(getSettingi("camType") == CAM_TYPE_MOUSE) 
+  if(getSettingi("camType") == CAM_TYPE_MOUSE)
     if(state == SYSTEM_MOUSEPRESSED) {
       if(buttons == SYSTEM_MOUSEBUTTON_LEFT) {
-	cam_r -= CAM_DR;
-	if(cam_r < CAM_R_MIN) cam_r = CAM_R_MIN;
+        cam_r -= CAM_DR;
+        if(cam_r < CAM_R_MIN) cam_r = CAM_R_MIN;
       } else if(buttons == SYSTEM_MOUSEBUTTON_RIGHT) {
-	cam_r += CAM_DR;
-	if(cam_r > CAM_R_MAX) cam_r = CAM_R_MAX;
+        cam_r += CAM_DR;
+        if(cam_r > CAM_R_MAX) cam_r = CAM_R_MAX;
       }
     }
   */
   /* fprintf(stderr, "new cam_r: %.2f\n", cam_r); */
 }
 
-Callbacks gameCallbacks = { 
-  displayGame, GameMode_Idle, keyGame, enterGame, exitGame, gameMouse, NULL, "game"
-};
+Callbacks gameCallbacks = {displayGame, GameMode_Idle, keyGame, enterGame,
+                           exitGame,    gameMouse,     NULL,    "game"};

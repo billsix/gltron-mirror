@@ -6,7 +6,7 @@ extern float menu_hlColor1[4];
 extern float menu_hlColor2[4];
 
 typedef struct mDisplay {
-  float fgColor[4]; /* entries */
+  float fgColor[4];  /* entries */
   float hlColor1[4]; /* the highlighted one */
   float hlColor2[4];
   char szCaption[64];

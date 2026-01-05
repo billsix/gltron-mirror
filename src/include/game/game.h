@@ -1,33 +1,23 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "game/game_data.h" // Game, Game2, Data
-#include "game/event.h" // GameEvent
-#include "configuration/settings.h" // SettingsCache
+#include "game/game_data.h"          // Game, Game2, Data
+#include "game/event.h"              // GameEvent
+#include "configuration/settings.h"  // SettingsCache
 
 #define NEW_LEVEL
 
 /* use enums, not magic */
-enum {
-	TURN_LEFT = 3,
-	TURN_RIGHT = 1
-};
+enum { TURN_LEFT = 3, TURN_RIGHT = 1 };
 
-enum { 
-	AI_HUMAN = 0,
-	AI_COMPUTER = 1,
-	AI_NONE = 2
-};
-
+enum { AI_HUMAN = 0, AI_COMPUTER = 1, AI_NONE = 2 };
 
 /* physics recomputed every 10ms */
 #define PHYSICS_RATE 20
 
-
 #define PLAYERS 4
 #define MAX_PLAYERS 4
 #define MAX_TRAIL 1000
-
 
 /* these must be < 0 */
 #define SPEED_CRASHED -1
@@ -44,17 +34,17 @@ enum {
 #define FAST_FINISH 40
 
 enum {
-	PAUSE_NO_GAME = 0,
-	PAUSE_GAME_RUNNING = 1,
-	PAUSE_GAME_FINISHED = 2,
-	PAUSE_GAME_SUSPENDED = 4,
-	PAUSE_GAME_STARTING = 8,
-	PAUSE_DEMO_NEW = 16,
-	PAUSE_DEMO_RUNNING = 32,
+  PAUSE_NO_GAME = 0,
+  PAUSE_GAME_RUNNING = 1,
+  PAUSE_GAME_FINISHED = 2,
+  PAUSE_GAME_SUSPENDED = 4,
+  PAUSE_GAME_STARTING = 8,
+  PAUSE_DEMO_NEW = 16,
+  PAUSE_DEMO_RUNNING = 32,
 };
 
-extern Game *game;
-extern Game2 *game2;
+extern Game* game;
+extern Game2* game2;
 
 extern int dirsX[];
 extern int dirsY[];
@@ -90,6 +80,6 @@ void resetPlayerData(void);
 
 void initWalls(void);
 
-void getPositionFromIndex(float *x, float *y, int player);
-void getPositionFromData(float *x, float *y, Data *data);
+void getPositionFromIndex(float* x, float* y, int player);
+void getPositionFromData(float* x, float* y, Data* data);
 #endif

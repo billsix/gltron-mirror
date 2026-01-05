@@ -4,21 +4,21 @@
 #include "base/nebu_vector.h"
 
 typedef struct game_spawnpoint {
-	vec2 v;
-	int dir;
+  vec2 v;
+  int dir;
 } game_spawnpoint;
 
 typedef struct game_level {
-	int scalable;
-	int nBoundaries;
-	segment2 *boundaries;
-	int nSpawnPoints;
-	game_spawnpoint *spawnPoints;
-	box2 boundingBox;
+  int scalable;
+  int nBoundaries;
+  segment2* boundaries;
+  int nSpawnPoints;
+  game_spawnpoint* spawnPoints;
+  box2 boundingBox;
 } game_level;
 
-void game_FreeLevel(game_level *l);
+void game_FreeLevel(game_level* l);
 game_level* game_CreateLevel();
-void game_ScaleLevel(game_level *l, float fSize);
+void game_ScaleLevel(game_level* l, float fSize);
 
 #endif

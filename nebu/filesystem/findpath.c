@@ -27,7 +27,7 @@
 #include <string.h>
 #ifndef macintosh
 #ifndef WIN32
-#    include <unistd.h>
+#include <unistd.h>
 #endif
 #endif
 
@@ -38,70 +38,68 @@
 #endif
 
 #if !defined(WIN32) && !defined(macintosh) && !defined(__APPLE__)
-void goto_installpath(const char *argv0)
-{
-    char temppath[PATH_MAX];
-    char datapath[PATH_MAX];
-    char *home;
+void goto_installpath(const char* argv0) {
+  char temppath[PATH_MAX];
+  char datapath[PATH_MAX];
+  char* home;
 
-    home = getenv("HOME");
-    if ( ! home ) {
-        home = ".";
-    }
+  home = getenv("HOME");
+  if (!home) {
+    home = ".";
+  }
 
-    strncpy(temppath, argv0, PATH_MAX); 
-    if ( ! strrchr(temppath, '/') ) {
-        char *path;
-        char *last;
-        int found;
+  strncpy(temppath, argv0, PATH_MAX);
+  if (!strrchr(temppath, '/')) {
+    char* path;
+    char* last;
+    int found;
 
-        found = 0;
-        path = getenv("PATH");
-        do {
-            /* Initialize our filename variable */
-            temppath[0] = '\0';
+    found = 0;
+    path = getenv("PATH");
+    do {
+      /* Initialize our filename variable */
+      temppath[0] = '\0';
 
-            /* Get next entry from path variable */
-            last = strchr(path, ':');
-            if ( ! last )
-                last = path+strlen(path);
+      /* Get next entry from path variable */
+      last = strchr(path, ':');
+      if (!last) last = path + strlen(path);
 
-            /* Perform tilde expansion */
-            if ( *path == '~' ) {
-                strcpy(temppath, home);
-                ++path;
-            }
+      /* Perform tilde expansion */
+      if (*path == '~') {
+        strcpy(temppath, home);
+        ++path;
+      }
 
-            /* Fill in the rest of the filename */
-            if ( last > (path+1) ) {
-                strncat(temppath, path, (last-path));
-                strcat(temppath, "/");
-            }
-            strcat(temppath, "./");
-            strcat(temppath, argv0);
+      /* Fill in the rest of the filename */
+      if (last > (path + 1)) {
+        strncat(temppath, path, (last - path));
+        strcat(temppath, "/");
+      }
+      strcat(temppath, "./");
+      strcat(temppath, argv0);
 
-            /* See if it exists, and update path */
-            if (access(temppath, X_OK) == 0) {
-                ++found;
-            }
-            path = last+1;
+      /* See if it exists, and update path */
+      if (access(temppath, X_OK) == 0) {
+        ++found;
+      }
+      path = last + 1;
 
-        } while ( *last && !found );
+    } while (*last && !found);
 
-    } else {
-        /* Increment argv0 to the basename */
-        argv0 = strrchr(argv0, '/')+1;
-    }
+  } else {
+    /* Increment argv0 to the basename */
+    argv0 = strrchr(argv0, '/') + 1;
+  }
 
-    /* Now canonicalize it to a full pathname for the data path */
-    datapath[0] = '\0';
-    if ( realpath(temppath, datapath) ) {
-        /* There should always be '/' in the path */
-        *(strrchr(datapath, '/')) = '\0';
-    }
-    if ( ! *datapath || (chdir(datapath) < 0) ) {
-        fprintf(stderr, "Couldn't change to install directory\n");
-        exit(1); /* OK: critical, installation corrupt */
-    }
+  /* Now canonicalize it to a full pathname for the data path */
+  datapath[0] = '\0';
+  if (realpath(temppath, datapath)) {
+    /* There should always be '/' in the path */
+    *(strrchr(datapath, '/')) = '\0';
+  }
+  if (!*datapath || (chdir(datapath) < 0)) {
+    fprintf(stderr, "Couldn't change to install directory\n");
+    exit(1); /* OK: critical, installation corrupt */
+  }
 }
 #endif

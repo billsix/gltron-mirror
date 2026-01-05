@@ -9,14 +9,14 @@ typedef enum {
 } event_type_e;
 
 typedef struct GameEvent {
-  int type; /* what */
+  int type;   /* what */
   int player; /* who */
-  float x; /* where */
+  float x;    /* where */
   float y;
   unsigned int timestamp;
 } GameEvent;
 
 void createEvent(int player, event_type_e eventType);
-int processEvent(GameEvent *e);
+int processEvent(GameEvent* e);
 
 #endif /* EVENT_H */

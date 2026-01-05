@@ -7,28 +7,21 @@ static void drawHUDFrame(void);
 static void drawSpeedometer(void);
 static void drawScores(void);
 
-
 void drawHud(void) {
-	drawFrames();
-	drawSpeedometer();
-	drawFPS();
-	drawAIStatus();
+  drawFrames();
+  drawSpeedometer();
+  drawFPS();
+  drawAIStatus();
 }
 
-void drawFrame(void) {
-}
+void drawFrame(void) {}
 
-void drawFPS(void) {
-}
+void drawFPS(void) {}
 
-void drawAIStatus(void) {
-}
+void drawAIStatus(void) {}
 
-void drawHUDFrame(void) {
-}
+void drawHUDFrame(void) {}
 
-void drawSpeedometer(void) {
-}
+void drawSpeedometer(void) {}
 
-void drawScores(void) {
-}
+void drawScores(void) {}

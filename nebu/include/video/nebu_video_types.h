@@ -9,7 +9,7 @@ typedef struct {
 
   int onScreen;
 
-  unsigned int *textures; /* texture IDs */
+  unsigned int* textures; /* texture IDs */
 } Visual;
 
 #endif

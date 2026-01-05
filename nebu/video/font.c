@@ -11,15 +11,8 @@
 #include "base/nebu_debug_memory.h"
 
 unsigned char irc_color_codes[][3] = {
-  { 255, 255,255 },
-  { 0, 0, 0 },
-  { 255, 0, 0 },
-  { 255, 128, 0 },
-  { 255, 255, 0 },
-  { 128, 255, 0 },
-  { 0, 255, 0 },
-  { 0, 255, 128 }
-};
+    {255, 255, 255}, {0, 0, 0},     {255, 0, 0}, {255, 128, 0},
+    {255, 255, 0},   {128, 255, 0}, {0, 255, 0}, {0, 255, 128}};
 
 /*
 0     48    white       65535  65536  65535  FFFFFF
@@ -55,277 +48,246 @@ J     74    |           32768      0  32768  800080
 K     75    -           32768      0  16384  800040
 */
 
-void getLine(char *buf, int size, file_handle file) {
+void getLine(char* buf, int size, file_handle file) {
   do {
     file_gets(file, buf, size);
-  } while( buf[0] == '\n' || buf[0] == '#');
+  } while (buf[0] == '\n' || buf[0] == '#');
 }
 
-int getTextLength(const char *text, int len)
-{
-	int i;
-	int textLength = 0;
+int getTextLength(const char* text, int len) {
+  int i;
+  int textLength = 0;
 
-	for(i = 0; !len || i < len; i++)
-	{
-		if(text[i] == 0) // end of text reached?
-			break; 
-		if(text[i] == 0x03) // color code?
-		{
-			if(text[i+1] == 0)
-				break;
-			i++;
-		}
-		else
-			textLength++;
-	}
-	return textLength;
+  for (i = 0; !len || i < len; i++) {
+    if (text[i] == 0)  // end of text reached?
+      break;
+    if (text[i] == 0x03)  // color code?
+    {
+      if (text[i + 1] == 0) break;
+      i++;
+    } else
+      textLength++;
+  }
+  return textLength;
 }
 
+nebu_Font* nebu_Font_Load(const char* filename, int fs_tag) {
+  file_handle file;
+  char buf[100];
 
-nebu_Font* nebu_Font_Load(const char *filename, int fs_tag)
-{
-	file_handle file;
-	char buf[100];
+  int i;
+  int len;
+  int texWidth, charWidth;
 
-	int i;
-	int len;
-	int texWidth, charWidth;
+  nebu_Font* font = (nebu_Font*)malloc(sizeof(nebu_Font));
 
-	nebu_Font *font = (nebu_Font*) malloc(sizeof(nebu_Font));
+  file = file_open(filename, "r");
+  /* TODO(5): check for EOF errors in the following code */
 
-	file = file_open(filename, "r");
-	/* TODO(5): check for EOF errors in the following code */
+  /* nTextures, texture width, char width */
+  getLine(buf, sizeof(buf), file);
+  sscanf(buf, "%d %d %d ", &(font->nTextures), &texWidth, &charWidth);
+  font->metrics.baseline = 0;
+  font->metrics.width = (float)charWidth / (float)texWidth;
+  font->metrics.height = (float)charWidth / (float)texWidth;
 
-	/* nTextures, texture width, char width */
-	getLine(buf, sizeof(buf), file);
-	sscanf(buf, "%d %d %d ", &(font->nTextures), &texWidth, &charWidth);
-	font->metrics.baseline = 0;
-	font->metrics.width = (float)charWidth / (float)texWidth;
-	font->metrics.height = (float)charWidth / (float)texWidth;
+  /* lowest character, highest character */
+  getLine(buf, sizeof(buf), file);
+  {
+    int lastChar;
+    sscanf(buf, "%d %d ", &(font->firstChar), &lastChar);
+    font->nChars = lastChar - font->firstChar;
+  }
+  /* font name - ignored */
+  getLine(buf, sizeof(buf), file);
+  len = strlen(buf) + 1;
 
-	/* lowest character, highest character */
-	getLine(buf, sizeof(buf), file);
-	{
-		int lastChar;
-		sscanf(buf, "%d %d ", &(font->firstChar), &lastChar);
-		font->nChars = lastChar - font->firstChar;
-	}
-	/* font name - ignored */
-	getLine(buf, sizeof(buf), file);
-	len = strlen(buf) + 1;
+  nebu_Video_CheckErrors("before font load");
 
-	nebu_Video_CheckErrors("before font load");
+  /* prepare space for texture IDs  */
+  font->pTextures = (int*)malloc(font->nTextures * sizeof(int));
+  glGenTextures(font->nTextures, (GLuint*)font->pTextures);
 
-	/* prepare space for texture IDs  */
-	font->pTextures = (int*) malloc(font->nTextures * sizeof(int));
-	glGenTextures(font->nTextures, (GLuint*) font->pTextures);
+  /* the individual textures */
+  for (i = 0; i < font->nTextures; i++) {
+    char* texname;
+    char* path;
+    getLine(buf, sizeof(buf), file);
+    len = strlen(buf) + 1;
+    if (buf[len - 2] == '\n') buf[len - 2] = 0;
+    texname = (char*)malloc(len);
+    memcpy(texname, buf, len);
+    glBindTexture(GL_TEXTURE_2D, font->pTextures[i]);
+    // TODO: load texture
+    path = nebu_FS_GetPath(fs_tag, texname);
+    if (path) {
+      nebu_Surface* p2d = nebu_Surface_LoadPNG(path);
+      // TODO: add mipmapping
+      // TODO: assert that p2d->w, p2d->h are valid texture dimensions
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, p2d->w, p2d->h, 0, GL_RGBA,
+                   GL_UNSIGNED_BYTE, p2d->data);
+      nebu_Surface_Free(p2d);
+    }
 
-	/* the individual textures */
-	for(i = 0; i < font->nTextures; i++) {
-		char *texname;
-		char *path;
-		getLine(buf, sizeof(buf), file);
-		len = strlen(buf) + 1;
-		if(buf[len - 2] == '\n') buf[len - 2] = 0;
-		texname = (char*)malloc(len);
-		memcpy(texname, buf, len); 
-		glBindTexture(GL_TEXTURE_2D, font->pTextures[i]);
-		// TODO: load texture 
-		path = nebu_FS_GetPath(fs_tag, texname);
-		if(path)
-		{
-			nebu_Surface* p2d = nebu_Surface_LoadPNG(path);
-			// TODO: add mipmapping
-			// TODO: assert that p2d->w, p2d->h are valid texture dimensions
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, p2d->w, p2d->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, p2d->data);
-			nebu_Surface_Free(p2d);
-		}
+    free(path);
+    free(texname);
 
-		free(path);
-		free(texname);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    // glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+  }
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		// glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	}
+  nebu_Video_CheckErrors("after font load");
 
-	nebu_Video_CheckErrors("after font load");
-
-	file_close(file);
-	return font;
+  file_close(file);
+  return font;
 }
 
-void nebu_Font_Free(nebu_Font* font)
-{
-	glDeleteTextures(font->nTextures, font->pTextures);
-	free(font->pTextures);
-	free(font);
+void nebu_Font_Free(nebu_Font* font) {
+  glDeleteTextures(font->nTextures, font->pTextures);
+  free(font->pTextures);
+  free(font);
 }
 
-void nebu_Font_GetCharsPerTexture(const nebu_Font* font, int *wx, int *wy)
-{
-	*wx = (int) ( 1.0 / font->metrics.width );
-	*wy = (int) ( 1.0 / font->metrics.height );
+void nebu_Font_GetCharsPerTexture(const nebu_Font* font, int* wx, int* wy) {
+  *wx = (int)(1.0 / font->metrics.width);
+  *wy = (int)(1.0 / font->metrics.height);
 }
 
-void nebu_Font_Render(nebu_Font* font, const char *text, int len)
-{
-	int i;
+void nebu_Font_Render(nebu_Font* font, const char* text, int len) {
+  int i;
 
-	nebu_Video_CheckErrors("before font render");
+  nebu_Video_CheckErrors("before font render");
 
-	for(i = 0; !len || i < len; i++)
-	{
-		int index;
-		int texture;
-		int texHIndex, texVIndex;
-		int wx, wy;
-		float u1, u2, v1, v2;
+  for (i = 0; !len || i < len; i++) {
+    int index;
+    int texture;
+    int texHIndex, texVIndex;
+    int wx, wy;
+    float u1, u2, v1, v2;
 
-		if(text[i] == 0)
-			return;
-		if(text[i] == 0x03)
-		{
-			if(text[i+1] == 0)
-				return;
+    if (text[i] == 0) return;
+    if (text[i] == 0x03) {
+      if (text[i + 1] == 0) return;
 
-			glColor3ubv(irc_color_codes[text[i+1] - '0']);
-			i++;
-			continue;
-		}
+      glColor3ubv(irc_color_codes[text[i + 1] - '0']);
+      i++;
+      continue;
+    }
 
-		index = text[i] - font->firstChar + 1;
-		if(index >= font->nChars)
-		{
-			// font doesn't contain this char
-			assert(0);
-			continue;
-		}
-		nebu_Font_GetCharsPerTexture(font, &wx, &wy);
-		texture = index / (wx * wy);
-		texHIndex = (index % (wx * wy)) % wx;
-		texVIndex = wx - 1 - (index % (wx * wy)) / wx;
-		u1 = texHIndex * font->metrics.width;
-		u2 = (texHIndex + 1) * font->metrics.width;
-		v1 = texVIndex * font->metrics.height;
-		v2 = (texVIndex + 1) * font->metrics.height;
+    index = text[i] - font->firstChar + 1;
+    if (index >= font->nChars) {
+      // font doesn't contain this char
+      assert(0);
+      continue;
+    }
+    nebu_Font_GetCharsPerTexture(font, &wx, &wy);
+    texture = index / (wx * wy);
+    texHIndex = (index % (wx * wy)) % wx;
+    texVIndex = wx - 1 - (index % (wx * wy)) / wx;
+    u1 = texHIndex * font->metrics.width;
+    u2 = (texHIndex + 1) * font->metrics.width;
+    v1 = texVIndex * font->metrics.height;
+    v2 = (texVIndex + 1) * font->metrics.height;
 
-		// draw textured quad
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBindTexture(GL_TEXTURE_2D, font->pTextures[texture]);
-		glEnable(GL_TEXTURE_2D);
-		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    // draw textured quad
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBindTexture(GL_TEXTURE_2D, font->pTextures[texture]);
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-		glBegin(GL_QUADS);
-		glTexCoord2f(u1, v1);
-		glVertex3f(0, 0, 0);
-		glTexCoord2f(u2, v1);
-		glVertex3f(1, 0, 0);
-		glTexCoord2f(u2, v2);
-		glVertex3f(1, 1, 0);
-		glTexCoord2f(u1, v2);
-		glVertex3f(0, 1, 0);
-		glEnd();
+    glBegin(GL_QUADS);
+    glTexCoord2f(u1, v1);
+    glVertex3f(0, 0, 0);
+    glTexCoord2f(u2, v1);
+    glVertex3f(1, 0, 0);
+    glTexCoord2f(u2, v2);
+    glVertex3f(1, 1, 0);
+    glTexCoord2f(u1, v2);
+    glVertex3f(0, 1, 0);
+    glEnd();
 
-		glDisable(GL_TEXTURE_2D);
-		glDisable(GL_BLEND);
-		// advance vpos
-		glTranslatef(1,0,0);
-	}
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_BLEND);
+    // advance vpos
+    glTranslatef(1, 0, 0);
+  }
 
-	nebu_Video_CheckErrors("after font render");
+  nebu_Video_CheckErrors("after font render");
 }
 
-void nebu_Font_RenderFormatted(nebu_Font* font, nebu_Font_Format *format, const char *text)
-{
-	// TODO: add word wrapping
+void nebu_Font_RenderFormatted(nebu_Font* font, nebu_Font_Format* format,
+                               const char* text) {
+  // TODO: add word wrapping
 
-	const char *pos = text;
-	int linePos = 0;
+  const char* pos = text;
+  int linePos = 0;
 
-	glPushMatrix(); // new line
-	while(*pos)
-	{
-		if(*pos != '\n' && linePos < format->lineWidth)
-		{
-			nebu_Font_Render(font, pos, 1);
-			linePos++;
-			pos++;
-		}
-		else
-		{
-			// new line
-			glPopMatrix();
-			glTranslatef(0, -format->lineWidth, 0);
-			glPushMatrix();
+  glPushMatrix();  // new line
+  while (*pos) {
+    if (*pos != '\n' && linePos < format->lineWidth) {
+      nebu_Font_Render(font, pos, 1);
+      linePos++;
+      pos++;
+    } else {
+      // new line
+      glPopMatrix();
+      glTranslatef(0, -format->lineWidth, 0);
+      glPushMatrix();
 
-			linePos = 0;
-			if(*pos == '\n')
-				pos++;
-		}
-	}
-	glPopMatrix();
+      linePos = 0;
+      if (*pos == '\n') pos++;
+    }
+  }
+  glPopMatrix();
 }
 
-void nebu_Font_RenderToBox(nebu_Font* font, const char *text, int len, box2 *box, int flags)
-{
-	float width, height, scalew, scaleh;
-	int textLength;
-	glPushMatrix();
-	glTranslatef(box->vMin.v[0], box->vMin.v[1], 0);
+void nebu_Font_RenderToBox(nebu_Font* font, const char* text, int len,
+                           box2* box, int flags) {
+  float width, height, scalew, scaleh;
+  int textLength;
+  glPushMatrix();
+  glTranslatef(box->vMin.v[0], box->vMin.v[1], 0);
 
-	width = box->vMax.v[0] - box->vMin.v[0];
-	height = box->vMax.v[1] - box->vMin.v[1];
-	textLength = getTextLength(text, len);
-	if(width / textLength < height)
-	{
-		if(flags & eFontFormatScaleFitVertically)
-		{
-			scaleh = height;
-			scalew = width / textLength;
-		}
-		else
-		{
-			scalew = width / textLength;
-			scaleh = width / textLength;
-		}
+  width = box->vMax.v[0] - box->vMin.v[0];
+  height = box->vMax.v[1] - box->vMin.v[1];
+  textLength = getTextLength(text, len);
+  if (width / textLength < height) {
+    if (flags & eFontFormatScaleFitVertically) {
+      scaleh = height;
+      scalew = width / textLength;
+    } else {
+      scalew = width / textLength;
+      scaleh = width / textLength;
+    }
 
-	}
-	else
-	{
-		if(flags & eFontFormatScaleFitHorizontally)
-		{
-			scalew = width / textLength;
-			scaleh = height;
-		}
-		else
-		{
-			scalew = height;
-			scaleh = height;
-		}
-	}
+  } else {
+    if (flags & eFontFormatScaleFitHorizontally) {
+      scalew = width / textLength;
+      scaleh = height;
+    } else {
+      scalew = height;
+      scaleh = height;
+    }
+  }
 
-	if(flags & eFontFormatAlignCenter)
-	{
-		// shift according to width/scale
-		glTranslatef( (width - textLength * scalew) / 2, 0, 0);
-	}
-	if(flags & eFontFormatAlignVCenter)
-	{
-		// shift according to height/scale
-		glTranslatef( 0, (height - scaleh) / 2, 0);
-	}
+  if (flags & eFontFormatAlignCenter) {
+    // shift according to width/scale
+    glTranslatef((width - textLength * scalew) / 2, 0, 0);
+  }
+  if (flags & eFontFormatAlignVCenter) {
+    // shift according to height/scale
+    glTranslatef(0, (height - scaleh) / 2, 0);
+  }
 
-	glScalef(scalew, scaleh, 1);
-	nebu_Font_Render(font, text, len);
-	glPopMatrix();
+  glScalef(scalew, scaleh, 1);
+  nebu_Font_Render(font, text, len);
+  glPopMatrix();
 }
 
-void nebu_Font_RenderToBoxFormatted(nebu_Font* font, nebu_Font_Format *format, const char *text, box2 *box)
-{
-}
+void nebu_Font_RenderToBoxFormatted(nebu_Font* font, nebu_Font_Format* format,
+                                    const char* text, box2* box) {}

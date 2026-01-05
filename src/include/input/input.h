@@ -6,7 +6,6 @@ typedef struct Input {
   int mouse2;
 } Input;
 
-
 #define MOUSE_ORIG_X 100
 #define MOUSE_ORIG_Y 100
 #define MOUSE_CX 0.003f

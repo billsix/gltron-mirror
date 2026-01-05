@@ -8,14 +8,14 @@ typedef nebu_Font FontTex;
 #else
 typedef struct {
   int nTextures;
-  
+
   int texwidth; /* texture width */
-  int width; /* character width */
+  int width;    /* character width */
 
   int lower; /* lowest ascii character (normally: 32) */
   int upper; /* highest ascii character (normally: 126) */
 
-  int *texID;
+  int* texID;
 } FontTex;
 #endif
 

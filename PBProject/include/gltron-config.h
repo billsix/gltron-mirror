@@ -7,5 +7,5 @@
 #define sinf(x) sin(x)
 #define cosf(x) cos(x)
 #define sqrtf(x) sqrt(x)
-#define tanf(x)  tan(x)
+#define tanf(x) tan(x)
 #define acosf(x) acos(x)

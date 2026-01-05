@@ -11,7 +11,7 @@ typedef gzFile file_handle;
 typedef FILE* file_handle;
 #endif
 
-file_handle file_open(const char *path, const char *mode);
+file_handle file_open(const char* path, const char* mode);
 int file_close(file_handle file);
 
 int file_read(file_handle file, void* data, unsigned int size);

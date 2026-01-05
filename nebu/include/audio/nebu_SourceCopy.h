@@ -7,18 +7,18 @@
 #include "base/nebu_Vector3.h"
 
 namespace Sound {
-  class SourceCopy : public Source { 
-  public:
-    SourceCopy(SourceSample *source) { 
-      _source = source;
+class SourceCopy : public Source {
+ public:
+  SourceCopy(SourceSample* source) {
+    _source = source;
 
-      _position = 0;
-    };
-    SourceSample* _source;
-    virtual int Mix(Uint8 *data, int len);
-    // protected:
-    int _position;
+    _position = 0;
   };
-}
+  SourceSample* _source;
+  virtual int Mix(Uint8* data, int len);
+  // protected:
+  int _position;
+};
+}  // namespace Sound
 
 #endif

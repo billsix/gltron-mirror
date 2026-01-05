@@ -6,7 +6,7 @@
 void Sound_loadFX(void);
 void Sound_init(void);
 void Sound_shutdown(void);
-void Sound_load(char *name);
+void Sound_load(char* name);
 void Sound_play(void);
 void Sound_stop(void);
 void Sound_idle(void);

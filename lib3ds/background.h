@@ -7,13 +7,13 @@
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
- * under the terms of the  GNU Lesser General Public License  as published by 
- * the  Free Software Foundation;  either version 2.1 of the License,  or (at 
+ * under the terms of the  GNU Lesser General Public License  as published by
+ * the  Free Software Foundation;  either version 2.1 of the License,  or (at
  * your option) any later version.
  *
  * This  program  is  distributed in  the  hope that it will  be useful,  but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or  FITNESS FOR A  PARTICULAR PURPOSE.  See the  GNU Lesser General Public  
+ * or  FITNESS FOR A  PARTICULAR PURPOSE.  See the  GNU Lesser General Public
  * License for more details.
  *
  * You should  have received  a copy of the GNU Lesser General Public License
@@ -36,8 +36,8 @@ extern "C" {
  * \ingroup background
  */
 typedef struct _Lib3dsBitmap {
-    Lib3dsBool use;
-    char name[64];
+  Lib3dsBool use;
+  char name[64];
 } Lib3dsBitmap;
 
 /*!
@@ -45,8 +45,8 @@ typedef struct _Lib3dsBitmap {
  * \ingroup background
  */
 typedef struct _Lib3dsSolid {
-    Lib3dsBool use;
-    Lib3dsRgb col;
+  Lib3dsBool use;
+  Lib3dsRgb col;
 } Lib3dsSolid;
 
 /*!
@@ -54,11 +54,11 @@ typedef struct _Lib3dsSolid {
  * \ingroup background
  */
 typedef struct _Lib3dsGradient {
-    Lib3dsBool use;
-    Lib3dsFloat percent;
-    Lib3dsRgb top;
-    Lib3dsRgb middle;
-    Lib3dsRgb bottom;
+  Lib3dsBool use;
+  Lib3dsFloat percent;
+  Lib3dsRgb top;
+  Lib3dsRgb middle;
+  Lib3dsRgb bottom;
 } Lib3dsGradient;
 
 /*!
@@ -66,20 +66,17 @@ typedef struct _Lib3dsGradient {
  * \ingroup background
  */
 struct _Lib3dsBackground {
-    Lib3dsBitmap bitmap;
-    Lib3dsSolid solid;
-    Lib3dsGradient gradient;
+  Lib3dsBitmap bitmap;
+  Lib3dsSolid solid;
+  Lib3dsGradient gradient;
 };
 
-extern LIB3DSAPI Lib3dsBool lib3ds_background_read(Lib3dsBackground *background, Lib3dsIo *io);
-extern LIB3DSAPI Lib3dsBool lib3ds_background_write(Lib3dsBackground *background, Lib3dsIo *io);
+extern LIB3DSAPI Lib3dsBool lib3ds_background_read(Lib3dsBackground* background,
+                                                   Lib3dsIo* io);
+extern LIB3DSAPI Lib3dsBool
+lib3ds_background_write(Lib3dsBackground* background, Lib3dsIo* io);
 
 #ifdef __cplusplus
 };
 #endif
 #endif
-
-
-
-
-

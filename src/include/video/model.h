@@ -15,8 +15,8 @@ typedef struct gltron_Mesh_Material {
   float diffuse[4];
   float specular[4];
   float shininess;
-  char *name;
-  char *map_diffuse;
+  char* name;
+  char* map_diffuse;
 } gltron_Mesh_Material;
 
 typedef struct gltron_Mesh_BoundingBox {
@@ -26,34 +26,28 @@ typedef struct gltron_Mesh_BoundingBox {
 } gltron_Mesh_BoundingBox;
 
 typedef struct gltron_Mesh {
-  float *pVertices;
-  float *pNormals;
-  unsigned short **ppIndices;
+  float* pVertices;
+  float* pNormals;
+  unsigned short** ppIndices;
   int nVertices, nNormals, nMaterials;
   gltron_Mesh_Material* pMaterials;
-  int *pnFaces;
+  int* pnFaces;
   gltron_Mesh_BoundingBox BBox;
 } gltron_Mesh;
 
-typedef enum gltron_MeshType {
-  TRI_MESH,
-  QUAD_MESH
-} gltron_MeshType;
-    
-gltron_Mesh* gltron_Mesh_LoadFromFile(const char* filename, gltron_MeshType type);
+typedef enum gltron_MeshType { TRI_MESH, QUAD_MESH } gltron_MeshType;
+
+gltron_Mesh* gltron_Mesh_LoadFromFile(const char* filename,
+                                      gltron_MeshType type);
 void gltron_Mesh_Draw(gltron_Mesh* pMesh, gltron_MeshType type);
-void gltron_Mesh_DrawExplosion(gltron_Mesh *pMesh, float fRadius);
+void gltron_Mesh_DrawExplosion(gltron_Mesh* pMesh, float fRadius);
 void gltron_Mesh_Free(gltron_Mesh* pMesh);
 
-typedef enum ColorType {
-  eAmbient = 0,
-  eDiffuse,
-  eSpecular
-} ColorType;
+typedef enum ColorType { eAmbient = 0, eDiffuse, eSpecular } ColorType;
 
-void gltron_Mesh_SetMaterialAlpha(gltron_Mesh *pMesh, float fAlpha);
-void gltron_Mesh_SetMaterialColor(gltron_Mesh *pMesh, char *name, 
-	 ColorType eType, float pColor[4]);
+void gltron_Mesh_SetMaterialAlpha(gltron_Mesh* pMesh, float fAlpha);
+void gltron_Mesh_SetMaterialColor(gltron_Mesh* pMesh, char* name,
+                                  ColorType eType, float pColor[4]);
 
 void gltron_Mesh_ComputeBBox(gltron_Mesh* pMesh);
 

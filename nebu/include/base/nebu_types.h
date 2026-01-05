@@ -5,13 +5,13 @@ typedef struct {
   unsigned int current;
   unsigned int lastFrame;
   unsigned int offset; /* from SystemGetElapsedTime() */
-  unsigned int dt; /* current - lastFrame */
+  unsigned int dt;     /* current - lastFrame */
 
   /* float timeScale; */
 } SystemTime;
 
 typedef struct {
-	int x, y, width, height;
+  int x, y, width, height;
 } nebu_Rect;
 
 #endif

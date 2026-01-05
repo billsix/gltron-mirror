@@ -7,115 +7,113 @@
 
 #include "base/nebu_debug_memory.h"
 
-void loadDefaultMaterial(gltron_Mesh_Material *pMaterial) {
-  float ambient[] = { 0.2f, 0.2f, 0.2f, 1.0 };
-  float diffuse[] = { 1.0, 1.0, 0.0, 1.0 };
-  float specular[] = { 1.0, 1.0, 1.0, 1.0 };
+void loadDefaultMaterial(gltron_Mesh_Material* pMaterial) {
+  float ambient[] = {0.2f, 0.2f, 0.2f, 1.0};
+  float diffuse[] = {1.0, 1.0, 0.0, 1.0};
+  float specular[] = {1.0, 1.0, 1.0, 1.0};
   float shininess = 2;
 
-  memcpy( pMaterial->ambient, ambient, sizeof(ambient) );
-  memcpy( pMaterial->diffuse, diffuse, sizeof(diffuse) );
-  memcpy( pMaterial->specular, specular, sizeof(specular) );
+  memcpy(pMaterial->ambient, ambient, sizeof(ambient));
+  memcpy(pMaterial->diffuse, diffuse, sizeof(diffuse));
+  memcpy(pMaterial->specular, specular, sizeof(specular));
   pMaterial->shininess = shininess;
   pMaterial->name = NULL;
   pMaterial->map_diffuse = NULL;
 }
 
-void readMaterialLibraryFromFile(char *filename, gltron_Mesh *pMesh) {
-  gltron_Mesh_Material *pMaterials; 
+void readMaterialLibraryFromFile(char* filename, gltron_Mesh* pMesh) {
+  gltron_Mesh_Material* pMaterials;
   int iMaterial;
 
   char buf[BUF_SIZE];
   char name[BUF_SIZE];
-  char *path;
+  char* path;
   gzFile f;
 
   int i;
 
   path = getPath(PATH_DATA, filename);
-  if(path == NULL) {
+  if (path == NULL) {
     fprintf(stderr, "** could not optain path to file '%s'\n", filename);
     return;
   }
 
-  if((f = gzopen(path, "r")) == 0) {
+  if ((f = gzopen(path, "r")) == 0) {
     fprintf(stderr, "** could not open file '%s'\n", filename);
     free(path);
     return;
   }
   free(path);
 
-  pMaterials = malloc( MAX_MATERIALS * sizeof( gltron_Mesh_Material ) );
+  pMaterials = malloc(MAX_MATERIALS * sizeof(gltron_Mesh_Material));
   iMaterial = -1;
 
-  while( gzgets(f, buf, sizeof(buf)) ) {
-    switch(buf[0]) {
-    case '#': break;
-    case 'n':
-      iMaterial++;
-      loadDefaultMaterial(pMaterials + iMaterial);
+  while (gzgets(f, buf, sizeof(buf))) {
+    switch (buf[0]) {
+      case '#':
+        break;
+      case 'n':
+        iMaterial++;
+        loadDefaultMaterial(pMaterials + iMaterial);
 
-      sscanf(buf, "newmtl %s ", name);
-      pMaterials[iMaterial].name = malloc( strlen(name) + 1 );
-      strcpy( pMaterials[iMaterial].name, name );
+        sscanf(buf, "newmtl %s ", name);
+        pMaterials[iMaterial].name = malloc(strlen(name) + 1);
+        strcpy(pMaterials[iMaterial].name, name);
 
-      break;
-    default:
-      if(sscanf(buf, " Ka %f %f %f ", 
-		pMaterials[iMaterial].ambient + 0,
-		pMaterials[iMaterial].ambient + 1,
-		pMaterials[iMaterial].ambient + 2) == 3) {
-	// nothing
-      } else if(sscanf(buf, " Kd %f %f %f ", 
-		pMaterials[iMaterial].diffuse + 0,
-		pMaterials[iMaterial].diffuse + 1,
-		pMaterials[iMaterial].diffuse + 2) == 3) {
-	// nothing
-      } else if(sscanf(buf, " Ks %f %f %f ", 
-		pMaterials[iMaterial].specular + 0,
-		pMaterials[iMaterial].specular + 1,
-		pMaterials[iMaterial].specular + 2) == 3) {
-	// nothing
-      } else if(sscanf(buf, " Ns %f ", 
-		       & (pMaterials[iMaterial].shininess) ) == 1 ) {
-	// nothing
-      } else {
-	/* FIXME: "disabled error message" */
-	/* fprintf(stderr, "+++ unparsed material property: %s", buf); */
-      }
+        break;
+      default:
+        if (sscanf(buf, " Ka %f %f %f ", pMaterials[iMaterial].ambient + 0,
+                   pMaterials[iMaterial].ambient + 1,
+                   pMaterials[iMaterial].ambient + 2) == 3) {
+          // nothing
+        } else if (sscanf(buf, " Kd %f %f %f ",
+                          pMaterials[iMaterial].diffuse + 0,
+                          pMaterials[iMaterial].diffuse + 1,
+                          pMaterials[iMaterial].diffuse + 2) == 3) {
+          // nothing
+        } else if (sscanf(buf, " Ks %f %f %f ",
+                          pMaterials[iMaterial].specular + 0,
+                          pMaterials[iMaterial].specular + 1,
+                          pMaterials[iMaterial].specular + 2) == 3) {
+          // nothing
+        } else if (sscanf(buf, " Ns %f ", &(pMaterials[iMaterial].shininess)) ==
+                   1) {
+          // nothing
+        } else {
+          /* FIXME: "disabled error message" */
+          /* fprintf(stderr, "+++ unparsed material property: %s", buf); */
+        }
     }
   }
-	
+
   pMesh->nMaterials = iMaterial + 1;
-  pMesh->pMaterials = malloc( sizeof(gltron_Mesh_Material) *  
-															pMesh->nMaterials );
-  for(i = 0; i < pMesh->nMaterials; i++) {
-    memcpy( pMesh->pMaterials + i, pMaterials + i, 
-						sizeof(gltron_Mesh_Material) );
+  pMesh->pMaterials = malloc(sizeof(gltron_Mesh_Material) * pMesh->nMaterials);
+  for (i = 0; i < pMesh->nMaterials; i++) {
+    memcpy(pMesh->pMaterials + i, pMaterials + i, sizeof(gltron_Mesh_Material));
   }
   free(pMaterials);
 }
 
-void readMaterialLibrary(char *buf, gltron_Mesh *pMesh) {
+void readMaterialLibrary(char* buf, gltron_Mesh* pMesh) {
   char filename[BUF_SIZE];
-  if(sscanf(buf, " mtllib %s ", filename) != 1) {
+  if (sscanf(buf, " mtllib %s ", filename) != 1) {
     fprintf(stderr, "*** failing parsing filename from %s\n", buf);
     return;
   }
   readMaterialLibraryFromFile(filename, pMesh);
 }
 
-void setMaterial(char *buf, gltron_Mesh *pMesh, int *iGroup) {
+void setMaterial(char* buf, gltron_Mesh* pMesh, int* iGroup) {
   char name[BUF_SIZE];
   int i;
 
-  if(sscanf(buf, " usemtl %s ", name) == 1) {
+  if (sscanf(buf, " usemtl %s ", name) == 1) {
     // search through all materials for the current one
-    for(i = 0; i < pMesh->nMaterials; i++) {
-      if(strstr(pMesh->pMaterials[i].name, name) ==
-	 pMesh->pMaterials[i].name) {
-	*iGroup = i;
-	return;
+    for (i = 0; i < pMesh->nMaterials; i++) {
+      if (strstr(pMesh->pMaterials[i].name, name) ==
+          pMesh->pMaterials[i].name) {
+        *iGroup = i;
+        return;
       }
     }
     fprintf(stderr, "*** error: material %s not found\n", name);
@@ -124,35 +122,32 @@ void setMaterial(char *buf, gltron_Mesh *pMesh, int *iGroup) {
   }
 }
 
-void gltron_Mesh_SetMaterialAlpha(gltron_Mesh *pMesh, float fAlpha)
-{
+void gltron_Mesh_SetMaterialAlpha(gltron_Mesh* pMesh, float fAlpha) {
   int i;
 
-  for(i = 0; i < pMesh->nMaterials; i++)
-  {
-	  pMesh->pMaterials[i].diffuse[3] = fAlpha;
+  for (i = 0; i < pMesh->nMaterials; i++) {
+    pMesh->pMaterials[i].diffuse[3] = fAlpha;
   }
 }
 
-void gltron_Mesh_SetMaterialColor(gltron_Mesh *pMesh, char *name, ColorType eType,
-		      float pColor[4]) {
+void gltron_Mesh_SetMaterialColor(gltron_Mesh* pMesh, char* name,
+                                  ColorType eType, float pColor[4]) {
   int i;
 
-  for(i = 0; i < pMesh->nMaterials; i++) {
-    if(name == NULL || strstr(pMesh->pMaterials[i].name, name) ==
-       pMesh->pMaterials[i].name) {
-      switch(eType) {
-      case eAmbient:
-	memcpy( pMesh->pMaterials[i].ambient, pColor, sizeof(float[4]) );
-	break;
-      case eDiffuse:
-	memcpy( pMesh->pMaterials[i].diffuse, pColor, sizeof(float[4]) );
-	break;
-      case eSpecular:
-	memcpy( pMesh->pMaterials[i].specular, pColor, sizeof(float[4]) );
-	break;
+  for (i = 0; i < pMesh->nMaterials; i++) {
+    if (name == NULL ||
+        strstr(pMesh->pMaterials[i].name, name) == pMesh->pMaterials[i].name) {
+      switch (eType) {
+        case eAmbient:
+          memcpy(pMesh->pMaterials[i].ambient, pColor, sizeof(float[4]));
+          break;
+        case eDiffuse:
+          memcpy(pMesh->pMaterials[i].diffuse, pColor, sizeof(float[4]));
+          break;
+        case eSpecular:
+          memcpy(pMesh->pMaterials[i].specular, pColor, sizeof(float[4]));
+          break;
       }
     }
   }
 }
-

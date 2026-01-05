@@ -6,15 +6,15 @@
 #include "base/nebu_math.h"
 #include "video/nebu_renderer_gl.h"
 
-void drawGlow(Camera *pCam, Player *pTarget, PlayerVisual *pV,
-							Visual *d, float dim) {
-  float mat[4*4];
+void drawGlow(Camera* pCam, Player* pTarget, PlayerVisual* pV, Visual* d,
+              float dim) {
+  float mat[4 * 4];
   float alpha, dist;
-	float x, y;
+  float x, y;
 
   glPushMatrix();
-	
-	getPositionFromData(&x, &y, pTarget->data);
+
+  getPositionFromData(&x, &y, pTarget->data);
   glTranslatef(x, y, 0);
 
   glDepthMask(GL_FALSE);
@@ -30,82 +30,78 @@ void drawGlow(Camera *pCam, Player *pTarget, PlayerVisual *pV,
   mat[8] = mat[9] = 0.0;
   glLoadMatrixf(mat);
 
-	{
-		vec3 v;
-		v.v[0] = x - pCam->cam[0];
-		v.v[1] = y - pCam->cam[1];
-		v.v[2] = 0 - pCam->cam[2];
-		dist = vec3_Length(&v);
-	}
-	{
-	  const float fMin = 30;
-		const float fMax = 100;
-		if(dist < fMin) alpha = 0.0f;
-		else if(dist > fMax) alpha = 1.0f;
-		else alpha = (dist - fMin) / (fMax - fMin);
-		// printf("dist: %.2f, alpha: %.2f\n", dist, alpha);
-	}
+  {
+    vec3 v;
+    v.v[0] = x - pCam->cam[0];
+    v.v[1] = y - pCam->cam[1];
+    v.v[2] = 0 - pCam->cam[2];
+    dist = vec3_Length(&v);
+  }
+  {
+    const float fMin = 30;
+    const float fMax = 100;
+    if (dist < fMin)
+      alpha = 0.0f;
+    else if (dist > fMax)
+      alpha = 1.0f;
+    else
+      alpha = (dist - fMin) / (fMax - fMin);
+    // printf("dist: %.2f, alpha: %.2f\n", dist, alpha);
+  }
   glBegin(GL_TRIANGLE_FAN);
-  glColor4f(pV->pColorDiffuse[0], 
-						pV->pColorDiffuse[1], 
-						pV->pColorDiffuse[2],
-						alpha);
+  glColor4f(pV->pColorDiffuse[0], pV->pColorDiffuse[1], pV->pColorDiffuse[2],
+            alpha);
 
-  glVertex3f(0,TRAIL_HEIGHT/2, 0);
-  glColor4f(0,0,0,0.0);
-  glVertex3d(dim*cos(-0.2*3.1415/5.0),
-	     TRAIL_HEIGHT/2+dim*sin(-0.2*3.1415/5.0), 0);
-  glVertex3d(dim*cos(1.0*3.1415/5.0),
-	     TRAIL_HEIGHT/2+dim*sin(1.0*3.1415/5.0), 0);
-  glVertex3d(dim*cos(2.0*3.1415/5.0),
-	     TRAIL_HEIGHT/2+dim*sin(2.0*3.1415/5.0), 0);
-  glVertex3d(dim*cos(3.0*3.1415/5.0),
-	     TRAIL_HEIGHT/2+dim*sin(3.0*3.1415/5.0), 0);
-  glVertex3d(dim*cos(4.0*3.1415/5.0),
-	     TRAIL_HEIGHT/2+dim*sin(4.0*3.1415/5.0), 0);
-  glVertex3d(dim*cos(5.2*3.1415/5.0),
-	     TRAIL_HEIGHT/2+dim*sin(5.2*3.1415/5.0), 0);
+  glVertex3f(0, TRAIL_HEIGHT / 2, 0);
+  glColor4f(0, 0, 0, 0.0);
+  glVertex3d(dim * cos(-0.2 * 3.1415 / 5.0),
+             TRAIL_HEIGHT / 2 + dim * sin(-0.2 * 3.1415 / 5.0), 0);
+  glVertex3d(dim * cos(1.0 * 3.1415 / 5.0),
+             TRAIL_HEIGHT / 2 + dim * sin(1.0 * 3.1415 / 5.0), 0);
+  glVertex3d(dim * cos(2.0 * 3.1415 / 5.0),
+             TRAIL_HEIGHT / 2 + dim * sin(2.0 * 3.1415 / 5.0), 0);
+  glVertex3d(dim * cos(3.0 * 3.1415 / 5.0),
+             TRAIL_HEIGHT / 2 + dim * sin(3.0 * 3.1415 / 5.0), 0);
+  glVertex3d(dim * cos(4.0 * 3.1415 / 5.0),
+             TRAIL_HEIGHT / 2 + dim * sin(4.0 * 3.1415 / 5.0), 0);
+  glVertex3d(dim * cos(5.2 * 3.1415 / 5.0),
+             TRAIL_HEIGHT / 2 + dim * sin(5.2 * 3.1415 / 5.0), 0);
   glEnd();
 
   glBegin(GL_TRIANGLES);
-  glColor4f(pV->pColorDiffuse[0], 
-						pV->pColorDiffuse[1], 
-						pV->pColorDiffuse[2],
-						alpha);
-  glVertex3f(0,TRAIL_HEIGHT/2, 0);
-  glColor4f(0,0,0,0.0);
-  glVertex3f(0,-TRAIL_HEIGHT/4,0);
-  glVertex3d(dim*cos(-0.2f*3.1415/5.0),
-	     TRAIL_HEIGHT/2+dim*sin(-0.2*3.1415/5.0), 0);
+  glColor4f(pV->pColorDiffuse[0], pV->pColorDiffuse[1], pV->pColorDiffuse[2],
+            alpha);
+  glVertex3f(0, TRAIL_HEIGHT / 2, 0);
+  glColor4f(0, 0, 0, 0.0);
+  glVertex3f(0, -TRAIL_HEIGHT / 4, 0);
+  glVertex3d(dim * cos(-0.2f * 3.1415 / 5.0),
+             TRAIL_HEIGHT / 2 + dim * sin(-0.2 * 3.1415 / 5.0), 0);
 
-  glColor4f(pV->pColorDiffuse[0], 
-						pV->pColorDiffuse[1], 
-						pV->pColorDiffuse[2],
-						alpha);
-  glVertex3f(0,TRAIL_HEIGHT/2, 0);
-  glColor4f(0,0,0,0.0);
-  glVertex3d(dim*cos(5.2*3.1415/5.0),
-	     TRAIL_HEIGHT/2+dim*sin(5.2*3.1415/5.0), 0);
-  glVertex3f(0,-TRAIL_HEIGHT/4,0);
+  glColor4f(pV->pColorDiffuse[0], pV->pColorDiffuse[1], pV->pColorDiffuse[2],
+            alpha);
+  glVertex3f(0, TRAIL_HEIGHT / 2, 0);
+  glColor4f(0, 0, 0, 0.0);
+  glVertex3d(dim * cos(5.2 * 3.1415 / 5.0),
+             TRAIL_HEIGHT / 2 + dim * sin(5.2 * 3.1415 / 5.0), 0);
+  glVertex3f(0, -TRAIL_HEIGHT / 4, 0);
   glEnd();
 
   glDepthMask(GL_TRUE);
   glEnable(GL_DEPTH_TEST);
 
-  glPopMatrix();  
+  glPopMatrix();
 }
 
 void drawImpact(int player) {
-	glPushMatrix();
-	glRotatef(90, 90, 0, 1);
-	/*
-	* Drop impact slightly below the floor and move it a tiny bit
-	* back from the impact point so we don't draw behind the
-	* trail/wall that's hit.
-	*/
-	glTranslatef(0.0, -0.5, -0.5);
-	glColor3f(0.68f, 0, 0);
-	drawExplosion(game->player[player].data->exp_radius);
-	glPopMatrix();
+  glPushMatrix();
+  glRotatef(90, 90, 0, 1);
+  /*
+   * Drop impact slightly below the floor and move it a tiny bit
+   * back from the impact point so we don't draw behind the
+   * trail/wall that's hit.
+   */
+  glTranslatef(0.0, -0.5, -0.5);
+  glColor3f(0.68f, 0, 0);
+  drawExplosion(game->player[player].data->exp_radius);
+  glPopMatrix();
 }
-

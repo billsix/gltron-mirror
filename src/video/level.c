@@ -14,191 +14,180 @@
 
 nebu_Mesh* loadMesh(void);
 
-void video_FreeLevel(video_level *l) {
-	nebu_Mesh_Free(l->floor);
-	nebu_Mesh_Free(l->arena);
-	glDeleteTextures(1, & l->floor_shader.diffuse_texture_id);
-	glDeleteTextures(1, & l->arena_shader.diffuse_texture_id);
-	free(l);
+void video_FreeLevel(video_level* l) {
+  nebu_Mesh_Free(l->floor);
+  nebu_Mesh_Free(l->arena);
+  glDeleteTextures(1, &l->floor_shader.diffuse_texture_id);
+  glDeleteTextures(1, &l->arena_shader.diffuse_texture_id);
+  free(l);
 }
 
-void video_ScaleLevel(video_level *l, float fSize)
-{
-	nebu_Mesh_Scale(l->floor, fSize);
-	nebu_Mesh_Scale(l->arena, fSize);
+void video_ScaleLevel(video_level* l, float fSize) {
+  nebu_Mesh_Scale(l->floor, fSize);
+  nebu_Mesh_Scale(l->arena, fSize);
 }
 
 void video_Shader_Setup(video_level_shader* shader) {
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, shader->diffuse_texture_id);
-	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+  glEnable(GL_TEXTURE_2D);
+  glBindTexture(GL_TEXTURE_2D, shader->diffuse_texture_id);
+  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
 
 void video_Shader_Cleanup(video_level_shader* shader) {
-	glDisable(GL_TEXTURE_2D);
+  glDisable(GL_TEXTURE_2D);
 }
 
 int level_LoadTexture() {
-	int id;
-	char *filename;
-	int filter[] = { GL_NEAREST, GL_LINEAR, GL_LINEAR_MIPMAP_NEAREST, 
-									 GL_LINEAR_MIPMAP_LINEAR };
-	int wrap[] = { GL_CLAMP, GL_CLAMP_TO_EDGE, GL_REPEAT };
-	int result;
+  int id;
+  char* filename;
+  int filter[] = {GL_NEAREST, GL_LINEAR, GL_LINEAR_MIPMAP_NEAREST,
+                  GL_LINEAR_MIPMAP_LINEAR};
+  int wrap[] = {GL_CLAMP, GL_CLAMP_TO_EDGE, GL_REPEAT};
+  int result;
 
-	// FIXME: error checking
+  // FIXME: error checking
 
-	glGenTextures(1, & id);
-	glBindTexture(GL_TEXTURE_2D, id);
-	// printf("binding texture %d\n", id);
+  glGenTextures(1, &id);
+  glBindTexture(GL_TEXTURE_2D, id);
+  // printf("binding texture %d\n", id);
 
-	scripting_GetValue("file");
-	scripting_GetStringResult(& filename);
-	loadTexture(filename, GL_RGBA);
-	free(filename);
+  scripting_GetValue("file");
+  scripting_GetStringResult(&filename);
+  loadTexture(filename, GL_RGBA);
+  free(filename);
 
-	scripting_GetValue("min_filter");
-	scripting_GetIntegerResult(&result);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter[result]);
+  scripting_GetValue("min_filter");
+  scripting_GetIntegerResult(&result);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter[result]);
 
-	scripting_GetValue("mag_filter");
-	scripting_GetIntegerResult(&result);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter[result]);
-	
-	scripting_GetValue("wrap_s");
-	scripting_GetIntegerResult(&result);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap[result]);
-	
-	scripting_GetValue("wrap_t");
-	scripting_GetIntegerResult(&result);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap[result]);
-	
-	return id;
+  scripting_GetValue("mag_filter");
+  scripting_GetIntegerResult(&result);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter[result]);
+
+  scripting_GetValue("wrap_s");
+  scripting_GetIntegerResult(&result);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap[result]);
+
+  scripting_GetValue("wrap_t");
+  scripting_GetIntegerResult(&result);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap[result]);
+
+  return id;
 }
 
-void level_LoadShader(video_level_shader *shader) {
-	scripting_GetValue("shading");
-	scripting_GetValue("lit");
-	scripting_GetIntegerResult(& shader->lit);
-	scripting_GetValue("textures");
-	scripting_GetValue("diffuse");
-	
-	shader->diffuse_texture_id = level_LoadTexture();
+void level_LoadShader(video_level_shader* shader) {
+  scripting_GetValue("shading");
+  scripting_GetValue("lit");
+  scripting_GetIntegerResult(&shader->lit);
+  scripting_GetValue("textures");
+  scripting_GetValue("diffuse");
 
-	scripting_Pop(); // diffuse
-	scripting_Pop(); // textures
-	scripting_Pop(); // shading
+  shader->diffuse_texture_id = level_LoadTexture();
+
+  scripting_Pop();  // diffuse
+  scripting_Pop();  // textures
+  scripting_Pop();  // shading
 }
 
 video_level* video_CreateLevel(void) {
-	video_level *l;
+  video_level* l;
 
-	l = malloc( sizeof(video_level) );
+  l = malloc(sizeof(video_level));
 
-	scripting_GetGlobal("level", NULL);
-	// get scalability flag
-	scripting_GetValue("scalable");
-	scripting_GetIntegerResult(& l->scalable);
+  scripting_GetGlobal("level", NULL);
+  // get scalability flag
+  scripting_GetValue("scalable");
+  scripting_GetIntegerResult(&l->scalable);
 
-	scripting_GetValue("geometry");
+  scripting_GetValue("geometry");
 
-	// get floor & arena meshes
-	scripting_GetValue("floor");
-	l->floor = loadMesh();
-	level_LoadShader(& l->floor_shader);
-	scripting_Pop(); // floor
-	
-	scripting_GetValue("arena");
-	l->arena = loadMesh();
-	level_LoadShader(& l->arena_shader);
-	scripting_Pop(); // arena
-		
-	scripting_Pop(); // geometry
+  // get floor & arena meshes
+  scripting_GetValue("floor");
+  l->floor = loadMesh();
+  level_LoadShader(&l->floor_shader);
+  scripting_Pop();  // floor
 
-	scripting_Pop(); // level;
+  scripting_GetValue("arena");
+  l->arena = loadMesh();
+  level_LoadShader(&l->arena_shader);
+  scripting_Pop();  // arena
 
-	return l;
+  scripting_Pop();  // geometry
+
+  scripting_Pop();  // level;
+
+  return l;
 }
 
-enum {
-	MESH_POSITION = 1,
-	MESH_NORMAL = 2,
-	MESH_TEXCOORD0 = 4
-};
+enum { MESH_POSITION = 1, MESH_NORMAL = 2, MESH_TEXCOORD0 = 4 };
 
-enum {
-	V_POS = 0,
-	V_NORMAL,
-	V_TEXCOORD0
-};
-	
+enum { V_POS = 0, V_NORMAL, V_TEXCOORD0 };
 
 nebu_Mesh* loadMesh(void) {
-	nebu_Mesh *pMesh;
-	int i, j;
-	
-	pMesh = (nebu_Mesh*) malloc( sizeof(nebu_Mesh) );
-	memset(pMesh, 0, sizeof(nebu_Mesh));
+  nebu_Mesh* pMesh;
+  int i, j;
 
-	scripting_GetValue("vertexformat");
-	scripting_GetIntegerResult(& pMesh->vertexformat);
-	scripting_GetValue("vertices");
-	scripting_GetArraySize(& pMesh->nVertices);
+  pMesh = (nebu_Mesh*)malloc(sizeof(nebu_Mesh));
+  memset(pMesh, 0, sizeof(nebu_Mesh));
 
-	if(pMesh->vertexformat & NEBU_MESH_POSITION)
-		pMesh->pVertices = malloc( pMesh->nVertices * 3 * sizeof(float) );
-	if(pMesh->vertexformat & NEBU_MESH_NORMAL)
-		pMesh->pNormals = malloc( pMesh->nVertices * 3 * sizeof(float) );
-	if(pMesh->vertexformat & NEBU_MESH_TEXCOORD0)
-		pMesh->pTexCoords[0] = malloc( pMesh->nVertices * 2 * sizeof(float) );
+  scripting_GetValue("vertexformat");
+  scripting_GetIntegerResult(&pMesh->vertexformat);
+  scripting_GetValue("vertices");
+  scripting_GetArraySize(&pMesh->nVertices);
 
-	for(i = 0; i < pMesh->nVertices; i++) {
-		scripting_GetArrayIndex(i + 1);
-		if(pMesh->vertexformat & NEBU_MESH_POSITION) {
-			scripting_GetValue("pos");
-			scripting_GetValue("x");
-			scripting_GetFloatResult( & pMesh->pVertices[3 * i + 0] );
-			scripting_GetValue("y");
-			scripting_GetFloatResult( & pMesh->pVertices[3 * i + 1] );
-			scripting_GetValue("z");
-			scripting_GetFloatResult( & pMesh->pVertices[3 * i + 2] );
-			scripting_Pop(); // pos
-		}
-		if(pMesh->vertexformat & NEBU_MESH_NORMAL) {
-			scripting_GetValue("normal");
-			scripting_GetValue("x");
-			scripting_GetFloatResult( & pMesh->pNormals[3 * i + 0] );
-			scripting_GetValue("y");
-			scripting_GetFloatResult( & pMesh->pNormals[3 * i + 1] );
-			scripting_GetValue("z");
-			scripting_GetFloatResult( & pMesh->pNormals[3 * i + 2] );
-			scripting_Pop(); // pos
-		}
-		if(pMesh->vertexformat & NEBU_MESH_TEXCOORD0) {
-			scripting_GetValue("uv");
-			scripting_GetValue("u");
-			scripting_GetFloatResult( & pMesh->pTexCoords[0][2 * i + 0] );
-			scripting_GetValue("v");
-			scripting_GetFloatResult( & pMesh->pTexCoords[0][2 * i + 1] );
-			scripting_Pop(); // uv
-		}
-		scripting_Pop(); // index i
-	}
-	scripting_Pop(); // vertices
-	
-	scripting_GetValue("indices");
-	scripting_GetArraySize(& pMesh->nTriangles);
-	pMesh->pTriangles = malloc( pMesh->nTriangles * 3 * sizeof(int) );
-	for(i = 0; i < pMesh->nTriangles; i++) {
-		scripting_GetArrayIndex(i + 1);
-		for(j = 0; j < 3; j++)
-		{
-			scripting_GetArrayIndex(j + 1);
-			scripting_GetIntegerResult( & pMesh->pTriangles[3 * i + j] );
-		}
-		scripting_Pop(); // index i;
-	}
-	scripting_Pop(); // indices
+  if (pMesh->vertexformat & NEBU_MESH_POSITION)
+    pMesh->pVertices = malloc(pMesh->nVertices * 3 * sizeof(float));
+  if (pMesh->vertexformat & NEBU_MESH_NORMAL)
+    pMesh->pNormals = malloc(pMesh->nVertices * 3 * sizeof(float));
+  if (pMesh->vertexformat & NEBU_MESH_TEXCOORD0)
+    pMesh->pTexCoords[0] = malloc(pMesh->nVertices * 2 * sizeof(float));
 
-	return pMesh;
+  for (i = 0; i < pMesh->nVertices; i++) {
+    scripting_GetArrayIndex(i + 1);
+    if (pMesh->vertexformat & NEBU_MESH_POSITION) {
+      scripting_GetValue("pos");
+      scripting_GetValue("x");
+      scripting_GetFloatResult(&pMesh->pVertices[3 * i + 0]);
+      scripting_GetValue("y");
+      scripting_GetFloatResult(&pMesh->pVertices[3 * i + 1]);
+      scripting_GetValue("z");
+      scripting_GetFloatResult(&pMesh->pVertices[3 * i + 2]);
+      scripting_Pop();  // pos
+    }
+    if (pMesh->vertexformat & NEBU_MESH_NORMAL) {
+      scripting_GetValue("normal");
+      scripting_GetValue("x");
+      scripting_GetFloatResult(&pMesh->pNormals[3 * i + 0]);
+      scripting_GetValue("y");
+      scripting_GetFloatResult(&pMesh->pNormals[3 * i + 1]);
+      scripting_GetValue("z");
+      scripting_GetFloatResult(&pMesh->pNormals[3 * i + 2]);
+      scripting_Pop();  // pos
+    }
+    if (pMesh->vertexformat & NEBU_MESH_TEXCOORD0) {
+      scripting_GetValue("uv");
+      scripting_GetValue("u");
+      scripting_GetFloatResult(&pMesh->pTexCoords[0][2 * i + 0]);
+      scripting_GetValue("v");
+      scripting_GetFloatResult(&pMesh->pTexCoords[0][2 * i + 1]);
+      scripting_Pop();  // uv
+    }
+    scripting_Pop();  // index i
+  }
+  scripting_Pop();  // vertices
+
+  scripting_GetValue("indices");
+  scripting_GetArraySize(&pMesh->nTriangles);
+  pMesh->pTriangles = malloc(pMesh->nTriangles * 3 * sizeof(int));
+  for (i = 0; i < pMesh->nTriangles; i++) {
+    scripting_GetArrayIndex(i + 1);
+    for (j = 0; j < 3; j++) {
+      scripting_GetArrayIndex(j + 1);
+      scripting_GetIntegerResult(&pMesh->pTriangles[3 * i + j]);
+    }
+    scripting_Pop();  // index i;
+  }
+  scripting_Pop();  // indices
+
+  return pMesh;
 }

@@ -3,15 +3,15 @@
 
 #define NEW_LEVEL_DRAW
 
-#include "game/game_data.h" // Player
-#include "game/camera.h" // Camera
-#include "video/texture.h" // Texture
-#include "video/nebu_video_types.h" // Visual
+#include "game/game_data.h"          // Player
+#include "game/camera.h"             // Camera
+#include "video/texture.h"           // Texture
+#include "video/nebu_video_types.h"  // Visual
 #include "video/nebu_2d.h"
 #include "video/nebu_font.h"
 #include "video/video_level.h"
-#include "video/model.h" // gltron_Mesh
-#include "base/nebu_png_texture.h" // png_texture
+#include "video/model.h"            // gltron_Mesh
+#include "base/nebu_png_texture.h"  // png_texture
 
 /* dropped support for anything else than libpng */
 typedef png_texture texture;
@@ -19,25 +19,25 @@ typedef png_texture texture;
 #define TEX_SUFFIX ".png"
 
 typedef struct Artpack {
-  char *path;
+  char* path;
   /* char *name; currently ignored */
 } Artpack;
 
 typedef struct PlayerVisual {
-	Camera camera;
+  Camera camera;
 
-	Visual display;
+  Visual display;
 
-	float pColorDiffuse[4];
-	float pColorSpecular[4];
-	float pColorAlpha[4];
+  float pColorDiffuse[4];
+  float pColorSpecular[4];
+  float pColorAlpha[4];
 
   // unsigned int turn_time; /* for cycle animation */
   unsigned int spoke_time; /* for cycle wheel animation */
-  int spoke_state; /* showing spoke or not */
+  int spoke_state;         /* showing spoke or not */
 } PlayerVisual;
 
-enum { VP_SINGLE = 0, VP_SPLIT = 1, VP_FOURWAY = 2 }; // Viewport Type;
+enum { VP_SINGLE = 0, VP_SPLIT = 1, VP_FOURWAY = 2 };  // Viewport Type;
 
 extern TextureInfo textures[];
 
@@ -47,12 +47,7 @@ void initArtpacks(void);
 void loadArt(void);
 void reloadArt(void);
 
-enum {
-	NEAREST = 0,
-	LINEAR,
-	MIPMAP,
-	TRILINEAR
-};
+enum { NEAREST = 0, LINEAR, MIPMAP, TRILINEAR };
 
 #define B_HEIGHT 0
 #define CYCLE_HEIGHT 8
@@ -77,7 +72,7 @@ enum {
 #define CAM_FOLLOW_SPEED_FACTOR 1.0f / 82.0f
 #define CAM_SPEED 0.000349f
 
-#define CAM_COCKPIT_Z 4 
+#define CAM_COCKPIT_Z 4
 
 #define CAM_R_MIN 2.0
 #define CAM_R_MAX 100
@@ -97,12 +92,9 @@ enum {
 #define BOW_DIST2 0.85f
 #define BOW_DIST1 0.4f
 
-
 extern int gl_error;
 
-
 extern int viewport_content[4];
-
 
 extern float camAngle;
 extern float cam_phi;
@@ -118,7 +110,7 @@ extern int* quadBufIndex;
 #endif
 
 #define LC_LOD 3
-extern char *lc_lod_names[];
+extern char* lc_lod_names[];
 
 extern int gTokenRecognizer;
 extern int gTokenRecognizerQuad;
@@ -130,23 +122,22 @@ extern int gpTokenLightcycles[LC_LOD];
 extern float rec_outline_color[3];
 extern float rec_spec_color[4];
 
-
-extern video_level *gWorld;
+extern video_level* gWorld;
 
 extern int gTokenGameFont;
 // extern nebu_Font *gameFtx;
 
-enum { 
-	eHUDSpeed = 0,
-	eHUDMaskSpeed,
-	eHUDMaskTurbo,
-	eHUDAIStatus,
-	eHUDMap,
-	eHUDScores,
-	eHUDFPS,
-	eHUDBuster,
-	eHUDMaskBuster,
-	eHUDElementCount
+enum {
+  eHUDSpeed = 0,
+  eHUDMaskSpeed,
+  eHUDMaskTurbo,
+  eHUDAIStatus,
+  eHUDMap,
+  eHUDScores,
+  eHUDFPS,
+  eHUDBuster,
+  eHUDMaskBuster,
+  eHUDElementCount
 };
 
 extern int gpTokenHUD[];
@@ -171,28 +162,26 @@ extern float gShadowColor[4];
 extern float gCurrentShadowColor[4];
 extern float shadow_matrix[16];
 
-
 /* pixel stuff */
-extern unsigned char* loadPixels(const char *filename, Visual *d);
-extern unsigned char* scalePixels(const unsigned char *source, 
-	int sw, int sh,
-	int x, int y, int w, int h,
-	int dw, int dh, int bytes);
+extern unsigned char* loadPixels(const char* filename, Visual* d);
+extern unsigned char* scalePixels(const unsigned char* source, int sw, int sh,
+                                  int x, int y, int w, int h, int dw, int dh,
+                                  int bytes);
 
 /* font stuff ->fonts.c */
 extern void initFonts(void);
 extern void deleteFonts(void);
-extern void draw( void );
+extern void draw(void);
 
-extern texture* loadTextureData(const char *filename);
-extern void freeTextureData(texture *tex);
-extern void loadTexture(const char *filename, int format);
+extern texture* loadTextureData(const char* filename);
+extern void freeTextureData(texture* tex);
+extern void loadTexture(const char* filename, int format);
 
-extern void doTrail(segment2 *t, int value);
+extern void doTrail(segment2* t, int value);
 
-extern void initDisplay(Visual *d, int type, int p, int onScreen);
+extern void initDisplay(Visual* d, int type, int p, int onScreen);
 extern void changeDisplay(int view);
-extern void updateDisplay(int vpType); 
+extern void updateDisplay(int vpType);
 /* vp types defined in data.h */
 
 extern void drawGame(void);
@@ -207,36 +196,36 @@ void artpack_UnloadSurfaces(void);
 
 /* texture loading -> load_texture.c */
 /* uses sgi_texture.c or sdl_texture.c */
-extern void loadTexture(const char *filename, int format);
+extern void loadTexture(const char* filename, int format);
 
 /* screenshot.c */
-extern void doBmpScreenShot(Visual *display);
-extern void doPngScreenShot(Visual *display);
+extern void doBmpScreenShot(Visual* display);
+extern void doPngScreenShot(Visual* display);
 
 /* probably common graphics stuff -> graphics.c */
 
-extern void rasonly(Visual *d);
+extern void rasonly(Visual* d);
 
 extern int hsv2rgb(float, float, float, float*, float*, float*);
 extern void colorDisc(void);
 
 /* gltron game graphics -> gamegraphics.c */
 extern void rebuildDebugTex(void);
-extern void drawDebugLines(Visual *d);
-extern void drawDebugTex(Visual *d);
+extern void drawDebugLines(Visual* d);
+extern void drawDebugTex(Visual* d);
 /* extern void drawHelp(Visual *d); */
 extern void drawPlayers(int player);
 extern void drawCam(int player);
 
-extern void draw2D( nebu_Rect *pRect );
-		
+extern void draw2D(nebu_Rect* pRect);
+
 /* trail.c */
-extern void drawTrailLines(Player *p, PlayerVisual *pV);
-extern void drawTrailShadow(Player *p, PlayerVisual *pV);
-extern float getSegmentUV(segment2 *line);
-extern float getSegmentEndUV(segment2 *line, Data *data);
-extern float getSegmentEndX(Data *data, int type);
-extern float getSegmentEndY(Data *data, int type);
+extern void drawTrailLines(Player* p, PlayerVisual* pV);
+extern void drawTrailShadow(Player* p, PlayerVisual* pV);
+extern float getSegmentUV(segment2* line);
+extern float getSegmentEndUV(segment2* line, Data* data);
+extern float getSegmentEndX(Data* data, int type);
+extern float getSegmentEndY(Data* data, int type);
 
 extern void freeVideoData(void);
 extern void initVideoData(void);
@@ -248,10 +237,10 @@ extern void video_ReleaseResources(void);
 
 extern void Video_Idle(void);
 
-extern Visual *gScreen;
+extern Visual* gScreen;
 extern int gViewportType;
 extern int video_initialized;
 
-extern PlayerVisual *gPlayerVisuals;
+extern PlayerVisual* gPlayerVisuals;
 
 #endif

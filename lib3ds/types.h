@@ -7,13 +7,13 @@
  * All rights reserved.
  *
  * This program is  free  software;  you can redistribute it and/or modify it
- * under the terms of the  GNU Lesser General Public License  as published by 
- * the  Free Software Foundation;  either version 2.1 of the License,  or (at 
+ * under the terms of the  GNU Lesser General Public License  as published by
+ * the  Free Software Foundation;  either version 2.1 of the License,  or (at
  * your option) any later version.
  *
  * This  program  is  distributed in  the  hope that it will  be useful,  but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or  FITNESS FOR A  PARTICULAR PURPOSE.  See the  GNU Lesser General Public  
+ * or  FITNESS FOR A  PARTICULAR PURPOSE.  See the  GNU Lesser General Public
  * License for more details.
  *
  * You should  have received  a copy of the GNU Lesser General Public License
@@ -26,12 +26,12 @@
 extern "C" {
 #endif
 
-#if defined (_LIB3DS_DLL) && defined(_WIN32) && (!defined(__GNUC__))
+#if defined(_LIB3DS_DLL) && defined(_WIN32) && (!defined(__GNUC__))
 #ifdef LIB3DS_EXPORT
 #define LIB3DSAPI __declspec(dllexport)
-#else               
+#else
 #define LIB3DSAPI __declspec(dllimport)
-#endif           
+#endif
 #else
 #define LIB3DSAPI
 #endif
@@ -58,28 +58,30 @@ typedef float Lib3dsRgba[4];
 
 #define LIB3DS_EPSILON (1e-8)
 #define LIB3DS_PI 3.14159265358979323846
-#define LIB3DS_TWOPI (2.0*LIB3DS_PI)
-#define LIB3DS_HALFPI (LIB3DS_PI/2.0)
-#define LIB3DS_DEG(x) ((180.0/LIB3DS_PI)*(x))
-#define LIB3DS_RAD(x) ((LIB3DS_PI/180.0)*(x))
-  
+#define LIB3DS_TWOPI (2.0 * LIB3DS_PI)
+#define LIB3DS_HALFPI (LIB3DS_PI / 2.0)
+#define LIB3DS_DEG(x) ((180.0 / LIB3DS_PI) * (x))
+#define LIB3DS_RAD(x) ((LIB3DS_PI / 180.0) * (x))
+
 #ifndef INCLUDED_STDIO_H
 #define INCLUDED_STDIO_H
 #include <stdio.h>
 #endif
 
 #ifdef _DEBUG
-  #ifndef ASSERT
-  #include <assert.h>
-  #define ASSERT(__expr) assert(__expr)
-  #endif
-  #define LIB3DS_ERROR_LOG \
-    {printf("\t***LIB3DS_ERROR_LOG*** %s : %d\n", __FILE__, __LINE__);}
-#else 
-  #ifndef ASSERT
-  #define ASSERT(__expr)
-  #endif
-  #define LIB3DS_ERROR_LOG
+#ifndef ASSERT
+#include <assert.h>
+#define ASSERT(__expr) assert(__expr)
+#endif
+#define LIB3DS_ERROR_LOG                                              \
+  {                                                                   \
+    printf("\t***LIB3DS_ERROR_LOG*** %s : %d\n", __FILE__, __LINE__); \
+  }
+#else
+#ifndef ASSERT
+#define ASSERT(__expr)
+#endif
+#define LIB3DS_ERROR_LOG
 #endif
 
 typedef struct _Lib3dsIo Lib3dsIo;
@@ -89,9 +91,9 @@ typedef struct _Lib3dsAtmosphere Lib3dsAtmosphere;
 typedef struct _Lib3dsShadow Lib3dsShadow;
 typedef struct _Lib3dsViewport Lib3dsViewport;
 typedef struct _Lib3dsMaterial Lib3dsMaterial;
-typedef struct _Lib3dsFace Lib3dsFace; 
-typedef struct _Lib3dsBoxMap Lib3dsBoxMap; 
-typedef struct _Lib3dsMapData Lib3dsMapData; 
+typedef struct _Lib3dsFace Lib3dsFace;
+typedef struct _Lib3dsBoxMap Lib3dsBoxMap;
+typedef struct _Lib3dsMapData Lib3dsMapData;
 typedef struct _Lib3dsMesh Lib3dsMesh;
 typedef struct _Lib3dsCamera Lib3dsCamera;
 typedef struct _Lib3dsLight Lib3dsLight;
@@ -107,39 +109,30 @@ typedef struct _Lib3dsMorphKey Lib3dsMorphKey;
 typedef struct _Lib3dsMorphTrack Lib3dsMorphTrack;
 
 typedef enum _Lib3dsNodeTypes {
-  LIB3DS_UNKNOWN_NODE =0,
-  LIB3DS_AMBIENT_NODE =1,
-  LIB3DS_OBJECT_NODE  =2,
-  LIB3DS_CAMERA_NODE  =3,
-  LIB3DS_TARGET_NODE  =4,
-  LIB3DS_LIGHT_NODE   =5,
-  LIB3DS_SPOT_NODE    =6
+  LIB3DS_UNKNOWN_NODE = 0,
+  LIB3DS_AMBIENT_NODE = 1,
+  LIB3DS_OBJECT_NODE = 2,
+  LIB3DS_CAMERA_NODE = 3,
+  LIB3DS_TARGET_NODE = 4,
+  LIB3DS_LIGHT_NODE = 5,
+  LIB3DS_SPOT_NODE = 6
 } Lib3dsNodeTypes;
 
 typedef struct _Lib3dsNode Lib3dsNode;
 
 typedef union _Lib3dsUserData {
-    void *p;
-    Lib3dsIntd i;
-    Lib3dsDword d;
-    Lib3dsFloat f;
-    Lib3dsMaterial *material;
-    Lib3dsMesh *mesh;
-    Lib3dsCamera *camera;
-    Lib3dsLight *light;
-    Lib3dsNode *node;
+  void* p;
+  Lib3dsIntd i;
+  Lib3dsDword d;
+  Lib3dsFloat f;
+  Lib3dsMaterial* material;
+  Lib3dsMesh* mesh;
+  Lib3dsCamera* camera;
+  Lib3dsLight* light;
+  Lib3dsNode* node;
 } Lib3dsUserData;
 
 #ifdef __cplusplus
 };
 #endif
 #endif
-
-
-
-
-
-
-
-
-
