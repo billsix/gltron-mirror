@@ -4,9 +4,24 @@ dist_pkgdata_DATA = artpack.lua \
   gltron.png \
   gltron_bitmap.png \
   gltron_floor.png \
+  gltron_impact.png \
   gltron_logo.png \
   gltron_trail.png \
   gltron_traildecal.png \
+  gltron_wall_1.png \
+  gltron_wall_2.png \
+  gltron_wall_3.png \
+  gltron_wall_4.png \
+  gui.png \
+  hud-ai.png \
+  hud-buster.png \
+  hud-fps.png \
+  hud-map.png \
+  hud-mask-buster.png \
+  hud-mask-speed.png \
+  hud-mask-turbo.png \
+  hud-scores.png \
+  hud-speed.png \
   walls.png \
   skybox0.png \
   skybox1.png \
@@ -16,7 +31,7 @@ dist_pkgdata_DATA = artpack.lua \
   skybox5.png \
   test.bitmap.png \
   xenotron.0.png \
-  xenotron.1.png \
-  gltron_impact.png
+  xenotron.1.png
+
 
 pkgdatadir = @datadir@/@PACKAGE@/art/default
