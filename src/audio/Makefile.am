@@ -13,3 +13,4 @@ AM_CXXFLAGS = \
 	-I$(top_srcdir)/nebu/include \
 	-I$(top_srcdir)/src/include
 
+AM_CFLAGS += -DDATA_DIR=\"$(pkgdatadir)\"

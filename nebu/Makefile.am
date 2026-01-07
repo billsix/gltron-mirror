@@ -12,5 +12,7 @@ libNebu_a_LIBADD = \
 	video/libvideo.a \
 	input/libinput.a
 
+AM_CFLAGS = -DDATA_DIR=\"$(pkgdatadir)\"
+
 ## $(top_srcdir)/lua/src/liblua.a \
 ## $(top_srcdir)/lua/src/lib/liblualib.a

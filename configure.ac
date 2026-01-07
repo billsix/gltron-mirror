@@ -18,7 +18,7 @@ AC_PROG_CPP
 AC_PROG_RANLIB
 
 dnl CFLAGS set-up
-CFLAGS="-DRC_NAME='\".gltronrc\"' -DPATH_SEPARATOR=\"'/'\" -DSEPARATOR=\"'/'\"" 
+CFLAGS="-DRC_NAME='\".gltronrc\"' -DPATH_SEPARATOR=\"'/'\" -DSEPARATOR=\"'/'\""
 dnl CFLAGS="-ansi -pedantic"
 dnl CXXFLAGS=""
 dnl CPPFLAGS=""
@@ -102,7 +102,7 @@ if test "x$use_sound" = xyes; then
 		SOUND_OBJS="sound.o sound_glue.o Source.o Source3D.o SourceMusic.o SourceSample.o SoundSystem.o SourceCopy.o SourceEngine.o",
 		AC_MSG_WARN(SDL_sound not found - disabling sound);
 		SOUND_OBJS="sound_stubs.o sound_glue_stubs.o")
-	
+
 	AC_SUBST(SOUND_OBJS)
 else
 	SOUND_OBJS="sound_stubs.o sound_glue_stubs.o"
@@ -178,6 +178,7 @@ AC_CONFIG_FILES([Makefile \
 	src/include/Makefile \
 	src/include/audio/Makefile \
 	src/include/base/Makefile \
+	src/include/base/config.h \
 	src/include/configuration/Makefile \
 	src/include/filesystem/Makefile \
 	src/include/game/Makefile \
@@ -195,6 +196,7 @@ AC_CONFIG_FILES([Makefile \
 	art/default/Makefile \
 	data/Makefile \
 	music/Makefile \
+	sounds/Makefile \
 	scripts/Makefile \
 	levels/Makefile \
 	])

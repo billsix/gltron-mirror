@@ -1,3 +1,5 @@
+#include <limits.h>
+
 #include "video/nebu_font.h"
 #include "video/nebu_renderer_gl.h"
 #include "video/nebu_video_system.h"
@@ -80,6 +82,7 @@ nebu_Font* nebu_Font_Load(const char* filename, int fs_tag) {
   int texWidth, charWidth;
 
   nebu_Font* font = (nebu_Font*)malloc(sizeof(nebu_Font));
+
 
   file = file_open(filename, "r");
   /* TODO(5): check for EOF errors in the following code */

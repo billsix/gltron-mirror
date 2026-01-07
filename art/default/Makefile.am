@@ -1,4 +1,4 @@
-dist_pkgdata_DATA = artpack.lua \
+art_DATA = artpack.lua \
   babbage.0.png \
   babbage.1.png \
   gltron.png \
@@ -34,4 +34,6 @@ dist_pkgdata_DATA = artpack.lua \
   xenotron.1.png
 
 
-pkgdatadir = @datadir@/@PACKAGE@/art/default
+artdir = ${pkgdatadir}/art/default
+
+AM_CFLAGS = -DDATA_DIR=\"$(pkgdatadir)\"

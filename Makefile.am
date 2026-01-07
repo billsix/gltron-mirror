@@ -1,4 +1,4 @@
-SUBDIRS = lib3ds lua5 nebu src art data music scripts levels
+SUBDIRS = lib3ds lua5 nebu src art data music sounds scripts levels
 
 bin_PROGRAMS = gltron
 

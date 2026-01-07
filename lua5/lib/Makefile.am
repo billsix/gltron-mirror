@@ -7,3 +7,5 @@ LDFLAGS=
 LIBS=-lm
 
 liblualib_a_SOURCES= lauxlib.c lbaselib.c ldblib.c liolib.c lmathlib.c loadlib.c lstrlib.c ltablib.c
+
+AM_CFLAGS += -DDATA_DIR=\"$(pkgdatadir)\"

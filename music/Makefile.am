@@ -1,3 +1,6 @@
-dist_pkgdata_DATA = song_revenge_of_cats.it
+music_DATA = song_revenge_of_cats.it
 
-pkgdatadir = @datadir@/@PACKAGE@/music
+musicdir = ${pkgdatadir}/music
+
+AM_CFLAGS = -DDATA_DIR=\"$(pkgdatadir)\"
+#pkgdatadir = @datadir@/@PACKAGE@/music

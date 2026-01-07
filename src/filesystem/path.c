@@ -34,28 +34,12 @@ void initDirectories(void) {
   else
     sprintf(snapshots_dir, "%s%s", getHome(), SNAP_DIR + 1);
 
-#ifdef LOCAL_DATA
-#ifdef macintosh
-  sprintf(data_dir, ":data");
-  sprintf(art_dir, ":art");
-  sprintf(scripts_dir, ":scripts");
-  sprintf(music_dir, ":music");
-  sprintf(level_dir, ":levels");
-#else
-  sprintf(data_dir, "data");
-  sprintf(art_dir, "art");
-  sprintf(scripts_dir, "scripts");
-  sprintf(music_dir, "music");
-  sprintf(level_dir, "levels");
-#endif
 
-#else
   sprintf(data_dir, "%s%c%s", DATA_DIR, SEPARATOR, "data");
-  sprintf(art_dir, "%s%c%s", DATA_DIR, SEPARATOR, "art");
+  sprintf(art_dir, "%s%c%s", DATA_DIR, SEPARATOR, "art/default");
   sprintf(scripts_dir, "%s%c%s", DATA_DIR, SEPARATOR, "scripts");
   sprintf(music_dir, "%s%c%s", DATA_DIR, SEPARATOR, "music");
   sprintf(level_dir, "%s%c%s", DATA_DIR, SEPARATOR, "levels");
-#endif
 
   /*
 printf("directories:\n"

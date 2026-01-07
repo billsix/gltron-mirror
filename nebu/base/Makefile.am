@@ -6,3 +6,5 @@ libbase_a_SOURCES = \
 	debug_memory.c
 
 AM_CFLAGS = -I$(top_srcdir)/nebu/include
+
+AM_CFLAGS += -DDATA_DIR=\"$(pkgdatadir)\"

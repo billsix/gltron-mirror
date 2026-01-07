@@ -19,3 +19,5 @@ libGLtron_a_LIBADD = \
 ## 	audio/libaudio.a \
 ## 	video/libvideo.a \
 ## 	input/libinput.a
+
+AM_CFLAGS = -DDATA_DIR=\"$(pkgdatadir)\"

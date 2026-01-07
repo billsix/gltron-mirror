@@ -5,3 +5,5 @@ libfilesystem_a_SOURCES= \
 
 AM_CFLAGS = \
 	-I$(top_srcdir)/nebu/include
+
+AM_CFLAGS += -DDATA_DIR=\"$(pkgdatadir)\"

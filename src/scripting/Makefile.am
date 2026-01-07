@@ -7,3 +7,5 @@ AM_CFLAGS= \
 	-I$(top_srcdir)/lua5/include \
 	-I$(top_srcdir)/nebu/include \
 	-I$(top_srcdir)/src/include
+
+AM_CFLAGS += -DDATA_DIR=\"$(pkgdatadir)\"
