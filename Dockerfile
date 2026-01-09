@@ -12,6 +12,7 @@ RUN --mount=type=cache,target=/var/cache/libdnf5 \
                    SDL_sound-devel \
                    autoconf  \
                    automake  \
+                   bear \
                    clang  \
                    clang-tools-extra  \
                    emacs  \
@@ -64,7 +65,7 @@ RUN --mount=type=cache,target=/var/cache/libdnf5 \
          fi ; \
     echo 'set debuginfod enabled off' > /root/.gdbinit
 
-
+COPY .clang-tidy /gltron/.clang-tidy
 COPY art /gltron/art/
 COPY autogen.sh /gltron/autogen.sh
 COPY ChangeLog /gltron/ChangeLog
