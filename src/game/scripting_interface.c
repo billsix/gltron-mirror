@@ -20,7 +20,6 @@
 #include "lua.h"
 #include "lualib.h"
 
-
 // some functions defined elsewhere: graphics_hud.c
 int c_drawRectangle(lua_State* l);
 int c_drawCircle(lua_State* l);
@@ -216,10 +215,9 @@ int c_setArtPath(lua_State* l) {
   scripting_GetStringResult(&artpack);
   fprintf(stderr, "[status] loading artpack '%s'\n", artpack);
 
-  //sprintf(art_dir_default, "%s%c%s", "art", SEPARATOR, "default");
+  // sprintf(art_dir_default, "%s%c%s", "art", SEPARATOR, "default");
   sprintf(art_dir_default, "%s%c%s", DATA_DIR, SEPARATOR, "art/default");
   sprintf(art_dir_artpack, "%s%c%s", "art", SEPARATOR, artpack);
-
 
   free(artpack);
 

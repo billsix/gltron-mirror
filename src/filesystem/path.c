@@ -34,7 +34,6 @@ void initDirectories(void) {
   else
     sprintf(snapshots_dir, "%s%s", getHome(), SNAP_DIR + 1);
 
-
   sprintf(data_dir, "%s%c%s", DATA_DIR, SEPARATOR, "data");
   sprintf(art_dir, "%s%c%s", DATA_DIR, SEPARATOR, "art/default");
   sprintf(scripts_dir, "%s%c%s", DATA_DIR, SEPARATOR, "scripts");

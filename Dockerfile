@@ -65,6 +65,36 @@ RUN --mount=type=cache,target=/var/cache/libdnf5 \
     echo 'set debuginfod enabled off' > /root/.gdbinit
 
 
+COPY art /gltron/art/
+COPY autogen.sh /gltron/autogen.sh
+COPY ChangeLog /gltron/ChangeLog
+COPY configure.ac /gltron/configure.ac
+COPY COPYING /gltron/COPYING
+COPY CREDITS /gltron/CREDITS
+COPY data /gltron/data/
+COPY docs /gltron/docs/
+COPY INSTALL /gltron/INSTALL
+COPY levels /gltron/levels/
+COPY lib3ds /gltron/lib3ds/
+COPY lua5 /gltron/lua5/
+COPY Makefile.am /gltron/Makefile.am
+COPY music /gltron/music/
+COPY nebu /gltron/nebu/
+COPY nebutest /gltron/nebutest/
+COPY README /gltron/README
+COPY resource /gltron/resource/
+COPY scripts /gltron/scripts/
+COPY sounds /gltron/sounds/
+COPY src /gltron/src/
+COPY TODO /gltron/TODO
+COPY tools /gltron/tools/
+
+
+RUN mkdir /bld && mkdir /bldInstall && \
+    cd /gltron && ./autogen.sh && \
+    cd /bld && ../gltron/configure --enable-debug --prefix=/bldInstall && \
+    make && make install
+
 COPY .clang-format /gltron/
 
 RUN echo "source ~/.extrabashrc" >> ~/.bashrc

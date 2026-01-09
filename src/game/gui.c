@@ -180,7 +180,6 @@ void initGui(void) {
 }
 
 void gui_LoadResources(void) {
-
   char font_path[PATH_MAX];
   sprintf(font_path, "%s%c%s", DATA_DIR, SEPARATOR, "data/babbage.ftx");
   pFont = nebu_Font_Load(font_path, PATH_ART);
