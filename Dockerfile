@@ -8,8 +8,8 @@ RUN --mount=type=cache,target=/var/cache/libdnf5 \
     echo "keepcache=True" >> /etc/dnf/dnf.conf && \
     dnf upgrade -y && \
     dnf install -y --skip-unavailable \
-                   SDL_sound \
-                   SDL_sound-devel \
+                   SDL2_sound \
+                   SDL2_sound-devel \
                    autoconf  \
                    automake  \
                    bear \
@@ -35,8 +35,6 @@ RUN --mount=type=cache,target=/var/cache/libdnf5 \
                    mikmod \
                    mikmod-devel \
                    nano  \
-                   sdl12-compat  \
-                   sdl12-compat-devel \
                    tmux  \
                    vorbis-tools \
                    zlib \
@@ -91,10 +89,10 @@ COPY TODO /gltron/TODO
 COPY tools /gltron/tools/
 
 
-RUN mkdir /bld && mkdir /bldInstall && \
-    cd /gltron && ./autogen.sh && \
-    cd /bld && ../gltron/configure --enable-debug --prefix=/bldInstall && \
-    make && make install
+#RUN mkdir /bld && mkdir /bldInstall && \
+#    cd /gltron && ./autogen.sh && \
+#    cd /bld && ../gltron/configure --enable-debug --prefix=/bldInstall && \
+#    make && make install
 
 COPY .clang-format /gltron/
 

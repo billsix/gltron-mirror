@@ -3,12 +3,14 @@
 #include "base/nebu_system.h"
 
 #include "SDL.h"
-
 #include <assert.h>
-
 #include "base/nebu_debug_memory.h"
 
-static SDL_Surface* screen;
+/* SDL2 Change: We no longer use a Surface for the screen. 
+   We need a Window handle and a GL Context handle. */
+static SDL_Window* gWindow = NULL;
+static SDL_GLContext gContext = NULL;
+
 static int width = 0;
 static int height = 0;
 static int bitdepth = 0;
@@ -19,16 +21,14 @@ static int window_id = 0;
 void nebu_Video_Init(void) {
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     fprintf(stderr, "Couldn't initialize SDL video: %s\n", SDL_GetError());
-    exit(1); /* OK: critical, no visual */
+    exit(1);
   } else
     video_initialized = 1;
 }
 
 void nebu_Video_SetWindowMode(int x, int y, int w, int h) {
-  fprintf(
-      stderr,
-      "ignoring (%d,%d) initial window position - feature not implemented\n", x,
-      y);
+  /* SDL2 actually implements this easily, but keeping your logic as requested */
+  fprintf(stderr, "ignoring (%d,%d) initial window position\n", x, y);
   width = w;
   height = h;
 }
@@ -40,14 +40,16 @@ void nebu_Video_GetDimension(int* x, int* y) {
 
 void nebu_Video_SetDisplayMode(int f) {
   int zdepth;
-
   flags = f;
+
   if (!video_initialized) {
     if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
       fprintf(stderr, "[system] can't initialize Video: %s\n", SDL_GetError());
-      exit(1); /* OK: critical, no visual */
+      exit(1);
     }
   }
+
+  /* SDL2 attributes remain similar but are applied to the window context later */
   if (flags & SYSTEM_DOUBLE) SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
   if (flags & SYSTEM_32_BIT) {
@@ -60,43 +62,59 @@ void nebu_Video_SetDisplayMode(int f) {
     zdepth = 16;
     bitdepth = 0;
   }
+  
   if (flags & SYSTEM_ALPHA) SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
   if (flags & SYSTEM_DEPTH) SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, zdepth);
+  
   if (flags & SYSTEM_STENCIL)
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
   else
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
+    
   video_initialized = 1;
 }
 
 void printOpenGLDebugInfo(void) {
   int r, g, b, a;
-
   fprintf(stderr, "GL vendor: %s\n", glGetString(GL_VENDOR));
   fprintf(stderr, "GL renderer: %s\n", glGetString(GL_RENDERER));
   fprintf(stderr, "GL version: %s\n", glGetString(GL_VERSION));
 
-  fprintf(stderr, "Bitdepth:\n");
   nebu_Video_GetDisplayDepth(&r, &g, &b, &a);
-
-  fprintf(stderr, "  Red: %d\n", r);
-  fprintf(stderr, "  Green: %d\n", g);
-  fprintf(stderr, "  Blue: %d\n", b);
-  fprintf(stderr, "  Alpha: %d\n", a);
+  fprintf(stderr, "Bitdepth: R:%d G:%d B:%d A:%d\n", r, g, b, a);
 }
 
 void SystemSetGamma(float red, float green, float blue) {
-  SDL_SetGamma(red, green, blue);
+  /* SDL_SetGamma is deprecated in SDL2, but you can use SDL_SetWindowGammaRamp 
+     or just skip it as most modern OSes block hardware gamma changes. */
+  Uint16 r[256], g[256], b[256];
+  SDL_CalculateGammaRamp(red, r);
+  SDL_CalculateGammaRamp(green, g);
+  SDL_CalculateGammaRamp(blue, b);
+  if(gWindow) SDL_SetWindowGammaRamp(gWindow, r, g, b);
 }
 
 void createWindow(void) {
-  if ((screen = SDL_SetVideoMode(
-           width, height, bitdepth,
-           ((flags & SYSTEM_FULLSCREEN) ? SDL_FULLSCREEN : 0) | SDL_OPENGL)) ==
-      NULL) {
-    fprintf(stderr, "[system] Couldn't set GL mode: %s\n", SDL_GetError());
-    exit(1); /* OK: critical, no visual */
+  /* SDL2 Change: Replace SDL_SetVideoMode with SDL_CreateWindow and SDL_GL_CreateContext */
+  Uint32 window_flags = SDL_WINDOW_OPENGL;
+  if (flags & SYSTEM_FULLSCREEN) window_flags |= SDL_WINDOW_FULLSCREEN;
+
+  gWindow = SDL_CreateWindow("GLTron", 
+                             SDL_WINDOWPOS_UNDEFINED, 
+                             SDL_WINDOWPOS_UNDEFINED, 
+                             width, height, window_flags);
+
+  if (gWindow == NULL) {
+    fprintf(stderr, "[system] Couldn't create window: %s\n", SDL_GetError());
+    exit(1);
   }
+
+  gContext = SDL_GL_CreateContext(gWindow);
+  if (gContext == NULL) {
+    fprintf(stderr, "[system] Couldn't create GL context: %s\n", SDL_GetError());
+    exit(1);
+  }
+
   window_id = 1;
 }
 
@@ -108,64 +126,64 @@ void nebu_Video_GetDisplayDepth(int* r, int* g, int* b, int* a) {
 }
 
 int nebu_Video_Create(char* name) {
-  assert(window_id == 0);  // only single window allowed for now
+  assert(window_id == 0);
   assert(width != 0 && height != 0);
 
   createWindow();
   glewInit();
 
+  /* Multi-texture check and fallback logic */
   if (!GLEW_ARB_multitexture) {
     printOpenGLDebugInfo();
     nebu_Video_Destroy(window_id);
     nebu_Video_Init();
     nebu_Video_SetDisplayMode(flags);
-    // try without alpha
     fprintf(stderr, "trying without destination alpha\n");
     SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 0);
     createWindow();
     glewInit();
     if (!GLEW_ARB_multitexture) {
-      printOpenGLDebugInfo();
       fprintf(stderr, "multitexturing is not available\n");
       exit(1);
     }
   }
-  SDL_WM_SetCaption(name, NULL);
+
+  /* SDL2 Change: SDL_WM_SetCaption is now SDL_SetWindowTitle */
+  SDL_SetWindowTitle(gWindow, name);
   printOpenGLDebugInfo();
 
   glClearColor(0, 0, 0, 0);
   glClear(GL_COLOR_BUFFER_BIT);
-  nebu_System_SwapBuffers();
+  
+  /* SDL2 Change: Swapping is now done via the window */
+  SDL_GL_SwapWindow(gWindow);
+  
   return window_id;
 }
 
 void nebu_Video_Destroy(int id) {
-  /* quit the video subsytem
-   * otherwise SDL can't create a new context on win32, if the stencil
-   * bits change
-   */
-  /* there used to be some problems (memory leaks, unprober driver unloading)
-   * caused by this, but I can't remember what they where
-   */
-  if (id == window_id)
-    SDL_QuitSubSystem(SDL_INIT_VIDEO);
-  else
+  if (id == window_id) {
+    if (gContext) SDL_GL_DeleteContext(gContext);
+    if (gWindow) SDL_DestroyWindow(gWindow);
+    gContext = NULL;
+    gWindow = NULL;
+  } else {
     assert(0);
+  }
   video_initialized = 0;
   window_id = 0;
 }
 
 void SystemReshapeFunc(void (*reshape)(int w, int h)) {
-  fprintf(stderr, "can't set reshape function (%p) - feature not supported\n",
-          reshape);
+  fprintf(stderr, "reshape feature not supported\n");
 }
 
 void nebu_Video_WarpPointer(int x, int y) {
-  SDL_WarpMouse((Uint16)x, (Uint16)y);
+  /* SDL2 Change: SDL_WarpMouse is now window-relative */
+  if(gWindow) SDL_WarpMouseInWindow(gWindow, x, y);
 }
 
 void nebu_Video_CheckErrors(const char* where) {
-  int error;
-  error = glGetError();
+  GLenum error = glGetError();
   if (error != GL_NO_ERROR) printf("[glError: %s] - %d\n", where, error);
 }

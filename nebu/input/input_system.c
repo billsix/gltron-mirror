@@ -5,7 +5,6 @@
 #include "scripting/nebu_scripting.h"
 
 #include "SDL.h"
-#include "SDL_getenv.h"
 #include <errno.h>
 
 #include "base/nebu_debug_memory.h"
@@ -25,7 +24,7 @@ void nebu_Input_Init(void) {
   int i;
 
   /* keyboard */
-  SDL_EnableKeyRepeat(0, 0); /* turn keyrepeat off */
+  //SDL_EnableKeyRepeat(0, 0); /* turn keyrepeat off */
 
   /* joystick */
   if (SDL_Init(SDL_INIT_JOYSTICK) >= 0) {
@@ -62,13 +61,24 @@ void nebu_Input_Init(void) {
   }
 }
 
-void nebu_Input_Grab(void) { SDL_WM_GrabInput(SDL_GRAB_ON); }
+void nebu_Input_Grab(void) {
+  SDL_Window* current_win = SDL_GL_GetCurrentWindow();
+  if (current_win) {
+    SDL_SetWindowGrab(current_win, SDL_TRUE);
+  }
+}
 
-void nebu_Input_Ungrab(void) { SDL_WM_GrabInput(SDL_GRAB_OFF); }
+void nebu_Input_Ungrab(void) {
+  SDL_Window* current_win = SDL_GL_GetCurrentWindow();
+  if (current_win) {
+    SDL_SetWindowGrab(current_win, SDL_FALSE);
+  }
 
-void nebu_Input_HidePointer(void) { SDL_ShowCursor(SDL_DISABLE); }
+}
 
-void nebu_Input_UnhidePointer(void) { SDL_ShowCursor(SDL_ENABLE); }
+void nebu_Input_HidePointer(void) { SDL_ShowCursor(SDL_FALSE); }
+
+void nebu_Input_UnhidePointer(void) { SDL_ShowCursor(SDL_TRUE); }
 
 void SystemMouse(int buttons, int state, int x, int y) {
   if (current && current->mouse) current->mouse(buttons, state, x, y);

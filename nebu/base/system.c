@@ -101,7 +101,10 @@ void nebu_System_SwapBuffers() {
   fps_dt = now - fps_last;
   fps_last = now;
   nebu_Time_SetCurrentFrameTime(now);
-  SDL_GL_SwapBuffers();
+  SDL_Window* current_win = SDL_GL_GetCurrentWindow();
+  if (current_win) {
+    SDL_GL_SwapWindow(current_win);
+  }
 }
 
 void nebu_System_SetCallback_Display(void (*display)(void)) {

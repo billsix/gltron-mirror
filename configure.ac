@@ -1,27 +1,23 @@
 dnl Process this file with autoconf to produce a configure script.
 
 dnl initialisation
-AC_INIT
+AC_INIT([gltron], [0.71-beta-6])
 AC_CONFIG_SRCDIR([src/gltron.c])
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE(gltron, 0.71-beta-6)
+AM_INIT_AUTOMAKE
 
 AC_PREFIX_DEFAULT("/usr/local")
-
-dnl AM_MAINTAINER_MODE
 
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_CPP
 AC_PROG_RANLIB
+PKG_PROG_PKG_CONFIG
 
 dnl CFLAGS set-up
-CFLAGS="-DRC_NAME='\".gltronrc\"' -DPATH_SEPARATOR=\"'/'\" -DSEPARATOR=\"'/'\""
-dnl CFLAGS="-ansi -pedantic"
-dnl CXXFLAGS=""
-dnl CPPFLAGS=""
+CFLAGS="-DRC_NAME='\".gltronrc\"' -DPATH_SEPARATOR=\"'/'\" -DSEPARATOR=\"'/'\" $CFLAGS"
 
 AC_ARG_ENABLE(warn,
 AS_HELP_STRING([--enable-warn],[Enable compiler warnings @<:@default=off@:>@]),
@@ -51,22 +47,23 @@ fi
 
 AC_ARG_ENABLE(optimize,
 AS_HELP_STRING([--enable-optimize=@<:@level@:>@],[Enable optimization @<:@default=s@:>@]),
-	enable_optmize=$enableval, enable_optimize=s)
-dnl this is always true
+	enable_optimize=$enableval, enable_optimize=s)
 if test "x$enable_optimize" ; then
 	CFLAGS="$CFLAGS -O$enable_optimize"
 	CXXFLAGS="$CXXFLAGS -O$enable_optimize"
 fi
 
 dnl library checks
-AM_PATH_SDL(1.1.0, CFLAGS="$CFLAGS $SDL_CFLAGS"; CXXFLAGS="$CXXFLAGS $SDL_CFLAGS"; LIBS="$LIBS $SDL_LIBS",
-	AC_MSG_ERROR(SDL is not installed))
+PKG_CHECK_MODULES([SDL], [sdl2 >= 2.0.0], [
+    CFLAGS="$CFLAGS $SDL_CFLAGS"
+    CXXFLAGS="$CXXFLAGS $SDL_CFLAGS"
+    LIBS="$LIBS $SDL_LIBS"
+], [AC_MSG_ERROR([SDL2 is not installed])])
+
 AC_CHECK_LIB(GL, glBegin,, AC_MSG_ERROR(OpenGL is not installed))
-AC_CHECK_LIB(GLEW, glewInit,, AC_MSG_ERROR(OpenGL is not installed))
-dnl AC_CHECK_LIB(opengl32, main,, AC_MSG_ERROR(OpenGL is not installed))
+AC_CHECK_LIB(GLEW, glewInit,, AC_MSG_ERROR(GLEW is not installed))
 AC_CHECK_LIB(z, gzopen,, AC_MSG_ERROR(libz is not installed))
 AC_CHECK_LIB(png, png_read_info,, AC_MSG_ERROR(libpng is not installed))
-dnl AC_CHECK_LIB(physfs, PHYSFS_init,, AC_MSG_ERROR(physfs is not installed))
 
 dnl local data dir setup
 AC_ARG_ENABLE(localdata,
@@ -89,24 +86,21 @@ AS_HELP_STRING([--with-preferences-dir=@<:@path@:>@],[Preferences directory @<:@
 dnl sound set-up
 AC_ARG_ENABLE(sound,
 AS_HELP_STRING([--disable-sound],[Don't compile in sound @<:@default=off@:>@]),
-   use_sound=no, use_sound=yes)
-if test "x$use_sound" = xyes; then
-	AC_CHECK_LIB(smpeg, main,, AC_MSG_WARN(smpeg not found - music playback may not work correctly))
-	AC_CHECK_LIB(ogg, main,, AC_MSG_WARN(ogg not found - music playback may not work correctly))
-	AC_CHECK_LIB(vorbis, main,, AC_MSG_WARN(vorbis not found - music playback may not work correctly))
-	AC_CHECK_LIB(vorbisfile, main,, AC_MSG_WARN(vorbisfile not found - music playback may not work correctly))
-	AC_CHECK_LIB(smpeg, main,, AC_MSG_WARN(smpeg not found - music playback may not work correctly))
-	AC_CHECK_LIB(mikmod, main,, AC_MSG_WARN(mikmod not found - music playback may not work correctly))
-	AC_CHECK_LIB(SDL_sound, Sound_Init,
-		LIBS="-lSDL_sound $LIBS";
-		SOUND_OBJS="sound.o sound_glue.o Source.o Source3D.o SourceMusic.o SourceSample.o SoundSystem.o SourceCopy.o SourceEngine.o",
-		AC_MSG_WARN(SDL_sound not found - disabling sound);
-		SOUND_OBJS="sound_stubs.o sound_glue_stubs.o")
+  use_sound=$enableval, use_sound=yes)
 
-	AC_SUBST(SOUND_OBJS)
+if test "x$use_sound" = xyes; then
+    PKG_CHECK_MODULES([SDL_SOUND], [SDL2_sound], [
+        CFLAGS="$CFLAGS $SDL_SOUND_CFLAGS"
+        LIBS="$SDL_SOUND_LIBS $LIBS"
+        SOUND_OBJS="sound.o sound_glue.o Source.o Source3D.o SourceMusic.o SourceSample.o SoundSystem.o SourceCopy.o SourceEngine.o"
+    ], [
+        AC_MSG_WARN([SDL2_sound not found - disabling sound])
+        SOUND_OBJS="sound_stubs.o sound_glue_stubs.o"
+    ])
+    AC_SUBST(SOUND_OBJS)
 else
-	SOUND_OBJS="sound_stubs.o sound_glue_stubs.o"
-	AC_SUBST(SOUND_OBJS)
+    SOUND_OBJS="sound_stubs.o sound_glue_stubs.o"
+    AC_SUBST(SOUND_OBJS)
 fi
 
 dnl network set-up
@@ -114,38 +108,31 @@ AC_ARG_ENABLE(network,
 AS_HELP_STRING([--enable-network],[Experimental network mode @<:@default=off@:>@]),
 	enable_network=$enableval, enable_network=off)
 if test "x$enable_network" = xyes; then
-	AC_CHECK_LIB(SDL_net, SDLNet_Init,
-	CFLAGS="$CFLAGS -DNETWORK";
-	LIBS="$LIBS -lSDL_net";
-	NETWORK_OBJS="network.o system_net.o",
-	AC_MSG_WARN(SDL_net not found - disabling network))
+	PKG_CHECK_MODULES([SDL_NET], [SDL2_net], [
+        CFLAGS="$CFLAGS -DNETWORK $SDL_NET_CFLAGS"
+        LIBS="$LIBS $SDL_NET_LIBS"
+        NETWORK_OBJS="network.o system_net.o"
+    ], [
+        AC_MSG_WARN([SDL2_net not found - disabling network])
+    ])
 	AC_SUBST(NETWORK_OBJS)
 fi
 
-dnl CXXFLAGS="$CFLAGS"
-
 dnl header checks
-m4_warn([obsolete],
-[The preprocessor macro 'STDC_HEADERS' is obsolete.
-  Except in unusual embedded environments, you can safely include all
-  C89 headers unconditionally.])dnl
-# Autoupdate added the next two lines to ensure that your configure
-# script's behavior did not change.  They are probably safe to remove.
 AC_CHECK_INCLUDES_DEFAULT
 AC_PROG_EGREP
-
 AC_CHECK_HEADERS(unistd.h)
 
 AC_CHECK_HEADERS(GL/gl.h, have_gl_h=true, have_gl_h=false)
-$have_gl_h || {
+if test "x$have_gl_h" = xfalse; then
 	AC_CHECK_HEADERS(/usr/X11R6/include/GL/gl.h, includes_in_x=1 have_gl_h=true, have_gl_h=false)
-}
-$have_gl_h || {
+fi
+if test "x$have_gl_h" = xfalse; then
 	AC_CHECK_HEADERS(/usr/local/include/GL/gl.h, includes_in_local=1 have_gl_h=true, have_gl_h=false)
-}
-$have_gl_h || {
+fi
+if test "x$have_gl_h" = xfalse; then
 	AC_MSG_ERROR(cant find GL headers)
-}
+fi
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -173,7 +160,7 @@ AC_CONFIG_FILES([Makefile \
 	nebu/scripting/Makefile \
 	nebu/input/Makefile \
 	nebu/video/Makefile \
-	nebu/audio/Makefile
+	nebu/audio/Makefile \
 	src/Makefile \
 	src/include/Makefile \
 	src/include/audio/Makefile \
