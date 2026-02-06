@@ -54,13 +54,31 @@ if test "x$enable_optimize" ; then
 fi
 
 dnl library checks
-PKG_CHECK_MODULES([SDL], [sdl2 >= 2.0.0], [
-    CFLAGS="$CFLAGS $SDL_CFLAGS"
-    CXXFLAGS="$CXXFLAGS $SDL_CFLAGS"
-    LIBS="$LIBS $SDL_LIBS"
+PKG_CHECK_MODULES([SDL2], [sdl2 >= 2.0.0], [
+    CFLAGS="$CFLAGS $SDL2_CFLAGS"
+    CXXFLAGS="$CXXFLAGS $SDL2_CFLAGS"
+    LIBS="$LIBS $SDL2_LIBS"
 ], [AC_MSG_ERROR([SDL2 is not installed])])
 
-AC_CHECK_LIB(GL, glBegin,, AC_MSG_ERROR(OpenGL is not installed))
+
+PKG_CHECK_MODULES([SDL2_sound], [sdl2_sound >= 2.0.0], [
+    CFLAGS="$CFLAGS $SDL2_CFLAGS"
+    CXXFLAGS="$CXXFLAGS $SDL2_SOUND_CFLAGS"
+    LIBS="$LIBS $SDL2_SOUND_LIBS"
+], [AC_MSG_ERROR([SDL2 is not installed])])
+
+
+dnl OpenGL check - handle macOS frameworks
+case "${host_os}" in
+    darwin*)
+        LIBS="$LIBS -framework OpenGL"
+        AC_MSG_NOTICE([Using OpenGL framework on macOS])
+        ;;
+    *)
+        AC_CHECK_LIB(GL, glBegin,, AC_MSG_ERROR(OpenGL is not installed))
+        ;;
+esac
+
 AC_CHECK_LIB(GLEW, glewInit,, AC_MSG_ERROR(GLEW is not installed))
 AC_CHECK_LIB(z, gzopen,, AC_MSG_ERROR(libz is not installed))
 AC_CHECK_LIB(png, png_read_info,, AC_MSG_ERROR(libpng is not installed))
@@ -89,9 +107,9 @@ AS_HELP_STRING([--disable-sound],[Don't compile in sound @<:@default=off@:>@]),
   use_sound=$enableval, use_sound=yes)
 
 if test "x$use_sound" = xyes; then
-    PKG_CHECK_MODULES([SDL_SOUND], [SDL2_sound], [
-        CFLAGS="$CFLAGS $SDL_SOUND_CFLAGS"
-        LIBS="$SDL_SOUND_LIBS $LIBS"
+      PKG_CHECK_MODULES([SDL2_SOUND], [SDL2_sound], [
+        CFLAGS="$CFLAGS $SDL2_SOUND_CFLAGS"
+        LIBS="-lSDL2_sound $SDL2_SOUND_LIBS $LIBS"
         SOUND_OBJS="sound.o sound_glue.o Source.o Source3D.o SourceMusic.o SourceSample.o SoundSystem.o SourceCopy.o SourceEngine.o"
     ], [
         AC_MSG_WARN([SDL2_sound not found - disabling sound])
@@ -108,9 +126,9 @@ AC_ARG_ENABLE(network,
 AS_HELP_STRING([--enable-network],[Experimental network mode @<:@default=off@:>@]),
 	enable_network=$enableval, enable_network=off)
 if test "x$enable_network" = xyes; then
-	PKG_CHECK_MODULES([SDL_NET], [SDL2_net], [
-        CFLAGS="$CFLAGS -DNETWORK $SDL_NET_CFLAGS"
-        LIBS="$LIBS $SDL_NET_LIBS"
+	PKG_CHECK_MODULES([SDL2_NET], [SDL2_net], [
+        CFLAGS="$CFLAGS -DNETWORK $SDL2_NET_CFLAGS"
+        LIBS="$LIBS $SDL2_NET_LIBS"
         NETWORK_OBJS="network.o system_net.o"
     ], [
         AC_MSG_WARN([SDL2_net not found - disabling network])
@@ -123,15 +141,29 @@ AC_CHECK_INCLUDES_DEFAULT
 AC_PROG_EGREP
 AC_CHECK_HEADERS(unistd.h)
 
-AC_CHECK_HEADERS(GL/gl.h, have_gl_h=true, have_gl_h=false)
+
+dnl OpenGL header check - handle macOS frameworks
+have_gl_h=false
+case "${host_os}" in
+    darwin*)
+        AC_CHECK_HEADERS(OpenGL/gl.h, have_gl_h=true, have_gl_h=false)
+        if test "x$have_gl_h" = xtrue; then
+            AC_MSG_NOTICE([Using OpenGL headers from framework on macOS])
+        fi
+        ;;
+    *)
+        AC_CHECK_HEADERS(GL/gl.h, have_gl_h=true, have_gl_h=false)
+        if test "x$have_gl_h" = xfalse; then
+            AC_CHECK_HEADERS(/usr/X11R6/include/GL/gl.h, includes_in_x=1 have_gl_h=true, have_gl_h=false)
+        fi
+        if test "x$have_gl_h" = xfalse; then
+            AC_CHECK_HEADERS(/usr/local/include/GL/gl.h, includes_in_local=1 have_gl_h=true, have_gl_h=false)
+        fi
+        ;;
+esac
+
 if test "x$have_gl_h" = xfalse; then
-	AC_CHECK_HEADERS(/usr/X11R6/include/GL/gl.h, includes_in_x=1 have_gl_h=true, have_gl_h=false)
-fi
-if test "x$have_gl_h" = xfalse; then
-	AC_CHECK_HEADERS(/usr/local/include/GL/gl.h, includes_in_local=1 have_gl_h=true, have_gl_h=false)
-fi
-if test "x$have_gl_h" = xfalse; then
-	AC_MSG_ERROR(cant find GL headers)
+    AC_MSG_ERROR(cant find GL headers)
 fi
 
 dnl Checks for typedefs, structures, and compiler characteristics.
