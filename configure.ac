@@ -61,12 +61,6 @@ PKG_CHECK_MODULES([SDL2], [sdl2 >= 2.0.0], [
 ], [AC_MSG_ERROR([SDL2 is not installed])])
 
 
-PKG_CHECK_MODULES([SDL2_sound], [sdl2_sound >= 2.0.0], [
-    CFLAGS="$CFLAGS $SDL2_CFLAGS"
-    CXXFLAGS="$CXXFLAGS $SDL2_SOUND_CFLAGS"
-    LIBS="$LIBS $SDL2_SOUND_LIBS"
-], [AC_MSG_ERROR([SDL2 is not installed])])
-
 
 dnl OpenGL check - handle macOS frameworks
 case "${host_os}" in

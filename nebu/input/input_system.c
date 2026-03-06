@@ -24,7 +24,7 @@ void nebu_Input_Init(void) {
   int i;
 
   /* keyboard */
-  //SDL_EnableKeyRepeat(0, 0); /* turn keyrepeat off */
+  // SDL_EnableKeyRepeat(0, 0); /* turn keyrepeat off */
 
   /* joystick */
   if (SDL_Init(SDL_INIT_JOYSTICK) >= 0) {
@@ -73,7 +73,6 @@ void nebu_Input_Ungrab(void) {
   if (current_win) {
     SDL_SetWindowGrab(current_win, SDL_FALSE);
   }
-
 }
 
 void nebu_Input_HidePointer(void) { SDL_ShowCursor(SDL_FALSE); }

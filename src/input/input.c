@@ -83,19 +83,21 @@ void keyGame(int state, int k, int x, int y) {
         */
     }
   }
+
+  const int ascii_offset_between_capital_and_lowercase = 32;
   for (i = 0; i < game->players; i++) {
     if (PLAYER_IS_ACTIVE(&game->player[i]) && !game->player[i].ai->active) {
       int key;
       if (state == NEBU_INPUT_KEYSTATE_DOWN) {
         scripting_RunFormat("return settings.keys[%d].left", i + 1);
         scripting_GetIntegerResult(&key);
-        if (key == k) {
+        if ((key == k) || (key == (k+ascii_offset_between_capital_and_lowercase))) {
           createEvent(i, EVENT_TURN_LEFT);
           return;
         }
         scripting_RunFormat("return settings.keys[%d].right", i + 1);
         scripting_GetIntegerResult(&key);
-        if (key == k) {
+        if ((key == k) || (key == (k+ascii_offset_between_capital_and_lowercase))) {
           createEvent(i, EVENT_TURN_RIGHT);
           return;
         }
@@ -103,7 +105,7 @@ void keyGame(int state, int k, int x, int y) {
       // deal with glance keys
       scripting_RunFormat("return settings.keys[%d].glance_left", i + 1);
       scripting_GetIntegerResult(&key);
-      if (key == k) {
+      if ((key == k) || (key == (k+ascii_offset_between_capital_and_lowercase))) {
         if (state == NEBU_INPUT_KEYSTATE_DOWN) {
           // printf("glance left down\n");
           gPlayerVisuals[i].camera.bIsGlancing = 1;
@@ -116,7 +118,7 @@ void keyGame(int state, int k, int x, int y) {
       // deal with glance keys
       scripting_RunFormat("return settings.keys[%d].glance_right", i + 1);
       scripting_GetIntegerResult(&key);
-      if (key == k) {
+      if ((key == k) || (key == (k+ascii_offset_between_capital_and_lowercase))) {
         if (state == NEBU_INPUT_KEYSTATE_DOWN) {
           // printf("glance right down\n");
           gPlayerVisuals[i].camera.bIsGlancing = -1;
@@ -129,7 +131,7 @@ void keyGame(int state, int k, int x, int y) {
       // boost
       scripting_RunFormat("return settings.keys[%d].boost", i + 1);
       scripting_GetIntegerResult(&key);
-      if (key == k) {
+      if ((key == k) || (key == (k+ascii_offset_between_capital_and_lowercase))) {
         if (state == NEBU_INPUT_KEYSTATE_DOWN) {
           // printf("boost down\n");
           if (getSettingi("booster_on") &&
@@ -145,7 +147,7 @@ void keyGame(int state, int k, int x, int y) {
       // wallbuster
       scripting_RunFormat("return settings.keys[%d].bust", i + 1);
       scripting_GetIntegerResult(&key);
-      if (key == k) {
+      if ((key == k) || (key == (k+ascii_offset_between_capital_and_lowercase))) {
         if (state == NEBU_INPUT_KEYSTATE_DOWN) {
           // printf("wall_buster down\n");
           if (getSettingi("wall_buster_on") &&

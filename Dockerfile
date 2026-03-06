@@ -8,6 +8,7 @@ RUN --mount=type=cache,target=/var/cache/libdnf5 \
     echo "keepcache=True" >> /etc/dnf/dnf.conf && \
     dnf upgrade -y && \
     dnf install -y --skip-unavailable \
+                   SDL2 \
                    SDL2_sound \
                    SDL2_sound-devel \
                    autoconf  \
@@ -89,10 +90,10 @@ COPY TODO /gltron/TODO
 COPY tools /gltron/tools/
 
 
-#RUN mkdir /bld && mkdir /bldInstall && \
-#    cd /gltron && ./autogen.sh && \
-#    cd /bld && ../gltron/configure --enable-debug --prefix=/bldInstall && \
-#    make && make install
+RUN mkdir /bld && mkdir /bldInstall && \
+    cd /gltron && ./autogen.sh && \
+    cd /bld && ../gltron/configure --enable-debug --prefix=/bldInstall && \
+    make && make install
 
 COPY .clang-format /gltron/
 

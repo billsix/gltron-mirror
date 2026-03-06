@@ -6,7 +6,7 @@
 #include <assert.h>
 #include "base/nebu_debug_memory.h"
 
-/* SDL2 Change: We no longer use a Surface for the screen. 
+/* SDL2 Change: We no longer use a Surface for the screen.
    We need a Window handle and a GL Context handle. */
 static SDL_Window* gWindow = NULL;
 static SDL_GLContext gContext = NULL;
@@ -27,7 +27,8 @@ void nebu_Video_Init(void) {
 }
 
 void nebu_Video_SetWindowMode(int x, int y, int w, int h) {
-  /* SDL2 actually implements this easily, but keeping your logic as requested */
+  /* SDL2 actually implements this easily, but keeping your logic as requested
+   */
   fprintf(stderr, "ignoring (%d,%d) initial window position\n", x, y);
   width = w;
   height = h;
@@ -49,7 +50,8 @@ void nebu_Video_SetDisplayMode(int f) {
     }
   }
 
-  /* SDL2 attributes remain similar but are applied to the window context later */
+  /* SDL2 attributes remain similar but are applied to the window context later
+   */
   if (flags & SYSTEM_DOUBLE) SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
   if (flags & SYSTEM_32_BIT) {
@@ -62,15 +64,15 @@ void nebu_Video_SetDisplayMode(int f) {
     zdepth = 16;
     bitdepth = 0;
   }
-  
+
   if (flags & SYSTEM_ALPHA) SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
   if (flags & SYSTEM_DEPTH) SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, zdepth);
-  
+
   if (flags & SYSTEM_STENCIL)
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
   else
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
-    
+
   video_initialized = 1;
 }
 
@@ -85,24 +87,24 @@ void printOpenGLDebugInfo(void) {
 }
 
 void SystemSetGamma(float red, float green, float blue) {
-  /* SDL_SetGamma is deprecated in SDL2, but you can use SDL_SetWindowGammaRamp 
+  /* SDL_SetGamma is deprecated in SDL2, but you can use SDL_SetWindowGammaRamp
      or just skip it as most modern OSes block hardware gamma changes. */
   Uint16 r[256], g[256], b[256];
   SDL_CalculateGammaRamp(red, r);
   SDL_CalculateGammaRamp(green, g);
   SDL_CalculateGammaRamp(blue, b);
-  if(gWindow) SDL_SetWindowGammaRamp(gWindow, r, g, b);
+  if (gWindow) SDL_SetWindowGammaRamp(gWindow, r, g, b);
 }
 
 void createWindow(void) {
-  /* SDL2 Change: Replace SDL_SetVideoMode with SDL_CreateWindow and SDL_GL_CreateContext */
+  /* SDL2 Change: Replace SDL_SetVideoMode with SDL_CreateWindow and
+   * SDL_GL_CreateContext */
   Uint32 window_flags = SDL_WINDOW_OPENGL;
   if (flags & SYSTEM_FULLSCREEN) window_flags |= SDL_WINDOW_FULLSCREEN;
 
-  gWindow = SDL_CreateWindow("GLTron", 
-                             SDL_WINDOWPOS_UNDEFINED, 
-                             SDL_WINDOWPOS_UNDEFINED, 
-                             width, height, window_flags);
+  gWindow =
+      SDL_CreateWindow("GLTron", SDL_WINDOWPOS_UNDEFINED,
+                       SDL_WINDOWPOS_UNDEFINED, width, height, window_flags);
 
   if (gWindow == NULL) {
     fprintf(stderr, "[system] Couldn't create window: %s\n", SDL_GetError());
@@ -111,7 +113,8 @@ void createWindow(void) {
 
   gContext = SDL_GL_CreateContext(gWindow);
   if (gContext == NULL) {
-    fprintf(stderr, "[system] Couldn't create GL context: %s\n", SDL_GetError());
+    fprintf(stderr, "[system] Couldn't create GL context: %s\n",
+            SDL_GetError());
     exit(1);
   }
 
@@ -154,10 +157,10 @@ int nebu_Video_Create(char* name) {
 
   glClearColor(0, 0, 0, 0);
   glClear(GL_COLOR_BUFFER_BIT);
-  
+
   /* SDL2 Change: Swapping is now done via the window */
   SDL_GL_SwapWindow(gWindow);
-  
+
   return window_id;
 }
 
@@ -180,7 +183,7 @@ void SystemReshapeFunc(void (*reshape)(int w, int h)) {
 
 void nebu_Video_WarpPointer(int x, int y) {
   /* SDL2 Change: SDL_WarpMouse is now window-relative */
-  if(gWindow) SDL_WarpMouseInWindow(gWindow, x, y);
+  if (gWindow) SDL_WarpMouseInWindow(gWindow, x, y);
 }
 
 void nebu_Video_CheckErrors(const char* where) {
