@@ -121,6 +121,7 @@ void resetPlayerData(void) {
         ai->active = AI_NONE;
     }
     ai->tdiff = 0;
+    ai->lasttime = 0;
 
     /* arrange players in circle around center */
 

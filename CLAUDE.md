@@ -1,0 +1,58 @@
+# gltron
+
+A 3D lightcycle game from 1999 (Andreas Umbach), written in C against
+**fixed-function OpenGL**. The owner of this fork (Bill Six, billsix@gmail.com)
+maintains it as an **educational vehicle for explaining graphics concepts** —
+the fixed-function pipeline is the point. **Do not replace it with shaders or
+introduce a modern renderer abstraction unless explicitly asked.**
+
+## Status
+
+- Migrated from SDL 1.2 → **SDL2** on this fork.
+- Runs on **Linux** and **Windows**. macOS builds and runs as of `21113968`,
+  with a known hack around SDL2 sound (see commit message).
+- Audio uses **SDL2_sound**.
+- Scripting embedded via **Lua 5** (`lua5/`).
+- Build system: autotools (`autogen.sh` → `configure` → `make`).
+- A Fedora-based **podman** dev container is provided (`Makefile.docker`,
+  `Dockerfile`); `make -f Makefile.docker shell` drops into it. `bear` is
+  installed for compile_commands.json, and `clang-tidy` / `clang-format` are
+  configured (`.clang-tidy`, `.clang-format`).
+
+## Layout
+
+- `src/game/` — game logic: engine, AI (`computer.c`, `computer_utilities.c`),
+  events, camera, GUI, level, scripting glue.
+- `src/video/`, `src/audio/`, `src/input/`, `src/configuration/`,
+  `src/filesystem/`, `src/scripting/`, `src/base/` — subsystem code.
+- `src/include/` — public headers; game data structs live in
+  `src/include/game/game_data.h`.
+- `nebu/` — small in-tree engine library (Nebu).
+- `lib3ds/`, `lua5/` — vendored deps.
+- `data/`, `art/`, `levels/`, `music/`, `sounds/` — assets.
+- `scripts/` — Lua game scripts.
+
+## Runtime config
+
+User config is stored at `~/.gltronrc` (the `RC_NAME` macro in `configure.ac`).
+Some setups also leave a `~/.gltron` directory. Deleting these is the standard
+"reset to defaults" trick.
+
+## Tasks / plans (in-flight)
+
+Detailed plans live under `docs/plans/` so they survive across Claude sessions.
+Index:
+
+- [AI freezes on second round](docs/plans/ai-freezes-on-second-round.md) — **fixed**, see plan for explanation.
+
+When starting a new task, add a one-line entry here pointing at a
+`docs/plans/<slug>.md` file, and keep the plan file updated with status,
+approach, and open questions so the next session can pick it up cold.
+
+## Conventions
+
+- C99, 2-space indent, formatted with the project `.clang-format`.
+- Don't add new abstractions or "modernize" code as drive-by cleanup — the
+  codebase is intentionally a teaching artifact. Match the surrounding style.
+- Prefer minimal, surgical fixes over refactors. If you spot something worth
+  cleaning up, mention it rather than doing it.
