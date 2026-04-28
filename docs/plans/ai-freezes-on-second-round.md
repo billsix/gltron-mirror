@@ -1,7 +1,7 @@
 # AI freezes on second round
 
-**Status:** Fixed on branch `billsChanges` (2026-04-27). Awaiting in-game
-verification by the user.
+**Status:** Fixed on branch `billsChanges` (2026-04-27). Verified in-game
+by the user the same day.
 
 ## Symptom
 

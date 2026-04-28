@@ -9,13 +9,12 @@ RUN --mount=type=cache,target=/var/cache/libdnf5 \
     dnf upgrade -y && \
     dnf install -y --skip-unavailable \
                    SDL2 \
+                   SDL2-devel \
                    SDL2_sound \
                    SDL2_sound-devel \
-                   autoconf  \
-                   automake  \
-                   bear \
                    clang  \
                    clang-tools-extra  \
+                   cmake \
                    emacs  \
                    ffmpeg \
                    g++  \
@@ -26,7 +25,6 @@ RUN --mount=type=cache,target=/var/cache/libdnf5 \
                    libogg libogg-devel \
                    libpng \
                    libpng-devel \
-                   libtool  \
                    libvorbis-devel \
                    lldb  \
                    man  \
@@ -36,6 +34,7 @@ RUN --mount=type=cache,target=/var/cache/libdnf5 \
                    mikmod \
                    mikmod-devel \
                    nano  \
+                   ninja-build \
                    tmux  \
                    vorbis-tools \
                    zlib \
@@ -65,10 +64,9 @@ RUN --mount=type=cache,target=/var/cache/libdnf5 \
     echo 'set debuginfod enabled off' > /root/.gdbinit
 
 COPY .clang-tidy /gltron/.clang-tidy
+COPY CMakeLists.txt /gltron/CMakeLists.txt
 COPY art /gltron/art/
-COPY autogen.sh /gltron/autogen.sh
 COPY ChangeLog /gltron/ChangeLog
-COPY configure.ac /gltron/configure.ac
 COPY COPYING /gltron/COPYING
 COPY CREDITS /gltron/CREDITS
 COPY data /gltron/data/
@@ -77,7 +75,6 @@ COPY INSTALL /gltron/INSTALL
 COPY levels /gltron/levels/
 COPY lib3ds /gltron/lib3ds/
 COPY lua5 /gltron/lua5/
-COPY Makefile.am /gltron/Makefile.am
 COPY music /gltron/music/
 COPY nebu /gltron/nebu/
 COPY nebutest /gltron/nebutest/
@@ -90,10 +87,12 @@ COPY TODO /gltron/TODO
 COPY tools /gltron/tools/
 
 
-RUN mkdir /bld && mkdir /bldInstall && \
-    cd /gltron && ./autogen.sh && \
-    cd /bld && ../gltron/configure --enable-debug --prefix=/bldInstall && \
-    make && make install
+RUN cmake -S /gltron -B /bld -G Ninja \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DCMAKE_INSTALL_PREFIX=/bldInstall \
+    && cmake --build /bld -j \
+    && cmake --install /bld \
+    && (cd /bld && ctest --output-on-failure)
 
 COPY .clang-format /gltron/
 

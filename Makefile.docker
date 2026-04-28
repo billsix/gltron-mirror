@@ -25,13 +25,26 @@ WAYLAND_FLAGS_FOR_CONTAINER = -e "WAYLAND_DISPLAY=${WAYLAND_DISPLAY}" \
 all: shell ## Build the image and get a shell in it
 
 .PHONY: image
-image: ## Build podman image to run the examples
+image: ## Build podman image (also builds gltron via CMake at image-build time)
 	# build the container
 	$(CONTAINER_CMD) build \
                          --build-arg BUILD_DOCS=$(BUILD_DOCS) \
                          --build-arg USE_GRAPHICS=$(USE_GRAPHICS) \
                          -t $(CONTAINER_NAME) \
                          .
+
+
+.PHONY: build
+build: image ## Re-run CMake build inside the container against the mounted source tree (writes ./bld)
+	$(CONTAINER_CMD) run --rm \
+		$(FILES_TO_MOUNT) \
+		$(CONTAINER_NAME) \
+		bash -lc 'cmake -S /gltron -B /gltron/bld -G Ninja \
+		            -DCMAKE_BUILD_TYPE=Debug \
+		            -DCMAKE_INSTALL_PREFIX=/gltron/bld/install \
+		         && cmake --build /gltron/bld -j \
+		         && cmake --install /gltron/bld \
+		         && (cd /gltron/bld && ctest --output-on-failure)'
 
 
 .PHONY: shell

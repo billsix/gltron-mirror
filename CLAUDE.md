@@ -13,11 +13,15 @@ introduce a modern renderer abstraction unless explicitly asked.**
   with a known hack around SDL2 sound (see commit message).
 - Audio uses **SDL2_sound**.
 - Scripting embedded via **Lua 5** (`lua5/`).
-- Build system: autotools (`autogen.sh` → `configure` → `make`).
+- Build system: **CMake ≥ 3.21** (Ninja recommended). See `INSTALL` for the
+  full dep list and option flags. Out-of-tree only.
 - A Fedora-based **podman** dev container is provided (`Makefile.docker`,
-  `Dockerfile`); `make -f Makefile.docker shell` drops into it. `bear` is
-  installed for compile_commands.json, and `clang-tidy` / `clang-format` are
-  configured (`.clang-tidy`, `.clang-format`).
+  `Dockerfile`); `make -f Makefile.docker image` builds the image and
+  compiles gltron at image-build time, `make -f Makefile.docker shell`
+  drops into a shell, and `make -f Makefile.docker build` re-runs the
+  CMake build against the mounted source tree (writes to `./bld/`).
+  CMake natively emits `compile_commands.json`. `clang-tidy` and
+  `clang-format` are configured (`.clang-tidy`, `.clang-format`).
 
 ## Layout
 
@@ -44,6 +48,7 @@ Detailed plans live under `docs/plans/` so they survive across Claude sessions.
 Index:
 
 - [AI freezes on second round](docs/plans/ai-freezes-on-second-round.md) — **fixed**, see plan for explanation.
+- [Port build system from autotools to CMake](docs/plans/cmake-port.md) — **draft**, awaiting answers to open questions.
 
 When starting a new task, add a one-line entry here pointing at a
 `docs/plans/<slug>.md` file, and keep the plan file updated with status,

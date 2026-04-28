@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs -I{} sh -c 'echo \"=== {} ===\"; cat {}')",
+      "Bash(cmake --version)",
+      "Bash(pkg-config --modversion sdl2 SDL2_sound)",
+      "Read(//usr/include/GL/**)",
+      "Bash(command -v cmake gcc g++ pkg-config ninja make)",
+      "Bash(pkg-config --modversion sdl2)",
+      "Bash(pkg-config --list-all)",
+      "Bash(rpm -q SDL2_sound SDL2_sound-devel glew-devel mesa-libGLU-devel)",
+      "Bash(dnf install *)",
+      "Bash(rm -rf /tmp/gltron-build)",
+      "Bash(cmake -S /gltron -B /tmp/gltron-build -G Ninja -DCMAKE_BUILD_TYPE=Debug)",
+      "Bash(cmake --build /tmp/gltron-build -j)",
+      "Read(//tmp/gltron-build/src/**)",
+      "Bash(SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy /tmp/gltron-build/src/gltron -h)",
+      "Bash(echo \"exit=$?\")",
+      "Read(//tmp/gltron-build/**)",
+      "Bash(ctest --output-on-failure)",
+      "Bash(cmake -S /gltron -B /tmp/gltron-build)",
+      "Bash(DESTDIR=/tmp/gltron-install cmake --install /tmp/gltron-build)",
+      "Read(//tmp/**)",
+      "Read(//tmp/gltron-install/usr/local/share/**)",
+      "Bash(rm -rf /tmp/gltron-build /tmp/gltron-install)",
+      "Bash(cmake -S /gltron -B /tmp/gltron-build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/tmp/gltron-install)",
+      "Bash(cmake --install /tmp/gltron-build)",
+      "Bash(ctest)",
+      "Bash(rm -rf /tmp/final-bld /tmp/final-install)",
+      "Bash(cmake -S /gltron -B /tmp/final-bld -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/tmp/final-install -DGLTRON_WARN=ON)",
+      "Bash(cmake --build /tmp/final-bld -j)",
+      "Bash(cmake --install /tmp/final-bld)",
+      "Bash(cmake -S /gltron -B /tmp/final-bld -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/tmp/final-install)"
+    ]
+  }
+}
