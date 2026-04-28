@@ -59,6 +59,23 @@ shell:  ## Get Shell into a ephermeral container made from the image
 
 
 
+.PHONY: appimage
+appimage: image ## Build a Linux AppImage via cpack -G External (writes ./out/)
+	mkdir -p ./out
+	$(CONTAINER_CMD) run --rm \
+		--entrypoint /bin/bash \
+		$(FILES_TO_MOUNT) \
+		-v ./out:/gltron/out:Z \
+		$(CONTAINER_NAME) \
+		-lc 'rm -rf /gltron/bld-appimage \
+		         && cmake -S /gltron -B /gltron/bld-appimage -G Ninja \
+		              -DCMAKE_BUILD_TYPE=Release \
+		              -DGLTRON_DATA_DIR=usr/share/gltron \
+		         && cmake --build /gltron/bld-appimage -j \
+		         && (cd /gltron/bld-appimage && cpack -G External) \
+		         && cp /gltron/bld-appimage/*.appimage /gltron/out/'
+
+
 .PHONY: format
 format: image ## Format the C code
 	$(CONTAINER_CMD) run -it --rm \

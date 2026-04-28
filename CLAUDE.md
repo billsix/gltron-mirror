@@ -49,6 +49,7 @@ Index:
 
 - [AI freezes on second round](docs/plans/ai-freezes-on-second-round.md) — **fixed**, see plan for explanation.
 - [Port build system from autotools to CMake](docs/plans/cmake-port.md) — **draft**, awaiting answers to open questions.
+- [AppImage build target](docs/plans/appimage-target.md) — **shipped (host-dependent)**; future work to make the AppImage self-contained is captured in the plan.
 
 When starting a new task, add a one-line entry here pointing at a
 `docs/plans/<slug>.md` file, and keep the plan file updated with status,

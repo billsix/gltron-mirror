@@ -15,8 +15,11 @@ RUN --mount=type=cache,target=/var/cache/libdnf5 \
                    clang  \
                    clang-tools-extra  \
                    cmake \
+                   desktop-file-utils \
                    emacs  \
                    ffmpeg \
+                   file \
+                   fuse-libs \
                    g++  \
                    gcc  \
                    gdb  \
@@ -35,8 +38,11 @@ RUN --mount=type=cache,target=/var/cache/libdnf5 \
                    mikmod-devel \
                    nano  \
                    ninja-build \
+                   patchelf \
+                   squashfs-tools \
                    tmux  \
                    vorbis-tools \
+                   wget \
                    zlib \
                    zlib-devel; \
     if [ "$USE_GRAPHICS" = "1" ]; then \
@@ -64,8 +70,10 @@ RUN --mount=type=cache,target=/var/cache/libdnf5 \
     echo 'set debuginfod enabled off' > /root/.gdbinit
 
 COPY .clang-tidy /gltron/.clang-tidy
+COPY CMake /gltron/CMake/
 COPY CMakeLists.txt /gltron/CMakeLists.txt
 COPY art /gltron/art/
+COPY packaging /gltron/packaging/
 COPY ChangeLog /gltron/ChangeLog
 COPY COPYING /gltron/COPYING
 COPY CREDITS /gltron/CREDITS

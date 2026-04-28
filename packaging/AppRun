@@ -1,0 +1,7 @@
+#!/bin/sh
+# AppImage runtime sets $APPDIR to the mount point. When the AppImage is
+# launched directly, fall back to resolving from this script's location so
+# that running ./AppRun from an extracted AppDir also works.
+HERE="${APPDIR:-$(dirname "$(readlink -f "$0")")}"
+cd "$HERE" || exit 1
+exec ./usr/bin/gltron "$@"

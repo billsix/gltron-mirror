@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=GLtron
+GenericName=Lightcycle Game
+Comment=3D lightcycle game
+Exec=gltron
+Icon=gltron
+Terminal=false
+Categories=Game;ArcadeGame;

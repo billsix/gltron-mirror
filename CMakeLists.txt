@@ -28,7 +28,7 @@ set(GLTRON_PREFERENCES_DIR "~" CACHE STRING "Preferences directory (compiled in)
 
 include(GNUInstallDirs)
 set(GLTRON_DATA_DIR "${CMAKE_INSTALL_FULL_DATADIR}/gltron"
-    CACHE STRING "Data directory baked into the binary" FORCE)
+    CACHE STRING "Data directory baked into the binary")
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED IMPORTED_TARGET sdl2>=2.0.0)
@@ -77,6 +77,19 @@ install(DIRECTORY music/       DESTINATION ${CMAKE_INSTALL_DATADIR}/gltron/music
 install(DIRECTORY scripts/     DESTINATION ${CMAKE_INSTALL_DATADIR}/gltron/scripts FILES_MATCHING REGEX "\\.lua$")
 install(DIRECTORY sounds/      DESTINATION ${CMAKE_INSTALL_DATADIR}/gltron/sounds  FILES_MATCHING REGEX "\\.wav$")
 install(DIRECTORY levels/      DESTINATION ${CMAKE_INSTALL_DATADIR}/gltron/levels  FILES_MATCHING REGEX "\\.lua$")
+
+set_property(TARGET gltron PROPERTY APPIMAGE_DESKTOP_FILE
+    "${CMAKE_SOURCE_DIR}/packaging/gltron.desktop")
+set_property(TARGET gltron PROPERTY APPIMAGE_ICON_FILE
+    "${CMAKE_SOURCE_DIR}/art/default/gltron.png")
+set_property(TARGET gltron PROPERTY APPIMAGE_APPRUN
+    "${CMAKE_SOURCE_DIR}/packaging/AppRun")
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  set(CPACK_GENERATOR "External" CACHE STRING "")
+endif()
+set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/CMake/Packaging-config.cmake")
+include(CMake/Packaging.cmake)
 
 include(CTest)
 if(BUILD_TESTING)
