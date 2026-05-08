@@ -8,11 +8,15 @@ extern "C" {
 #include "audio/nebu_Source.h"
 #include "base/nebu_Vector3.h"
 
-#include "SDL_sound.h"
+#include <SDL3_sound/SDL_sound.h>
 
 namespace Sound {
 extern "C" {
-void c_callback(void* userdata, Uint8* stream, int len);
+/* SDL3 audio-stream callback shape: SDL hands us the stream and asks for at
+ * least `additional_amount` more bytes. We render via System::Callback into a
+ * scratch buffer and feed it via SDL_PutAudioStreamData. */
+void c_callback(void* userdata, SDL_AudioStream* stream,
+                int additional_amount, int total_amount);
 }
 
 class Listener {
@@ -30,12 +34,13 @@ class System {
  public:
   System(SDL_AudioSpec* spec);
   ~System();
-  typedef void (*Audio_Callback)(void* userdata, Uint8* data, int len);
+  typedef SDL_AudioStreamCallback Audio_Callback;
   Audio_Callback GetCallback() { return c_callback; };
   void Callback(Uint8* data, int len);
   void Idle(); /* remove dead sound sources */
   void AddSource(Source* source);
-  Sound_AudioInfo* GetAudioInfo() { return &_info; };
+  /* SDL3_sound replaced Sound_AudioInfo with SDL_AudioSpec. */
+  SDL_AudioSpec* GetAudioInfo() { return &_info; };
   Listener& GetListener() { return _listener; };
   void SetMixMusic(int value) { _mix_music = value; };
   void SetMixFX(int value) { _mix_fx = value; };
@@ -43,7 +48,7 @@ class System {
 
  protected:
   SDL_AudioSpec* _spec;
-  Sound_AudioInfo _info;
+  SDL_AudioSpec _info;
   Listener _listener;
   nebu_List _sources;
   int _mix_music;

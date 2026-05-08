@@ -1,7 +1,7 @@
 #include "base/nebu_system.h"
 #include "video/nebu_video_system.h"
 
-#include "SDL.h"
+#include <SDL3/SDL.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -20,20 +20,26 @@ void nebu_Init(void) {
 }
 
 void nebu_System_Exit() {
-  fprintf(stderr, "[system] shutting down SDL now\n");
-  SDL_Quit();
+  /* Don't call SDL_Quit here: the audio/video subsystems still need their
+     SDL handles during exitSubsystems(), which runs after the main loop
+     returns. SDL_Quit happens later via nebu_System_Shutdown(). */
   fprintf(stderr, "[system] scheduling application exit\n");
 
-  /* TODO: ugly, please fix */
   redisplay = 0;
   idle = 0;
+}
+
+void nebu_System_Shutdown(void) {
+  fprintf(stderr, "[system] shutting down SDL now\n");
+  SDL_Quit();
 }
 
 int nebu_Time_GetTimeForLastFrame() { return fps_dt; }
 
 unsigned int nebu_Time_GetElapsed() {
-  /* fprintf(stderr, "%d\n", SDL_GetTicks()); */
-  return SDL_GetTicks();
+  /* SDL3's SDL_GetTicks returns Uint64; truncate to keep the existing
+     unsigned-int interface. Differences within a session still fit. */
+  return (unsigned int)SDL_GetTicks();
 }
 
 static int lastFrame = 0;
@@ -56,17 +62,17 @@ int nebu_System_MainLoop() {
   while (return_code == -1) {
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
-        case SDL_KEYDOWN:
-        case SDL_KEYUP:
-        case SDL_JOYAXISMOTION:
-        case SDL_JOYBUTTONDOWN:
-        case SDL_JOYBUTTONUP:
-        case SDL_MOUSEBUTTONUP:
-        case SDL_MOUSEBUTTONDOWN:
-        case SDL_MOUSEMOTION:
+        case SDL_EVENT_KEY_DOWN:
+        case SDL_EVENT_KEY_UP:
+        case SDL_EVENT_JOYSTICK_AXIS_MOTION:
+        case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
+        case SDL_EVENT_JOYSTICK_BUTTON_UP:
+        case SDL_EVENT_MOUSE_BUTTON_UP:
+        case SDL_EVENT_MOUSE_BUTTON_DOWN:
+        case SDL_EVENT_MOUSE_MOTION:
           nebu_Intern_HandleInput(&event);
           break;
-        case SDL_QUIT:
+        case SDL_EVENT_QUIT:
           nebu_System_Exit();       // shut down
           nebu_System_ExitLoop(0);  // exit mainloop
           break;

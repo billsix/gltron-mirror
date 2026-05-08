@@ -1,5 +1,6 @@
 #include "audio/nebu_SourceMusic.h"
 
+#include <stdio.h>
 #include <string.h>
 
 #include "base/nebu_debug_memory.h"
@@ -20,16 +21,10 @@ SourceMusic::SourceMusic(System* system) {
   _read = 0;
 
   _filename = NULL;
-  _rwops = NULL;
 }
 
 SourceMusic::~SourceMusic() {
-  // fprintf(stderr, "nebu_SourceMusic destructor called\n");
-#ifndef macintosh
-  SDL_SemWait(_sem);
-#else
-  SDL_LockAudio();
-#endif
+  SDL_WaitSemaphore(_sem);
   if (_buffer) delete _buffer;
 
   if (_sample) {
@@ -39,11 +34,7 @@ SourceMusic::~SourceMusic() {
 
   if (_filename) delete _filename;
 
-#ifndef macintosh
-  SDL_SemPost(_sem);
-#else
-  SDL_UnlockAudio();
-#endif
+  SDL_SignalSemaphore(_sem);
 }
 
 /*!
@@ -53,23 +44,19 @@ SourceMusic::~SourceMusic() {
 */
 
 void SourceMusic::CreateSample(void) {
-  _rwops = SDL_RWFromFile(_filename, "rb");
-  char* ext = _filename;
-  for (int i = 0; *(_filename + i); i++) {
-    if (*(_filename + i) == '.') ext = _filename + i + 1;
-  }
+  /* SDL3_sound's Sound_NewSampleFromFile detects the extension itself. */
   _sample =
-      Sound_NewSample(_rwops, ext, _system->GetAudioInfo(), _sample_buffersize);
+      Sound_NewSampleFromFile(_filename, _system->GetAudioInfo(),
+                              _sample_buffersize);
 
   if (_sample == NULL) {
-    fprintf(stderr, "[error] failed loading sample type %s, from %s: %s\n", ext,
+    fprintf(stderr, "[error] failed loading sample from %s: %s\n",
             _filename, Sound_GetError());
     return;
   }
 
   _read = 0;
   _decoded = 0;
-  // fprintf(stderr, "created sample\n");
 }
 
 void SourceMusic::Load(char* filename) {
@@ -91,42 +78,32 @@ void SourceMusic::CleanUp(void) {
 
 int SourceMusic::Mix(Uint8* data, int len) {
   if (_sample == NULL) return 0;
-#ifndef macintosh
-  if (SDL_SemTryWait(_sem)) {
+  /* SDL3 SDL_TryWaitSemaphore returns true if it acquired the semaphore. */
+  if (!SDL_TryWaitSemaphore(_sem)) {
     fprintf(stderr, "semaphore locked, skipping mix\n");
     return 0;
   }
-#endif
-  // printf("mixing %d bytes\n", len);
-
-  int volume = (int)(_volume * SDL_MIX_MAXVOLUME);
-  // fprintf(stderr, "setting volume to %.3f -> %d\n", _volume, volume);
-  // fprintf(stderr, "entering mixer\n");
 
   if (len < (_decoded - _read + _buffersize) % _buffersize) {
-    // enough data to mix
     if (_read + len <= _buffersize) {
-      SDL_MixAudio(data, _buffer + _read, len, volume);
+      SDL_MixAudio(data, _buffer + _read, SDL_AUDIO_S16, len, _volume);
       _read = (_read + len) % _buffersize;
     } else {
-      // wrap around in buffer
       fprintf(stderr, "wrap around in buffer (%d, %d, %d)\n", len, _read,
               _buffersize);
 
-      SDL_MixAudio(data, _buffer + _read, _buffersize - _read, volume);
+      SDL_MixAudio(data, _buffer + _read, SDL_AUDIO_S16,
+                   _buffersize - _read, _volume);
       len -= _buffersize - _read;
-      SDL_MixAudio(data + _buffersize - _read, _buffer, len, volume);
+      SDL_MixAudio(data + _buffersize - _read, _buffer, SDL_AUDIO_S16,
+                   len, _volume);
       _read = len;
     }
   } else {
-    // buffer under-run
     fprintf(stderr, "buffer underrun!\n");
-    // don't do anything
   }
 
-#ifndef macintosh
-  SDL_SemPost(_sem);
-#endif
+  SDL_SignalSemaphore(_sem);
   return 1;
 }
 
@@ -156,29 +133,15 @@ void SourceMusic::Idle(void) {
     // check for end of sample, loop
     if ((_sample->flags & SOUND_SAMPLEFLAG_ERROR) ||
         (_sample->flags & SOUND_SAMPLEFLAG_EOF)) {
-      // some error has occured, maybe end of sample reached
-#ifndef macintosh
-      SDL_SemWait(_sem);
-#else
-      SDL_LockAudio();
-#endif
-      // todo: let playback finish, because there's still data
-      // in the buffer that has to be mixed
+      SDL_WaitSemaphore(_sem);
       CleanUp();
-      // fprintf(stderr, "end of sample reached!\n");
       if (_loop) {
-        // fprintf(stderr, "looping music\n");
         if (_loop != 255) _loop--;
         CreateSample();
       } else {
         _isPlaying = 0;
-        // todo: notify sound system (maybe load another song?)
       }
-#ifndef macintosh
-      SDL_SemPost(_sem);
-#else
-      SDL_UnlockAudio();
-#endif
+      SDL_SignalSemaphore(_sem);
     }
   }  // buffer has been filled
 }

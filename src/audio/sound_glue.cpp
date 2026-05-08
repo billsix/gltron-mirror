@@ -11,8 +11,8 @@ extern "C" {
 
 #include "Nebu_audio.h"
 
-#include "SDL.h"
-#include "SDL_sound.h"
+#include <SDL3/SDL.h>
+#include <SDL3_sound/SDL_sound.h>
 
 #include "base/nebu_debug_memory.h"
 
@@ -21,6 +21,7 @@ static Sound::SourceMusic* music = NULL;
 static Sound::SourceSample* sample_crash = NULL;
 static Sound::SourceSample* sample_engine = NULL;
 static Sound::SourceSample* sample_recognizer = NULL;
+static SDL_AudioStream* audio_stream = NULL;
 
 static Sound::Source3D* players[PLAYERS];
 static Sound::Source3D* recognizerEngine;
@@ -161,45 +162,40 @@ void Audio_CrashPlayer(int player) {
 
 void Audio_Init(void) {
   Sound_Init();  // Init SDL_Sound
-  // output_decoders();
 
+  /* SDL3 SDL_AudioSpec is just {format, channels, freq} — no callback or
+     buffer-size fields. The callback is attached by SDL_OpenAudioDeviceStream
+     on the resulting SDL_AudioStream. */
   SDL_AudioSpec* spec = new SDL_AudioSpec;
   spec->freq = 22050;
-  spec->format = AUDIO_S16SYS;
+  spec->format = SDL_AUDIO_S16;
   spec->channels = 2;
-  spec->samples = 1024;
 
   sound = new Sound::System(spec);
 
-  spec->userdata = sound;
-  spec->callback = sound->GetCallback();
-
-  SDL_AudioSpec obtained;
-
-  if (SDL_OpenAudio(spec, &obtained) != 0) {
+  audio_stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK,
+                                           spec, sound->GetCallback(), sound);
+  if (audio_stream == NULL) {
     fprintf(stderr, "[error] %s\n", SDL_GetError());
     sound->SetStatus(Sound::eUninitialized);
   } else {
     sound->SetStatus(Sound::eInitialized);
-    /*
-    fprintf(stderr, "[sound] frequency: %d\n", obtained.freq);
-    fprintf(stderr, "[sound] format: %d\n", obtained.format);
-    fprintf(stderr, "[sound] channels: %d\n", obtained.channels);
-    fprintf(stderr, "[sound] silence: %d\n", obtained.silence);
-    fprintf(stderr, "[sound] buffer in samples: %d\n", obtained.samples);
-    fprintf(stderr, "[sound] buffer in bytes: %d\n", obtained.size);
-    */
   }
   sound->SetMixMusic(gSettingsCache.playMusic);
   sound->SetMixFX(gSettingsCache.playEffects);
 }
 
-void Audio_Start(void) { SDL_PauseAudio(0); }
+void Audio_Start(void) {
+  if (audio_stream) SDL_ResumeAudioStreamDevice(audio_stream);
+}
 
 void Audio_Quit(void) {
-  SDL_PauseAudio(1);
+  if (audio_stream) {
+    SDL_PauseAudioStreamDevice(audio_stream);
+    SDL_DestroyAudioStream(audio_stream);
+    audio_stream = NULL;
+  }
   Sound_Quit();
-  SDL_CloseAudio();
   if (sound) {
     delete sound;
     sound = NULL;

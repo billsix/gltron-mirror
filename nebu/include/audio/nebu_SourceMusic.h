@@ -36,7 +36,6 @@ class SourceMusic : public Source {
   int _decoded;
 
   char* _filename;
-  SDL_RWops* _rwops;
 };
 }  // namespace Sound
 #endif

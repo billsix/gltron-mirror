@@ -1,7 +1,7 @@
 #ifndef NEBU_VIDEO_SYSTEM_H
 #define NEBU_VIDEO_SYSTEM_H
 
-#include "SDL.h"
+#include <SDL3/SDL.h>
 
 #define SYSTEM_RGB 1
 #define SYSTEM_DOUBLE 2

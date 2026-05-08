@@ -6,5 +6,5 @@ add_library(gltron_video STATIC
   screenshot.c skybox.c texture.c trail.c trail_geometry.c
   trail_render.c video.c visuals_2d.c)
 target_link_libraries(gltron_video
-  PUBLIC gltron_includes nebu_includes lua OpenGL::GL GLEW::GLEW PkgConfig::SDL2
+  PUBLIC gltron_includes nebu_includes lua OpenGL::GL GLEW::GLEW PkgConfig::SDL3
   PRIVATE gltron_paths gltron_warnings)

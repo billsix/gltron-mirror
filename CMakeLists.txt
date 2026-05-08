@@ -22,7 +22,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 option(GLTRON_WARN "Enable -Wall -Werror" OFF)
-option(GLTRON_NETWORK "Enable experimental networking (requires SDL2_net)" OFF)
+option(GLTRON_NETWORK "Enable experimental networking (requires SDL3_net)" OFF)
 set(GLTRON_SNAPSHOT_DIR "~" CACHE STRING "Screenshot directory (compiled in)")
 set(GLTRON_PREFERENCES_DIR "~" CACHE STRING "Preferences directory (compiled in)")
 
@@ -31,8 +31,8 @@ set(GLTRON_DATA_DIR "${CMAKE_INSTALL_FULL_DATADIR}/gltron"
     CACHE STRING "Data directory baked into the binary")
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(SDL2 REQUIRED IMPORTED_TARGET sdl2>=2.0.0)
-pkg_check_modules(SDL2_SOUND REQUIRED IMPORTED_TARGET SDL2_sound)
+pkg_check_modules(SDL3 REQUIRED IMPORTED_TARGET sdl3>=3.2.0)
+pkg_check_modules(SDL3_SOUND REQUIRED IMPORTED_TARGET sdl3-sound)
 
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
@@ -47,7 +47,7 @@ target_include_directories(lua INTERFACE ${LUA_INCLUDE_DIR})
 target_link_libraries(lua INTERFACE ${LUA_LIBRARIES})
 
 if(GLTRON_NETWORK)
-  pkg_check_modules(SDL2_NET REQUIRED IMPORTED_TARGET SDL2_net)
+  pkg_check_modules(SDL3_NET REQUIRED IMPORTED_TARGET sdl3-net)
 endif()
 
 # Common compile defs for code that touches paths.

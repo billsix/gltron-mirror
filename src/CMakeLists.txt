@@ -31,14 +31,14 @@ target_link_libraries(gltron PRIVATE
   GLEW::GLEW
   PNG::PNG
   ZLIB::ZLIB
-  PkgConfig::SDL2
-  PkgConfig::SDL2_SOUND
+  PkgConfig::SDL3
+  PkgConfig::SDL3_SOUND
   gltron_paths
   gltron_warnings)
 
 if(GLTRON_NETWORK)
   target_compile_definitions(gltron PRIVATE NETWORK)
-  target_link_libraries(gltron PRIVATE PkgConfig::SDL2_NET)
+  target_link_libraries(gltron PRIVATE PkgConfig::SDL3_NET)
 endif()
 
 install(TARGETS gltron RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

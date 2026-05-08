@@ -10,7 +10,7 @@ System::System(SDL_AudioSpec* spec) {
   _sources.next = NULL;
 
   _info.format = _spec->format;
-  _info.rate = spec->freq;
+  _info.freq = spec->freq;
   _info.channels = spec->channels;
 
   _mix_music = 1;  // TODO: add 'master' volume for music and fx
@@ -72,9 +72,21 @@ void System::Idle(void) {
 }
 
 extern "C" {
-void c_callback(void* userdata, Uint8* stream, int len) {
-  // printf("c_callback got called for %d bytes of data\n", len);
-  ((System*)userdata)->Callback(stream, len);
+/* SDL3 hands us an audio stream and asks for `additional_amount` more bytes
+ * of audio. Render via the legacy callback into a stack buffer and feed it
+ * to the stream. */
+void c_callback(void* userdata, SDL_AudioStream* stream,
+                int additional_amount, int /*total_amount*/) {
+  if (additional_amount <= 0) return;
+  Uint8 buf[8192];
+  while (additional_amount > 0) {
+    int chunk = additional_amount < (int)sizeof(buf)
+                  ? additional_amount
+                  : (int)sizeof(buf);
+    ((System*)userdata)->Callback(buf, chunk);
+    SDL_PutAudioStreamData(stream, buf, chunk);
+    additional_amount -= chunk;
+  }
 }
 }
 }  // namespace Sound

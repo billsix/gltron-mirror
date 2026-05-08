@@ -8,10 +8,11 @@ introduce a modern renderer abstraction unless explicitly asked.**
 
 ## Status
 
-- Migrated from SDL 1.2 → **SDL2** on this fork.
+- Migrated from SDL 1.2 → SDL2 → **SDL3** on this fork.
 - Runs on **Linux** and **Windows**. macOS builds and runs as of `21113968`,
-  with a known hack around SDL2 sound (see commit message).
-- Audio uses **SDL2_sound**.
+  with a known hack around SDL2 sound (see commit message). The macOS path
+  has not been re-tested on SDL3 yet.
+- Audio uses **SDL3_sound**.
 - Scripting embedded via **system Lua 5.4** (linked via `find_package(Lua)`).
 - Build system: **CMake ≥ 3.21** (Ninja recommended). See `INSTALL` for the
   full dep list and option flags. Out-of-tree only.
@@ -51,7 +52,7 @@ Index:
 - [Port build system from autotools to CMake](docs/plans/cmake-port.md) — **draft**, awaiting answers to open questions.
 - [AppImage build target](docs/plans/appimage-target.md) — **shipped (host-dependent)**; future work to make the AppImage self-contained is captured in the plan.
 - [SDL window architecture cleanup](docs/plans/sdl-window-architecture.md) — **shipped** (Option A, accessors).
-- [SDL2 → SDL3 port](docs/plans/sdl3-port.md) — **not started**, ungated now; ask Bill before beginning.
+- [SDL2 → SDL3 port](docs/plans/sdl3-port.md) — **shipped 2026-05-08** on Linux; macOS not retested.
 - [OpenGL fixed-function → 3.3 core profile port](docs/plans/opengl-core-profile-port.md) — **not started**, surface at session start and ask Bill before beginning.
 - [Modernization survey](docs/plans/modernization-survey.md) — **survey doc** (2026-05-08); inventory of antiquated libraries/subsystems with a recommended sequence. Read before picking any "modernize X" task.
 

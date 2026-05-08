@@ -3,5 +3,5 @@ add_library(nebu_audio STATIC
   SourceEngine.cpp SourceMusic.cpp SourceSample.cpp
   audio_system.c)
 target_link_libraries(nebu_audio
-  PUBLIC nebu_includes PkgConfig::SDL2 PkgConfig::SDL2_SOUND
+  PUBLIC nebu_includes PkgConfig::SDL3 PkgConfig::SDL3_SOUND
   PRIVATE gltron_warnings)

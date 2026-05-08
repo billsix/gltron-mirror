@@ -31,6 +31,7 @@ void exitSubsystems(void) {
   scripting_Quit();
   nebu_FS_ClearAllPaths();
   resource_FreeAll();
+  nebu_System_Shutdown();
 }
 
 void initSubsystems(int argc, const char* argv[]) {

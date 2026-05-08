@@ -8,10 +8,10 @@ RUN --mount=type=cache,target=/var/cache/libdnf5 \
     echo "keepcache=True" >> /etc/dnf/dnf.conf && \
     dnf upgrade -y && \
     dnf install -y --skip-unavailable \
-                   SDL2 \
-                   SDL2-devel \
-                   SDL2_sound \
-                   SDL2_sound-devel \
+                   SDL3 \
+                   SDL3-devel \
+                   SDL3_sound \
+                   SDL3_sound-devel \
                    clang  \
                    clang-tools-extra  \
                    cmake \

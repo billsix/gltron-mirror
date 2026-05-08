@@ -3,5 +3,5 @@ add_library(nebu_video STATIC
   video_system.c video_utility.c)
 target_include_directories(nebu_video PRIVATE ${CMAKE_SOURCE_DIR})
 target_link_libraries(nebu_video
-  PUBLIC nebu_includes OpenGL::GL GLEW::GLEW PkgConfig::SDL2
+  PUBLIC nebu_includes OpenGL::GL GLEW::GLEW PkgConfig::SDL3
   PRIVATE gltron_warnings)

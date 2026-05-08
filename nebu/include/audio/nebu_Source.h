@@ -3,7 +3,7 @@
 
 #include "nebu_Sound.h"
 
-#include "SDL.h"
+#include <SDL3/SDL.h>
 
 namespace Sound {
 enum { eSoundMusic = 1, eSoundFX = 2 };
@@ -44,8 +44,8 @@ class Source {  // an abstract class, the basic interface for all Sources
   int _type;
   char* _name;
 
-  SDL_mutex* _mutex;
-  SDL_sem* _sem;
+  SDL_Mutex* _mutex;
+  SDL_Semaphore* _sem;
 };
 }  // namespace Sound
 

@@ -2,7 +2,7 @@
 #include "video/nebu_video_system.h"
 #include "base/nebu_system.h"
 
-#include "SDL.h"
+#include <SDL3/SDL.h>
 #include <assert.h>
 #include "base/nebu_debug_memory.h"
 
@@ -19,7 +19,7 @@ static int video_initialized = 0;
 static int window_id = 0;
 
 void nebu_Video_Init(void) {
-  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+  if (!SDL_Init(SDL_INIT_VIDEO)) {
     fprintf(stderr, "Couldn't initialize SDL video: %s\n", SDL_GetError());
     exit(1);
   } else
@@ -44,7 +44,7 @@ void nebu_Video_SetDisplayMode(int f) {
   flags = f;
 
   if (!video_initialized) {
-    if (SDL_InitSubSystem(SDL_INIT_VIDEO) < 0) {
+    if (!SDL_InitSubSystem(SDL_INIT_VIDEO)) {
       fprintf(stderr, "[system] can't initialize Video: %s\n", SDL_GetError());
       exit(1);
     }
@@ -87,24 +87,19 @@ void printOpenGLDebugInfo(void) {
 }
 
 void SystemSetGamma(float red, float green, float blue) {
-  /* SDL_SetGamma is deprecated in SDL2, but you can use SDL_SetWindowGammaRamp
-     or just skip it as most modern OSes block hardware gamma changes. */
-  Uint16 r[256], g[256], b[256];
-  SDL_CalculateGammaRamp(red, r);
-  SDL_CalculateGammaRamp(green, g);
-  SDL_CalculateGammaRamp(blue, b);
-  if (gWindow) SDL_SetWindowGammaRamp(gWindow, r, g, b);
+  /* SDL3 dropped SDL_SetWindowGammaRamp / SDL_CalculateGammaRamp; modern
+     compositors don't honour per-window hardware gamma anyway. No-op. */
+  (void)red;
+  (void)green;
+  (void)blue;
 }
 
 void createWindow(void) {
-  /* SDL2 Change: Replace SDL_SetVideoMode with SDL_CreateWindow and
-   * SDL_GL_CreateContext */
-  Uint32 window_flags = SDL_WINDOW_OPENGL;
+  /* SDL3: SDL_CreateWindow takes (title, w, h, flags) — no x/y. */
+  SDL_WindowFlags window_flags = SDL_WINDOW_OPENGL;
   if (flags & SYSTEM_FULLSCREEN) window_flags |= SDL_WINDOW_FULLSCREEN;
 
-  gWindow =
-      SDL_CreateWindow("GLTron", SDL_WINDOWPOS_UNDEFINED,
-                       SDL_WINDOWPOS_UNDEFINED, width, height, window_flags);
+  gWindow = SDL_CreateWindow("GLTron", width, height, window_flags);
 
   if (gWindow == NULL) {
     fprintf(stderr, "[system] Couldn't create window: %s\n", SDL_GetError());
@@ -166,7 +161,7 @@ int nebu_Video_Create(char* name) {
 
 void nebu_Video_Destroy(int id) {
   if (id == window_id) {
-    if (gContext) SDL_GL_DeleteContext(gContext);
+    if (gContext) SDL_GL_DestroyContext(gContext);
     if (gWindow) SDL_DestroyWindow(gWindow);
     gContext = NULL;
     gWindow = NULL;
@@ -182,8 +177,8 @@ void SystemReshapeFunc(void (*reshape)(int w, int h)) {
 }
 
 void nebu_Video_WarpPointer(int x, int y) {
-  /* SDL2 Change: SDL_WarpMouse is now window-relative */
-  if (gWindow) SDL_WarpMouseInWindow(gWindow, x, y);
+  /* SDL3: SDL_WarpMouseInWindow takes floats. */
+  if (gWindow) SDL_WarpMouseInWindow(gWindow, (float)x, (float)y);
 }
 
 void nebu_Video_CheckErrors(const char* where) {

@@ -2,7 +2,7 @@
 #include "base/nebu_png_texture.h"
 
 #include <png.h>
-#include "SDL.h"
+#include <SDL3/SDL.h>
 
 #include "base/nebu_debug_memory.h"
 
@@ -72,18 +72,10 @@ int nebu_Surface_SaveBMP(nebu_Surface* pSurface, const char* filename) {
   pixels = (unsigned char*)pSurface->data;
 
   {
-    /* this code is shamelessly stolen from Ray Kelm, but I believe he
-            put it in the public domain */
     SDL_Surface* temp;
     int i;
 
-    temp = SDL_CreateRGBSurface(SDL_SWSURFACE, x, y, 24,
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-                                0x000000FF, 0x0000FF00, 0x00FF0000, 0
-#else
-                                0x00FF0000, 0x0000FF00, 0x000000FF, 0
-#endif
-    );
+    temp = SDL_CreateSurface(x, y, SDL_PIXELFORMAT_RGB24);
 
     if (temp == NULL) return -1;
 
@@ -92,7 +84,7 @@ int nebu_Surface_SaveBMP(nebu_Surface* pSurface, const char* filename) {
              pixels + 3 * x * (y - i - 1), x * 3);
 
     SDL_SaveBMP(temp, filename);
-    SDL_FreeSurface(temp);
+    SDL_DestroySurface(temp);
   }
   return 0;
 }

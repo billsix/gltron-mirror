@@ -33,8 +33,8 @@ Ordered roughly by ratio of (value × confidence) to (risk × effort):
    **DONE 2026-05-08.**
 6. **Reduce nebu surface** — keep what gltron actually uses, drop the rest;
    *do not dissolve nebu into src/*. See item below.
-7. **SDL2 → SDL3** — already planned, gated on #4. See
-   [sdl3-port.md](sdl3-port.md).
+7. **SDL2 → SDL3** — **DONE 2026-05-08** on Linux. See
+   [sdl3-port.md](sdl3-port.md). macOS not retested.
 8. **GL core profile** — already planned, deferred until Bill is ready.
    See [opengl-core-profile-port.md](opengl-core-profile-port.md).
 
@@ -205,15 +205,17 @@ OpenAL Soft is the path of least surprise.
 ### 8. SDL2_sound dep — fine but worth flagging
 
 `SDL2_sound` is the audio decoder front-end (loads `.wav`, `.ogg`, `.it`).
-It's still maintained but niche; the `.it` (Impulse Tracker) decode goes
-through libmikmod (visible in the Dockerfile dependencies — `mikmod`,
-`mikmod-devel`). SDL3_sound exists; minor renames expected during the SDL3
-port. Bundled with item #9 (SDL3 port).
+The `.it` (Impulse Tracker) decode goes through libmikmod (visible in the
+Dockerfile dependencies — `mikmod`, `mikmod-devel`). **DONE 2026-05-08**:
+swapped to SDL3_sound as part of the SDL3 port; the renames were not just
+cosmetic — `Sound_AudioInfo` was replaced with `SDL_AudioSpec`, and the
+RWops-taking `Sound_NewSample` calls were rewritten to
+`Sound_NewSampleFromFile`. Captured in [sdl3-port.md](sdl3-port.md).
 
 ### 9. SDL2 → SDL3
 
-Already planned at [sdl3-port.md](sdl3-port.md). Gated on the window
-architecture work.
+**DONE 2026-05-08** on Linux. See [sdl3-port.md](sdl3-port.md) for the
+full landed change set and the macOS / interactive-smoke-test follow-ups.
 
 ### 10. GLEW
 

@@ -1,6 +1,7 @@
 #include "audio/nebu_SourceSample.h"
 
 #include <assert.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "base/nebu_debug_memory.h"
@@ -23,13 +24,8 @@ SourceSample::~SourceSample() {
 }
 
 void SourceSample::Load(char* filename) {
-#define BUFSIZE 1024 * 1024
-  SDL_RWops* rwops;
-
-  rwops = SDL_RWFromFile(filename, "rb");
-
   Sound_Sample* sample =
-      Sound_NewSample(rwops, NULL, _system->GetAudioInfo(), _buffersize);
+      Sound_NewSampleFromFile(filename, _system->GetAudioInfo(), _buffersize);
   if (sample == NULL) {
     fprintf(stderr, "[error] failed loading sample from '%s': %s\n", filename,
             Sound_GetError());
@@ -44,29 +40,27 @@ void SourceSample::Load(char* filename) {
 
   Sound_FreeSample(sample);
 
-  // fprintf(stderr, "done decoding sample '%s'\n", filename);
   _position = 0;
 }
 
 int SourceSample::Mix(Uint8* data, int len) {
   if (_buffer == NULL) return 0;
 
-  int volume = (int)(_volume * SDL_MIX_MAXVOLUME);
   assert(len < _buffersize);
 
   if (len < _buffersize - _position) {
-    SDL_MixAudio(data, _buffer + _position, len, volume);
+    SDL_MixAudio(data, _buffer + _position, SDL_AUDIO_S16, len, _volume);
     _position += len;
   } else {
-    SDL_MixAudio(data, _buffer + _position, _buffersize - _position, volume);
+    SDL_MixAudio(data, _buffer + _position, SDL_AUDIO_S16,
+                 _buffersize - _position, _volume);
     len -= _buffersize - _position;
 
-    // printf("end of sample reached!\n");
     if (_loop) {
       if (_loop != 255) _loop--;
 
       _position = 0;
-      SDL_MixAudio(data, _buffer + _position, len, volume);
+      SDL_MixAudio(data, _buffer + _position, SDL_AUDIO_S16, len, _volume);
       _position += len;
     } else {
       _isPlaying = 0;

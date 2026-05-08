@@ -1,7 +1,14 @@
 #ifndef NEBU_SYSTEM_H
 #define NEBU_SYSTEM_H
 
-#include "SDL.h"
+/* SDL3's <SDL.h> no longer transitively pulls in <stdio.h>/<stdlib.h>;
+   bring them along here so the many consumers that historically relied on
+   SDL2's transitive availability keep compiling without a flurry of
+   per-file edits. */
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <SDL3/SDL.h>
 
 #include "nebu_callbacks.h"
 extern Callbacks* current;
@@ -17,6 +24,7 @@ void nebu_System_SetCallback_Key(void (*key)(int, int, int, int));
 void nebu_System_ExitLoop(int return_code);  // test ok
 int nebu_System_MainLoop(void);              // test ok
 void nebu_System_Exit(void);                 // test ok
+void nebu_System_Shutdown(void);             // call after exitSubsystems
 void nebu_System_PostRedisplay(void);        // test ok
 
 unsigned int nebu_Time_GetElapsed();
