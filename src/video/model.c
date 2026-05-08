@@ -26,8 +26,7 @@ extern void readMaterialLibrary(char* buf, gltron_Mesh* pMesh);
 extern void setMaterial(char* buf, gltron_Mesh* pMesh, int* iGroup);
 
 void readVector(char* buf, vec3* pVertex) {
-  if (sscanf(buf, " %f %f %f ", pVertex->v, pVertex->v + 1, pVertex->v + 2) !=
-      3) {
+  if (sscanf(buf, " %f %f %f ", &pVertex->X, &pVertex->Y, &pVertex->Z) != 3) {
     fprintf(stderr, "*** failed reading Vector from %s\n", buf);
   }
 }
@@ -224,8 +223,8 @@ gltron_Mesh* gltron_Mesh_LoadFromFile(const char* filename,
         int vertex = lookup[i][j];
         if (vertex != -1) {
           for (k = 0; k < 3; k++) {
-            *(pMesh->pVertices + 3 * vertex + k) = pVertices[i].v[k];
-            *(pMesh->pNormals + 3 * vertex + k) = pNormals[j].v[k];
+            *(pMesh->pVertices + 3 * vertex + k) = pVertices[i].Elements[k];
+            *(pMesh->pNormals + 3 * vertex + k) = pNormals[j].Elements[k];
           }
         }
       }
@@ -371,22 +370,19 @@ void gltron_Mesh_DrawExplosion(gltron_Mesh* pMesh, float fRadius) {
 
 void gltron_Mesh_ComputeBBox(gltron_Mesh* pMesh) {
   int i, j;
-  vec3 vMin, vMax, vSize;
-
-  vec3_Copy(&vMin, (vec3*)pMesh->pVertices);
-  vec3_Copy(&vMax, (vec3*)pMesh->pVertices);
+  vec3 vMin = *(vec3*)pMesh->pVertices;
+  vec3 vMax = vMin;
 
   for (i = 0; i < pMesh->nVertices; i++) {
     for (j = 0; j < 3; j++) {
-      if (vMin.v[j] > pMesh->pVertices[3 * i + j])
-        vMin.v[j] = pMesh->pVertices[3 * i + j];
-      if (vMax.v[j] < pMesh->pVertices[3 * i + j])
-        vMax.v[j] = pMesh->pVertices[3 * i + j];
+      if (vMin.Elements[j] > pMesh->pVertices[3 * i + j])
+        vMin.Elements[j] = pMesh->pVertices[3 * i + j];
+      if (vMax.Elements[j] < pMesh->pVertices[3 * i + j])
+        vMax.Elements[j] = pMesh->pVertices[3 * i + j];
     }
   }
 
-  vec3_Sub(&vSize, &vMax, &vMin);
-  vec3_Copy(&pMesh->BBox.vMin, &vMin);
-  vec3_Copy(&pMesh->BBox.vSize, &vSize);
-  pMesh->BBox.fRadius = vec3_Length(&pMesh->BBox.vSize) / 10;
+  pMesh->BBox.vMin = vMin;
+  pMesh->BBox.vSize = HMM_SubV3(vMax, vMin);
+  pMesh->BBox.fRadius = HMM_LenV3(pMesh->BBox.vSize) / 10;
 }

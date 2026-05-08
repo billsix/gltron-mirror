@@ -5,7 +5,7 @@ target_include_directories(nebu_includes INTERFACE
 #   nebu/include/scripting/nebu_scripting.h → "lua.h"
 #   nebu/include/base/nebu_system.h         → <SDL3/SDL.h>
 # Propagate those include paths to every nebu consumer.
-target_link_libraries(nebu_includes INTERFACE lua PkgConfig::SDL3)
+target_link_libraries(nebu_includes INTERFACE lua PkgConfig::SDL3 handmademath)
 
 add_subdirectory(base)
 add_subdirectory(filesystem)

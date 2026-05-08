@@ -1,5 +1,5 @@
 add_library(nebu_base STATIC
-  vector.c matrix.c quat.c
+  nebu_geom.c
   random.c util.c system.c surface.c png_texture.c
   debug_memory.c)
 target_link_libraries(nebu_base

@@ -1,7 +1,7 @@
 #ifndef TRAIL_GEOMETRY_H
 #define TRAIL_GEOMETRY_H
 
-#include "base/nebu_vector.h"
+#include "base/nebu_geom.h"
 #include "game/game_data.h"  // Player
 #include "video/video.h"     // PlayerVisual
 

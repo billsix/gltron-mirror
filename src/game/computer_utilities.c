@@ -14,19 +14,17 @@ void ai_getClosestOpponent(int player, int* opponent, float* distance) {
   *opponent = -1;
   *distance = FLT_MAX;
 
-  getPositionFromIndex(v_player.v + 0, v_player.v + 1, player);
+  getPositionFromIndex(&v_player.X, &v_player.Y, player);
 
   for (i = 0; i < game->players; i++) {
     if (i == player) continue;
     if (game->player[i].data->speed > 0) {
-      vec2 diff;
       float d;
 
-      getPositionFromIndex(v_opponent.v + 0, v_opponent.v + 1, i);
-      vec2_Sub(&diff, &v_player, &v_opponent);
+      getPositionFromIndex(&v_opponent.X, &v_opponent.Y, i);
+      vec2 diff = HMM_SubV2(v_player, v_opponent);
       // use manhattan distance instead of euclidean distance
-      d = (float)(fabs(diff.v[0]) + fabs(diff.v[1]));
-      // d = vec2Length(&diff);
+      d = (float)(fabs(diff.X) + fabs(diff.Y));
       if (d < *distance) {
         *opponent = i;
         *distance = d;
@@ -48,24 +46,21 @@ void ai_getDistances(int player, AI_Distances* distances) {
   float* left = &distances->left;
   float* backleft = &distances->backleft;
 
-  getPositionFromIndex(vPos.v + 0, vPos.v + 1, player);
+  getPositionFromIndex(&vPos.X, &vPos.Y, player);
 
   for (i = 0; i < eMax; i++) {
-    vec2_Copy(&segments[i].vStart, &vPos);
+    segments[i].vStart = vPos;
   }
 
-  segments[eFront].vDirection.v[0] = (float)dirsX[data->dir];
-  segments[eFront].vDirection.v[1] = (float)dirsY[data->dir];
-  segments[eLeft].vDirection.v[0] = (float)dirsX[dirLeft];
-  segments[eLeft].vDirection.v[1] = (float)dirsY[dirLeft];
-  segments[eRight].vDirection.v[0] = (float)dirsX[dirRight];
-  segments[eRight].vDirection.v[1] = (float)dirsY[dirRight];
-  segments[eBackleft].vDirection.v[0] =
-      (float)dirsX[dirLeft] - dirsX[data->dir];
-  segments[eBackleft].vDirection.v[1] =
-      (float)dirsY[dirLeft] - dirsY[data->dir];
-  vec2_Normalize(&segments[eBackleft].vDirection,
-                 &segments[eBackleft].vDirection);
+  segments[eFront].vDirection = HMM_V2((float)dirsX[data->dir],
+                                       (float)dirsY[data->dir]);
+  segments[eLeft].vDirection = HMM_V2((float)dirsX[dirLeft],
+                                      (float)dirsY[dirLeft]);
+  segments[eRight].vDirection = HMM_V2((float)dirsX[dirRight],
+                                       (float)dirsY[dirRight]);
+  segments[eBackleft].vDirection =
+      HMM_NormV2(HMM_V2((float)dirsX[dirLeft] - dirsX[data->dir],
+                        (float)dirsY[dirLeft] - dirsY[data->dir]));
   *front = FLT_MAX;
   *left = FLT_MAX;
   *right = FLT_MAX;
@@ -114,21 +109,21 @@ void ai_getDistances(int player, AI_Distances* distances) {
   // update debug render segments
   {
     AI* ai = game->player[player].ai;
-    vec2_Copy(&ai->front.vStart, &vPos);
-    vec2_Copy(&ai->left.vStart, &vPos);
-    vec2_Copy(&ai->right.vStart, &vPos);
-    vec2_Copy(&ai->backleft.vStart, &vPos);
+    ai->front.vStart = vPos;
+    ai->left.vStart = vPos;
+    ai->right.vStart = vPos;
+    ai->backleft.vStart = vPos;
 
-    ai->front.vDirection.v[0] = *front * dirsX[data->dir];
-    ai->front.vDirection.v[1] = *front * dirsY[data->dir];
-    ai->left.vDirection.v[0] = *left * dirsX[dirLeft];
-    ai->left.vDirection.v[1] = *left * dirsY[dirLeft];
-    ai->right.vDirection.v[0] = *right * dirsX[dirRight];
-    ai->right.vDirection.v[1] = *right * dirsY[dirRight];
-    ai->backleft.vDirection.v[0] = (float)(dirsX[dirLeft] - dirsX[data->dir]);
-    ai->backleft.vDirection.v[1] = (float)(dirsY[dirLeft] - dirsY[data->dir]);
-    vec2_Normalize(&ai->backleft.vDirection, &ai->backleft.vDirection);
-    vec2_Scale(&ai->backleft.vDirection, &ai->backleft.vDirection, *backleft);
+    ai->front.vDirection =
+        HMM_V2(*front * dirsX[data->dir], *front * dirsY[data->dir]);
+    ai->left.vDirection =
+        HMM_V2(*left * dirsX[dirLeft], *left * dirsY[dirLeft]);
+    ai->right.vDirection =
+        HMM_V2(*right * dirsX[dirRight], *right * dirsY[dirRight]);
+    ai->backleft.vDirection = HMM_MulV2F(
+        HMM_NormV2(HMM_V2((float)(dirsX[dirLeft] - dirsX[data->dir]),
+                          (float)(dirsY[dirLeft] - dirsY[data->dir]))),
+        *backleft);
   }
 
   // printf("%.2f, %.2f, %.2f\n", *front, *right, *left);
@@ -138,47 +133,36 @@ void ai_getDistances(int player, AI_Distances* distances) {
 void ai_getConfig(int player, int target, AI_Configuration* config) {
   Data* data;
 
-  getPositionFromIndex(config->player.vStart.v + 0, config->player.vStart.v + 1,
+  getPositionFromIndex(&config->player.vStart.X, &config->player.vStart.Y,
                        player);
-  getPositionFromIndex(config->opponent.vStart.v + 0,
-                       config->opponent.vStart.v + 1, target);
+  getPositionFromIndex(&config->opponent.vStart.X,
+                       &config->opponent.vStart.Y, target);
 
   data = game->player[player].data;
-  config->player.vDirection.v[0] = dirsX[data->dir] * data->speed;
-  config->player.vDirection.v[1] = dirsY[data->dir] * data->speed;
+  config->player.vDirection =
+      HMM_V2(dirsX[data->dir] * data->speed, dirsY[data->dir] * data->speed);
 
   data = game->player[target].data;
-  config->opponent.vDirection.v[0] = dirsX[data->dir] * data->speed;
-  config->opponent.vDirection.v[1] = dirsY[data->dir] * data->speed;
+  config->opponent.vDirection =
+      HMM_V2(dirsX[data->dir] * data->speed, dirsY[data->dir] * data->speed);
 
   // compute sector
   {
-    vec2 diff;
-    vec3 v1, v2, v3;
-    vec3 up = {{0, 0, 1}};
+    vec3 up = HMM_V3(0, 0, 1);
     float cosphi;
     float phi;
     int i;
 
-    vec2_Sub(&diff, &config->player.vStart, &config->opponent.vStart);
-    v1.v[0] = diff.v[0];
-    v1.v[1] = diff.v[1];
-    v1.v[2] = 0;
+    vec2 diff = HMM_SubV2(config->player.vStart, config->opponent.vStart);
+    vec3 v1 = HMM_NormV3(HMM_V3(diff.X, diff.Y, 0));
+    vec3 v2 = HMM_NormV3(HMM_V3(config->opponent.vDirection.X,
+                                config->opponent.vDirection.Y, 0));
+    vec3 v3 = HMM_NormV3(HMM_Cross(v1, v2));
 
-    v2.v[0] = config->opponent.vDirection.v[0];
-    v2.v[1] = config->opponent.vDirection.v[1];
-    v2.v[2] = 0;
-
-    vec3_Normalize(&v1, &v1);
-    vec3_Normalize(&v2, &v2);
-
-    vec3_Cross(&v3, &v1, &v2);
-    vec3_Normalize(&v3, &v3);
-
-    cosphi = vec3_Dot(&v1, &v2);
+    cosphi = HMM_DotV3(v1, v2);
     nebu_Clamp(&cosphi, -1, 1);
     phi = (float)acos(cosphi);
-    if (vec3_Dot(&v3, &up) > 0) phi = 2 * (float)M_PI - phi;
+    if (HMM_DotV3(v3, up) > 0) phi = 2 * (float)M_PI - phi;
 
     for (i = 0; i < 8; i++) {
       phi -= (float)M_PI / 4;
@@ -195,10 +179,9 @@ void ai_getConfig(int player, int target, AI_Configuration* config) {
     seg1.vStart = config->opponent.vStart;
     seg1.vDirection = config->opponent.vDirection;
     seg2.vStart = config->player.vStart;
-    vec2_Orthogonal(&seg2.vDirection, &config->opponent.vDirection);
-    vec2_Normalize(&seg2.vDirection, &seg2.vDirection);
-    vec2_Scale(&seg2.vDirection, &seg2.vDirection,
-               vec2_Length(&config->player.vDirection));
+    seg2.vDirection = HMM_MulV2F(
+        HMM_NormV2(vec2_Orthogonal(config->opponent.vDirection)),
+        HMM_LenV2(config->player.vDirection));
 
     segment2_Intersect(&config->intersection, &config->t_opponent,
                        &config->t_player, &seg1, &seg2);

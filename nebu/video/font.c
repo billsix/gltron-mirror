@@ -253,10 +253,10 @@ void nebu_Font_RenderToBox(nebu_Font* font, const char* text, int len,
   float width, height, scalew, scaleh;
   int textLength;
   glPushMatrix();
-  glTranslatef(box->vMin.v[0], box->vMin.v[1], 0);
+  glTranslatef(box->vMin.X, box->vMin.Y, 0);
 
-  width = box->vMax.v[0] - box->vMin.v[0];
-  height = box->vMax.v[1] - box->vMin.v[1];
+  width = box->vMax.X - box->vMin.X;
+  height = box->vMax.Y - box->vMin.Y;
   textLength = getTextLength(text, len);
   if (width / textLength < height) {
     if (flags & eFontFormatScaleFitVertically) {

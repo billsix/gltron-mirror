@@ -17,11 +17,10 @@
 #include "base/nebu_debug_memory.h"
 
 void Player_GetPosition(Player* pPlayer, float* pX, float* pY) {
-  vec2 v;
-  vec2_Add(&v, &pPlayer->data->trails[pPlayer->data->trailOffset].vStart,
-           &pPlayer->data->trails[pPlayer->data->trailOffset].vDirection);
-  *pX = v.v[0];
-  *pY = v.v[1];
+  vec2 v = HMM_AddV2(pPlayer->data->trails[pPlayer->data->trailOffset].vStart,
+                     pPlayer->data->trails[pPlayer->data->trailOffset].vDirection);
+  *pX = v.X;
+  *pY = v.Y;
 }
 
 void getPositionFromIndex(float* x, float* y, int player) {
@@ -29,11 +28,10 @@ void getPositionFromIndex(float* x, float* y, int player) {
 }
 
 void getPositionFromData(float* x, float* y, Data* data) {
-  vec2 v;
-  vec2_Add(&v, &data->trails[data->trailOffset].vStart,
-           &data->trails[data->trailOffset].vDirection);
-  *x = v.v[0];
-  *y = v.v[1];
+  vec2 v = HMM_AddV2(data->trails[data->trailOffset].vStart,
+                     data->trails[data->trailOffset].vDirection);
+  *x = v.X;
+  *y = v.Y;
 }
 
 void initGameLevel(void) {
@@ -126,8 +124,8 @@ void resetPlayerData(void) {
     /* arrange players in circle around center */
 
     /* randomize position on the grid */
-    x = game2->level->spawnPoints[startIndex[i]].v.v[0];
-    y = game2->level->spawnPoints[startIndex[i]].v.v[1];
+    x = game2->level->spawnPoints[startIndex[i]].v.X;
+    y = game2->level->spawnPoints[startIndex[i]].v.Y;
     /* randomize starting direction */
     data->dir = game2->level->spawnPoints[startIndex[i]].dir;
     if (data->dir == -1) data->dir = nebu_rand() & 3;
@@ -154,11 +152,8 @@ void resetPlayerData(void) {
     // data->trail = data->trails;
     data->trailOffset = 0;
 
-    data->trails[data->trailOffset].vStart.v[0] = x;
-    data->trails[data->trailOffset].vStart.v[1] = y;
-
-    data->trails[data->trailOffset].vDirection.v[0] = 0;
-    data->trails[data->trailOffset].vDirection.v[1] = 0;
+    data->trails[data->trailOffset].vStart = HMM_V2(x, y);
+    data->trails[data->trailOffset].vDirection = HMM_V2(0, 0);
 
     data->impact_radius = 0.0;
     data->turn_time = 0;
@@ -239,10 +234,8 @@ void newTrail(Data* data) {
   data->trailOffset++;
   s = data->trails + data->trailOffset;
 
-  s->vStart.v[0] = x;
-  s->vStart.v[1] = y;
-  s->vDirection.v[0] = 0;
-  s->vDirection.v[1] = 0;
+  s->vStart = HMM_V2(x, y);
+  s->vDirection = HMM_V2(0, 0);
 }
 
 void doTurn(GameEvent* e, int direction) {

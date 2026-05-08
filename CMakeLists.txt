@@ -13,10 +13,12 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     Debug Release RelWithDebInfo MinSizeRel)
 endif()
 
-set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 # GNU/POSIX extensions enabled to match the autotools default (no -std flag),
 # which is what code like nebu/filesystem/findpath.c relies on for realpath().
+# C11 is needed for HandmadeMath's _Generic shorthand
+# (see docs/plans/handmademath-port.md).
 set(CMAKE_C_EXTENSIONS ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -45,6 +47,12 @@ find_package(Lua 5.4 REQUIRED)
 add_library(lua INTERFACE)
 target_include_directories(lua INTERFACE ${LUA_INCLUDE_DIR})
 target_link_libraries(lua INTERFACE ${LUA_LIBRARIES})
+
+# Vendored single-header math library. See third_party/HandmadeMath/ and
+# docs/plans/handmademath-port.md.
+add_library(handmademath INTERFACE)
+target_include_directories(handmademath INTERFACE
+  ${CMAKE_SOURCE_DIR}/third_party/HandmadeMath)
 
 if(GLTRON_NETWORK)
   pkg_check_modules(SDL3_NET REQUIRED IMPORTED_TARGET sdl3-net)

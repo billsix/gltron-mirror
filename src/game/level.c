@@ -13,16 +13,16 @@ void game_FreeLevel(game_level* l) {
 void game_ScaleLevel(game_level* l, float fSize) {
   int i;
   for (i = 0; i < l->nBoundaries; i++) {
-    vec2_Scale(&l->boundaries[i].vStart, &l->boundaries[i].vStart, fSize);
-    vec2_Scale(&l->boundaries[i].vDirection, &l->boundaries[i].vDirection,
-               fSize);
+    l->boundaries[i].vStart = HMM_MulV2F(l->boundaries[i].vStart, fSize);
+    l->boundaries[i].vDirection =
+        HMM_MulV2F(l->boundaries[i].vDirection, fSize);
   }
   for (i = 0; i < l->nSpawnPoints; i++) {
-    vec2_Scale(&l->spawnPoints[i].v, &l->spawnPoints[i].v, fSize);
+    l->spawnPoints[i].v = HMM_MulV2F(l->spawnPoints[i].v, fSize);
   }
 
-  vec2_Scale(&l->boundingBox.vMin, &l->boundingBox.vMin, fSize);
-  vec2_Scale(&l->boundingBox.vMax, &l->boundingBox.vMax, fSize);
+  l->boundingBox.vMin = HMM_MulV2F(l->boundingBox.vMin, fSize);
+  l->boundingBox.vMax = HMM_MulV2F(l->boundingBox.vMax, fSize);
 }
 
 void computeBoundingBox(game_level* l) {
@@ -30,10 +30,10 @@ void computeBoundingBox(game_level* l) {
 
   box2_Init(&l->boundingBox);
   for (i = 0; i < l->nBoundaries; i++) {
-    vec2 vEnd;
-    vec2_Add(&vEnd, &l->boundaries[i].vStart, &l->boundaries[i].vDirection);
-    box2_Extend(&l->boundingBox, &l->boundaries[i].vStart);
-    box2_Extend(&l->boundingBox, &vEnd);
+    vec2 vEnd =
+        HMM_AddV2(l->boundaries[i].vStart, l->boundaries[i].vDirection);
+    box2_Extend(&l->boundingBox, l->boundaries[i].vStart);
+    box2_Extend(&l->boundingBox, vEnd);
   }
 }
 
@@ -57,9 +57,9 @@ game_level* game_CreateLevel(void) {
     scripting_GetArrayIndex(i + 1);
 
     scripting_GetValue("x");
-    scripting_GetFloatResult(&l->spawnPoints[i].v.v[0]);
+    scripting_GetFloatResult(&l->spawnPoints[i].v.X);
     scripting_GetValue("y");
-    scripting_GetFloatResult(&l->spawnPoints[i].v.v[1]);
+    scripting_GetFloatResult(&l->spawnPoints[i].v.Y);
     scripting_GetValue("dir");
     scripting_GetIntegerResult(&l->spawnPoints[i].dir);
 
@@ -77,19 +77,19 @@ game_level* game_CreateLevel(void) {
 
     scripting_GetArrayIndex(1);
     scripting_GetValue("x");
-    scripting_GetFloatResult(&l->boundaries[i].vStart.v[0]);
+    scripting_GetFloatResult(&l->boundaries[i].vStart.X);
     scripting_GetValue("y");
-    scripting_GetFloatResult(&l->boundaries[i].vStart.v[1]);
+    scripting_GetFloatResult(&l->boundaries[i].vStart.Y);
     scripting_Pop();  // index 0
 
     scripting_GetArrayIndex(2);
     {
       vec2 v;
       scripting_GetValue("x");
-      scripting_GetFloatResult(&v.v[0]);
+      scripting_GetFloatResult(&v.X);
       scripting_GetValue("y");
-      scripting_GetFloatResult(&v.v[1]);
-      vec2_Sub(&l->boundaries[i].vDirection, &v, &l->boundaries[i].vStart);
+      scripting_GetFloatResult(&v.Y);
+      l->boundaries[i].vDirection = HMM_SubV2(v, l->boundaries[i].vStart);
     }
     scripting_Pop();  // index 1
 

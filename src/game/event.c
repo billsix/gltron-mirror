@@ -102,8 +102,7 @@ int crashTestPlayers(int i, const segment2* movement) {
 							 t1, t2);
 #endif
         if (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1) {
-          current->vDirection.v[0] = v.v[0] - current->vStart.v[0];
-          current->vDirection.v[1] = v.v[1] - current->vStart.v[1];
+          current->vDirection = HMM_SubV2(v, current->vStart);
           createEvent(i, EVENT_CRASH);
           crash = 1;
           break;
@@ -128,8 +127,7 @@ int crashTestWalls(int i, const segment2* movement) {
     if (segment2_Intersect(&v, &t1, &t2, current,
                            game2->level->boundaries + j)) {
       if (t1 >= 0 && t1 < 1 && t2 >= 0 && t2 < 1) {
-        current->vDirection.v[0] = v.v[0] - current->vStart.v[0];
-        current->vDirection.v[1] = v.v[1] - current->vStart.v[1];
+        current->vDirection = HMM_SubV2(v, current->vStart);
         createEvent(i, EVENT_CRASH);
         crash = 1;
         break;
@@ -210,17 +208,16 @@ int applyWallAcceleration(int player, int dt) {
   int i, j;
 
   getPositionFromIndex(&x, &y, player);
-  vPos.v[0] = x;
-  vPos.v[1] = y;
+  vPos = HMM_V2(x, y);
 
   for (i = 0; i < eMax; i++) {
-    vec2_Copy(&segments[i].vStart, &vPos);
+    segments[i].vStart = vPos;
   }
 
-  segments[eLeft].vDirection.v[0] = (float)dirsX[dirLeft];
-  segments[eLeft].vDirection.v[1] = (float)dirsY[dirLeft];
-  segments[eRight].vDirection.v[0] = (float)dirsX[dirRight];
-  segments[eRight].vDirection.v[1] = (float)dirsY[dirRight];
+  segments[eLeft].vDirection = HMM_V2((float)dirsX[dirLeft],
+                                      (float)dirsY[dirLeft]);
+  segments[eRight].vDirection = HMM_V2((float)dirsX[dirRight],
+                                       (float)dirsY[dirRight]);
 
   left = FLT_MAX;
   right = FLT_MAX;
@@ -317,29 +314,28 @@ void doMovement(int dt) {
         float x, y;
 
         getPositionFromData(&x, &y, data);
-        movement.vStart.v[0] = x;
-        movement.vStart.v[1] = y;
-        movement.vDirection.v[0] = t * dirsX[data->dir];
-        movement.vDirection.v[1] = t * dirsY[data->dir];
+        movement.vStart = HMM_V2(x, y);
+        movement.vDirection = HMM_V2(t * dirsX[data->dir],
+                                     t * dirsY[data->dir]);
 
-        current->vDirection.v[0] += t * dirsX[data->dir];
-        current->vDirection.v[1] += t * dirsY[data->dir];
+        current->vDirection.X += t * dirsX[data->dir];
+        current->vDirection.Y += t * dirsY[data->dir];
 
         if (!data->wall_buster_enabled) {  // collision detection against
                                            // players
           crash = crashTestPlayers(i, &movement);
           if (crash) {
             printf("player %d crashed into other players \n", i);
-            printf("%f %f %f %f\n", movement.vStart.v[0], movement.vStart.v[1],
-                   movement.vDirection.v[0], movement.vDirection.v[1]);
+            printf("%f %f %f %f\n", movement.vStart.X, movement.vStart.Y,
+                   movement.vDirection.X, movement.vDirection.Y);
           }  // crash debug output
         }  // collision detection against players
         if (!crash) {  // collision detection against walls
           crash = crashTestWalls(i, &movement);
           if (crash) {
             printf("player %d crashed into the walls\n", i);
-            printf("%f %f %f %f\n", movement.vStart.v[0], movement.vStart.v[1],
-                   movement.vDirection.v[0], movement.vDirection.v[1]);
+            printf("%f %f %f %f\n", movement.vStart.X, movement.vStart.Y,
+                   movement.vDirection.X, movement.vDirection.Y);
           }  // crash debut output
         }  // collision detection against walls
       }  // movement

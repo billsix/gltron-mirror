@@ -6,7 +6,7 @@ extern "C" {
 }
 
 #include "audio/nebu_Source.h"
-#include "base/nebu_Vector3.h"
+#include <HandmadeMath.h>
 
 #include <SDL3_sound/SDL_sound.h>
 
@@ -22,10 +22,10 @@ void c_callback(void* userdata, SDL_AudioStream* stream,
 class Listener {
  public:
   Listener() {};
-  Vector3 _location;
-  Vector3 _velocity;
-  Vector3 _direction;
-  Vector3 _up;
+  HMM_Vec3 _location;
+  HMM_Vec3 _velocity;
+  HMM_Vec3 _direction;
+  HMM_Vec3 _up;
 };
 
 enum { eUninitialized, eInitialized };

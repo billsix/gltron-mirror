@@ -157,11 +157,11 @@ void observerCamera(Camera* cam) {
   vec2 p, v;
   getRecognizerPositionVelocity(&p, &v);
 
-  cam->cam[0] = p.v[0];
-  cam->cam[1] = p.v[1];
+  cam->cam[0] = p.X;
+  cam->cam[1] = p.Y;
   cam->cam[2] = RECOGNIZER_HEIGHT;
-  cam->target[0] = p.v[0] + v.v[0];
-  cam->target[1] = p.v[1] + v.v[1];
+  cam->target[0] = p.X + v.X;
+  cam->target[1] = p.Y + v.Y;
   cam->target[2] = RECOGNIZER_HEIGHT - 2;
 }
 

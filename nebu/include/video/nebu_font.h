@@ -1,7 +1,7 @@
 #ifndef NEBU_FONT_H
 #define NEBU_FONT_H
 
-#include "base/nebu_vector.h"
+#include "base/nebu_geom.h"
 
 typedef struct {
   float height;    // size of a character in texture v-direction

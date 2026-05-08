@@ -4,7 +4,6 @@
 #include "audio/nebu_Sound.h"
 #include "audio/nebu_SoundSystem.h"
 #include "audio/nebu_SourceSample.h"
-#include "base/nebu_Vector3.h"
 
 namespace Sound {
 class SourceCopy : public Source {

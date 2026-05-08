@@ -4,7 +4,7 @@
 #include "video/trail_geometry.h"
 #include "configuration/settings.h"
 
-#include "base/nebu_vector.h"
+#include "base/nebu_geom.h"
 #include "base/nebu_math.h"
 #include "video/nebu_renderer_gl.h"
 
@@ -50,36 +50,31 @@ void storeVertex(TrailMesh* pMesh, int offset, segment2* s,
   vec3* pVertices = pMesh->pVertices + offset;
   vec3* pNormals = pMesh->pNormals + offset;
   vec2* pTexCoords = pMesh->pTexCoords + offset;
-  vec3 v;
-  vec2 uv;
   float fUStart;
-  vec3 pvNormals[] = {{{1, 0, 0}}, {{-1, 0, 0}}, {{0, 1, 0}}, {{0, -1, 0}}};
+  vec3 pvNormals[] = {HMM_V3(1, 0, 0), HMM_V3(-1, 0, 0),
+                      HMM_V3(0, 1, 0), HMM_V3(0, -1, 0)};
 
   int iNormal;
-  if (s->vDirection.v[0] == 0)
-    // iNormal = (line->sx <= line->ex) ? 0 : 1;
+  if (s->vDirection.X == 0)
     iNormal = 0;
   else
-    // iNormal = (line->sy <= line->sy) ? 2 : 3;
     iNormal = 2;
 
   fUStart = (fTotalLength / DECAL_WIDTH) - floorf(fTotalLength / DECAL_WIDTH);
 
-  v.v[0] = s->vStart.v[0] + t * s->vDirection.v[0];
-  v.v[1] = s->vStart.v[1] + t * s->vDirection.v[1];
-  v.v[2] = fFloor;
-  uv.v[0] = fUStart + t * fSegLength / DECAL_WIDTH;
+  vec3 v = HMM_V3(s->vStart.X + t * s->vDirection.X,
+                  s->vStart.Y + t * s->vDirection.Y, fFloor);
+  vec2 uv = HMM_V2(fUStart + t * fSegLength / DECAL_WIDTH, 0);
 
-  uv.v[1] = 0;
-  vec3_Copy(pVertices, &v);
-  vec3_Copy(pNormals, pvNormals + iNormal);
-  vec2_Copy(pTexCoords, &uv);
+  pVertices[0] = v;
+  pNormals[0] = pvNormals[iNormal];
+  pTexCoords[0] = uv;
 
-  v.v[2] = fTop;
-  uv.v[1] = 1;
-  vec3_Copy(pVertices + 1, &v);
-  vec3_Copy(pNormals + 1, pvNormals + iNormal);
-  vec2_Copy(pTexCoords + 1, &uv);
+  v.Z = fTop;
+  uv.Y = 1;
+  pVertices[1] = v;
+  pNormals[1] = pvNormals[iNormal];
+  pTexCoords[1] = uv;
 }
 
 void storeIndices(TrailMesh* pMesh, int indexOffset, int vertexOffset) {
@@ -87,15 +82,15 @@ void storeIndices(TrailMesh* pMesh, int indexOffset, int vertexOffset) {
   int i;
   int winding;
 
-  if (pMesh->pVertices[vertexOffset].v[0] ==
-      pMesh->pVertices[vertexOffset + 2].v[0])
-    winding = (pMesh->pVertices[vertexOffset].v[1] <=
-               pMesh->pVertices[vertexOffset + 2].v[1])
+  if (pMesh->pVertices[vertexOffset].X ==
+      pMesh->pVertices[vertexOffset + 2].X)
+    winding = (pMesh->pVertices[vertexOffset].Y <=
+               pMesh->pVertices[vertexOffset + 2].Y)
                   ? 0
                   : 1;
   else
-    winding = (pMesh->pVertices[vertexOffset].v[0] <
-               pMesh->pVertices[vertexOffset + 2].v[0])
+    winding = (pMesh->pVertices[vertexOffset].X <
+               pMesh->pVertices[vertexOffset + 2].X)
                   ? 1
                   : 0;
 
@@ -105,8 +100,8 @@ void storeIndices(TrailMesh* pMesh, int indexOffset, int vertexOffset) {
 }
 
 int cmpdir(segment2* s1, segment2* s2) {
-  if ((s1->vDirection.v[0] == 0 && s2->vDirection.v[0] == 0) ||
-      (s1->vDirection.v[1] == 0 && s2->vDirection.v[1] == 0))
+  if ((s1->vDirection.X == 0 && s2->vDirection.X == 0) ||
+      (s1->vDirection.Y == 0 && s2->vDirection.Y == 0))
     return 0;
   return 1;
 }
@@ -139,9 +134,9 @@ void trailGeometry(Player* pPlayer, PlayerVisual* pV, TrailMesh* pMesh,
   }
   {
     segment2 s;
-    vec2_Copy(&s.vStart, &pData->trails[pData->trailOffset].vStart);
-    s.vDirection.v[0] = getSegmentEndX(pData, 1) - s.vStart.v[0];
-    s.vDirection.v[1] = getSegmentEndY(pData, 1) - s.vStart.v[1];
+    s.vStart = pData->trails[pData->trailOffset].vStart;
+    s.vDirection = HMM_V2(getSegmentEndX(pData, 1) - s.vStart.X,
+                          getSegmentEndY(pData, 1) - s.vStart.Y);
 
     fSegLength = segment2_Length(&s);
 
@@ -160,9 +155,9 @@ void trailGeometry(Player* pPlayer, PlayerVisual* pV, TrailMesh* pMesh,
 
     fTotalLength += fSegLength;
 
-    vec2_Add(&s.vStart, &s.vStart, &s.vDirection);
-    s.vDirection.v[0] = getSegmentEndX(pData, 0) - s.vStart.v[0];
-    s.vDirection.v[1] = getSegmentEndY(pData, 0) - s.vStart.v[1];
+    s.vStart = HMM_AddV2(s.vStart, s.vDirection);
+    s.vDirection = HMM_V2(getSegmentEndX(pData, 0) - s.vStart.X,
+                          getSegmentEndY(pData, 0) - s.vStart.Y);
     fSegLength = segment2_Length(&s);
 
     storeVertex(pMesh, curVertex, &s, 0, 0, pData->trail_height, fSegLength,
@@ -193,10 +188,9 @@ void bowGeometry(Player* pPlayer, PlayerVisual* pV, TrailMesh* pMesh,
   int vOffset = *pvOffset;
   int iOffset = *piOffset;
 
-  s.vStart.v[0] = getSegmentEndX(pData, 0);
-  s.vStart.v[1] = getSegmentEndY(pData, 0);
-  s.vDirection.v[0] = getSegmentEndX(pData, bdist) - s.vStart.v[0];
-  s.vDirection.v[1] = getSegmentEndY(pData, bdist) - s.vStart.v[1];
+  s.vStart = HMM_V2(getSegmentEndX(pData, 0), getSegmentEndY(pData, 0));
+  s.vDirection = HMM_V2(getSegmentEndX(pData, bdist) - s.vStart.X,
+                        getSegmentEndY(pData, bdist) - s.vStart.Y);
 
   for (i = 0; i < 10; i++) {
     float t = i * 1.0f / 10;

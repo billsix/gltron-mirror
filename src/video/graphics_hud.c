@@ -307,10 +307,10 @@ int c_drawTextFitIntoRect(lua_State* l) {
   scripting_GetFloatResult(&width);
   scripting_GetStringResult(&text);
   // these are ignored!
-  box.vMin.v[0] = 0;
-  box.vMin.v[1] = 0;
-  box.vMax.v[0] = width;
-  box.vMax.v[1] = height;
+  box.vMin.X = 0;
+  box.vMin.Y = 0;
+  box.vMax.X = width;
+  box.vMax.Y = height;
   nebu_Font_RenderToBox((nebu_Font*)resource_Get(gTokenGameFont, eRT_Font),
                         text, strlen(text), &box, flags);
   free(text);

@@ -4,7 +4,7 @@
 #include "nebu_Sound.h"
 #include "nebu_SoundSystem.h"
 #include "nebu_SourceSample.h"
-#include "base/nebu_Vector3.h"
+#include <HandmadeMath.h>
 
 #define USOUND 50
 #define EPSILON 0.1f
@@ -18,13 +18,13 @@ class Source3D : public Source {
     _system = system;
     _source = source;
 
-    _location = Vector3(0, 0, 0);
-    _velocity = Vector3(0, 0, 0);
+    _location = HMM_V3(0, 0, 0);
+    _velocity = HMM_V3(0, 0, 0);
 
     _position = 0;
   };
-  Vector3 _location;
-  Vector3 _velocity;
+  HMM_Vec3 _location;
+  HMM_Vec3 _velocity;
   SourceSample* _source;
 
   virtual int Mix(Uint8* data, int len);
@@ -34,8 +34,8 @@ class Source3D : public Source {
 
  protected:
   Source3D() {
-    _location = Vector3(0, 0, 0);
-    _velocity = Vector3(0, 0, 0);
+    _location = HMM_V3(0, 0, 0);
+    _velocity = HMM_V3(0, 0, 0);
 
     _position = 0;
   };

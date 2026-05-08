@@ -8,7 +8,7 @@
 
 #define BUF_SIZE 120
 
-#include "base/nebu_vector.h"
+#include "base/nebu_geom.h"
 
 typedef struct gltron_Mesh_Material {
   float ambient[4];

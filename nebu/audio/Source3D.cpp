@@ -92,52 +92,57 @@ void fxPan(float pan, float vol, Uint8* buf, int len) {
 namespace Sound {
 
 void Source3D::GetModifiers(float& fPan, float& fVolume, float& fShift) {
-  Vector3& vSourceLocation = _location;
-  Vector3& vSourceVelocity = _velocity;
+  /* HMM port note: gltron's old Vector3 operator* was the dot product;
+     HMM's HMM_Vec3 operator* is component-wise multiply. Every dot here
+     is therefore spelled explicitly with HMM_DotV3. */
+
+  HMM_Vec3 vSourceLocation = _location;
+  HMM_Vec3 vSourceVelocity = _velocity;
 
   Listener listener = _system->GetListener();
-  Vector3& vListenerLocation = listener._location;
-  Vector3 vListenerVelocity = listener._velocity;
-  Vector3 vListenerDirection = listener._direction;
-  Vector3 vListenerUp = listener._up;
+  HMM_Vec3 vListenerLocation = listener._location;
+  HMM_Vec3 vListenerVelocity = listener._velocity;
+  HMM_Vec3 vListenerDirection = listener._direction;
+  HMM_Vec3 vListenerUp = listener._up;
 
-  if ((vSourceLocation - vListenerLocation).Length() < EPSILON) {
+  if (HMM_LenV3(vSourceLocation - vListenerLocation) < EPSILON) {
     fPan = 0;
     fVolume = 1.0f;
     fShift = 1.0f;
     return;
   }
 
-  vListenerDirection.Normalize();
-  vListenerUp.Normalize();
-  Vector3 vListenerLeft = vListenerDirection.Cross(vListenerUp);
-  vListenerLeft.Normalize();
+  vListenerDirection = HMM_NormV3(vListenerDirection);
+  vListenerUp = HMM_NormV3(vListenerUp);
+  HMM_Vec3 vListenerLeft =
+      HMM_NormV3(HMM_Cross(vListenerDirection, vListenerUp));
 
   /* panning */
-  Vector3 vTarget = vSourceLocation - vListenerLocation;
-  Vector3 v1 = vListenerLeft * (vTarget * vListenerLeft);
-  Vector3 v2 = vListenerDirection * (vTarget * vListenerDirection);
-  Vector3 vTargetPlanar = v1 + v2;
+  HMM_Vec3 vTarget = vSourceLocation - vListenerLocation;
+  HMM_Vec3 v1 = vListenerLeft * HMM_DotV3(vTarget, vListenerLeft);
+  HMM_Vec3 v2 = vListenerDirection * HMM_DotV3(vTarget, vListenerDirection);
+  HMM_Vec3 vTargetPlanar = v1 + v2;
 
-  float cosPhi = vTargetPlanar.Normalize() * vListenerDirection;
+  vTargetPlanar = HMM_NormV3(vTargetPlanar);
+  float cosPhi = HMM_DotV3(vTargetPlanar, vListenerDirection);
 
   fPan = 1 - (float)fabs(cosPhi);
 
-  if (vTargetPlanar * vListenerLeft < 0) fPan = -fPan;
+  if (HMM_DotV3(vTargetPlanar, vListenerLeft) < 0) fPan = -fPan;
 
   /* done panning */
 
   /* attenuation */
-  // float fallOff = vTarget.Length2();
-  float fallOff = (float)pow(vTarget.Length(), 1.8f);
+  float vTargetLen = HMM_LenV3(vTarget);
+  float fallOff = (float)pow(vTargetLen, 1.8f);
   fVolume = (fallOff > VOLSCALE_BASE) ? (VOLSCALE_BASE / fallOff) : (1.0f);
 
   /* done attenuation */
 
   /* doppler */
 
-  fShift = (USOUND + (vListenerVelocity * vTarget) / vTarget.Length()) /
-           (USOUND + (vSourceVelocity * vTarget) / vTarget.Length());
+  fShift = (USOUND + HMM_DotV3(vListenerVelocity, vTarget) / vTargetLen) /
+           (USOUND + HMM_DotV3(vSourceVelocity, vTarget) / vTargetLen);
   if (fShift < 0.5) {
     printf("clamping fShift from %.2f to 0.5\n", fShift);
     fShift = 0.5f;

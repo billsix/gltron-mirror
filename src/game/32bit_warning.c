@@ -2,7 +2,7 @@
 #include "base/nebu_system.h"
 #include "input/nebu_input_system.h"
 #include "base/nebu_callbacks.h"
-#include "base/nebu_vector.h"
+#include "base/nebu_geom.h"
 #include "video/nebu_font.h"
 
 #include "video/video.h"
@@ -33,16 +33,16 @@ void _32bit_warning_Display(void) {
     float lineheight = 30.0f;
     int i;
 
-    box.vMin.v[0] = (float)(0 + xoff);
-    box.vMax.v[1] = (float)(gScreen->vp_h - yoff);
-    box.vMax.v[0] = (float)(gScreen->vp_w - 2 * xoff);
-    box.vMin.v[1] = box.vMax.v[1] - 1.2f * lineheight;
+    box.vMin.X = (float)(0 + xoff);
+    box.vMax.Y = (float)(gScreen->vp_h - yoff);
+    box.vMax.X = (float)(gScreen->vp_w - 2 * xoff);
+    box.vMin.Y = box.vMax.Y - 1.2f * lineheight;
 
     for (i = 0; i < 5; i++) {
       glColor3f(1, 1, 1);
       nebu_Font_RenderToBox(ppFont[i], text[i], 0, &box, 0);
-      box.vMin.v[1] -= 1.5f * lineheight;
-      box.vMax.v[1] -= 1.5f * lineheight;
+      box.vMin.Y -= 1.5f * lineheight;
+      box.vMax.Y -= 1.5f * lineheight;
     }
   }
   drawMenu(gScreen);

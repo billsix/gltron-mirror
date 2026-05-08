@@ -1,7 +1,7 @@
 #include "video/video.h"
 #include "video/trail_geometry.h"
 #include "configuration/settings.h"
-#include "base/nebu_vector.h"
+#include "base/nebu_geom.h"
 #include "video/nebu_mesh.h"
 #include "game/game.h"
 #include "game/camera.h"
@@ -19,8 +19,6 @@
 #include "video/nebu_video_system.h"
 #include "video/nebu_renderer_gl.h"
 #include "base/nebu_math.h"
-#include "base/nebu_vector.h"
-#include "base/nebu_matrix.h"
 
 #include "base/nebu_debug_memory.h"
 
@@ -156,7 +154,7 @@ void drawCycleShadow(PlayerVisual* pV, Player* p, int lod, int drawTurn) {
   } else if (p->data->exp_radius == 0) {
     glRotatef(dirangles[p->data->dir], 0.0, 0.0, 1.0);
   }
-  glTranslatef(0, 0, cycle->BBox.vSize.v[2] / 2);
+  glTranslatef(0, 0, cycle->BBox.vSize.Z / 2);
 
   /* render */
 
@@ -206,7 +204,7 @@ void drawCycle(int player, int lod, int drawTurn) {
   if (p->data->exp_radius == 0) {
     glEnable(GL_NORMALIZE);
 
-    glTranslatef(0, 0, cycle->BBox.vSize.v[2] / 2);
+    glTranslatef(0, 0, cycle->BBox.vSize.Z / 2);
 
     /* draw spoke animation */
     if (spoke_time > 140 - (p->data->speed * 10) &&
@@ -263,7 +261,7 @@ void drawCycle(int player, int lod, int drawTurn) {
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glTranslatef(0, 0, cycle->BBox.vSize.v[2] / 2);
+    glTranslatef(0, 0, cycle->BBox.vSize.Z / 2);
 
     if (gSettingsCache.light_cycles) {
       glEnable(GL_LIGHTING);  // enable OpenGL lighting for lightcycles
@@ -284,27 +282,23 @@ int playerVisible(int eyePlayer, int targetPlayer) {
   int lod_level;
   float x, y;
 
-  vec3_Sub(&v1, (vec3*)gPlayerVisuals[eyePlayer].camera.target,
-           (vec3*)gPlayerVisuals[eyePlayer].camera.cam);
-  vec3_Normalize(&v1, &v1);
+  v1 = HMM_NormV3(HMM_SubV3(*(vec3*)gPlayerVisuals[eyePlayer].camera.target,
+                            *(vec3*)gPlayerVisuals[eyePlayer].camera.cam));
 
   getPositionFromData(&x, &y, game->player[targetPlayer].data);
-  tmp.v[0] = x;
-  tmp.v[1] = y;
-  tmp.v[2] = 0;
+  tmp = HMM_V3(x, y, 0);
 
   lod_level =
       (gSettingsCache.lod > MAX_LOD_LEVEL) ? MAX_LOD_LEVEL : gSettingsCache.lod;
 
   /* calculate lod */
-  vec3_Sub(&v2, (vec3*)&gPlayerVisuals[eyePlayer].camera.cam, &tmp);
-  d = vec3_Length(&v2);
+  v2 = HMM_SubV3(*(vec3*)gPlayerVisuals[eyePlayer].camera.cam, tmp);
+  d = HMM_LenV3(v2);
   for (i = 0; i < LC_LOD && d >= lod_dist[lod_level][i]; i++);
   if (i >= LC_LOD) return -1;
 
-  vec3_Sub(&v2, &tmp, (vec3*)gPlayerVisuals[eyePlayer].camera.cam);
-  vec3_Normalize(&v2, &v2);
-  s = vec3_Dot(&v1, &v2);
+  v2 = HMM_NormV3(HMM_SubV3(tmp, *(vec3*)gPlayerVisuals[eyePlayer].camera.cam));
+  s = HMM_DotV3(v1, v2);
   /* maybe that's not exactly correct, but I didn't notice anything */
   d = cosf((gSettingsCache.fov / 2) * 2 * PI / 360.0);
   /*
@@ -463,19 +457,17 @@ void drawCam(int player) {
   glLoadIdentity();
 
   {
-    vec3 vLookAt;
-    vec3 vTarget;
-    matrix matRotate;
-
-    vec3_Sub(&vLookAt, (vec3*)gPlayerVisuals[player].camera.target,
-             (vec3*)gPlayerVisuals[player].camera.cam);
-    vec3_Normalize(&vLookAt, &vLookAt);
-    matrixRotationAxis(&matRotate,
-                       90.0f * (float)gPlayerVisuals[player].camera.bIsGlancing,
-                       (vec3*)up);
-    vec3_Transform(&vLookAt, &vLookAt, &matRotate);
-    vec3_Add(&vTarget, (vec3*)gPlayerVisuals[player].camera.cam, &vLookAt);
-    doLookAt(gPlayerVisuals[player].camera.cam, (float*)&vTarget, up);
+    vec3 vLookAt = HMM_NormV3(
+        HMM_SubV3(*(vec3*)gPlayerVisuals[player].camera.target,
+                  *(vec3*)gPlayerVisuals[player].camera.cam));
+    matrix matRotate = HMM_Rotate_RH(
+        90.0f * (float)gPlayerVisuals[player].camera.bIsGlancing,
+        *(vec3*)up);
+    /* upper-3x3 transform: w=0 ignores the translation column */
+    vLookAt = HMM_MulM4V4(matRotate, HMM_V4V(vLookAt, 0)).XYZ;
+    vec3 vTarget =
+        HMM_AddV3(*(vec3*)gPlayerVisuals[player].camera.cam, vLookAt);
+    doLookAt(gPlayerVisuals[player].camera.cam, vTarget.Elements, up);
   }
 
   glDisable(GL_LIGHTING);  // initial config at frame start

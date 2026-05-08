@@ -1,4 +1,12 @@
 #include "audio/sound_glue.h"
+
+/* HandmadeMath.h has C++-only overloaded functions; if it's first pulled in
+ * from inside an `extern "C"` block (via the C headers below transitively
+ * including nebu_geom.h), those overloads collide because C has no
+ * overloading. Include it here under C++ linkage so its overloads register
+ * first; the include guard then no-ops the later transitive inclusion. */
+#include <HandmadeMath.h>
+
 extern "C" {
 #include "game/game.h"
 #include "video/recognizer.h"
@@ -75,7 +83,7 @@ void Audio_Idle(void) {
       p3d = players[i];
       p = game->player + i;
       getPositionFromIndex(&x, &y, i);
-      p3d->_location = Vector3(x, y, 0);
+      p3d->_location = HMM_V3(x, y, 0);
       float V = p->data->speed;
 
       int dt = game2->time.current - p->data->turn_time;
@@ -84,10 +92,10 @@ void Audio_Idle(void) {
 
         float vx = (1 - t) * dirsX[p->data->last_dir] + t * dirsX[p->data->dir];
         float vy = (1 - t) * dirsY[p->data->last_dir] + t * dirsY[p->data->dir];
-        p3d->_velocity = Vector3(V * vx, V * vy, 0);
+        p3d->_velocity = HMM_V3(V * vx, V * vy, 0);
       } else {
         p3d->_velocity =
-            Vector3(V * dirsX[p->data->dir], V * dirsY[p->data->dir], 0);
+            HMM_V3(V * dirsX[p->data->dir], V * dirsY[p->data->dir], 0);
       }
       if (i == 0) {
         if (p->data->boost_enabled) {
@@ -121,8 +129,8 @@ void Audio_Idle(void) {
       vec2 p, v;
       getRecognizerPositionVelocity(&p, &v);
       // recognizerEngine->_location = Vector3(p.x, p.y, RECOGNIZER_HEIGHT);
-      recognizerEngine->_location = Vector3(p.v[0], p.v[1], 10.0f);
-      recognizerEngine->_velocity = Vector3(v.v[0], v.v[1], 0);
+      recognizerEngine->_location = HMM_V3(p.X, p.Y, 10.0f);
+      recognizerEngine->_velocity = HMM_V3(v.X, v.Y, 0);
     }
   }
 
@@ -136,16 +144,20 @@ void Audio_Idle(void) {
 
   Sound::Listener& listener = sound->GetListener();
 
-  listener._location = Vector3(gPlayerVisuals[0].camera.cam);
-  Vector3 v1 = Vector3(gPlayerVisuals[0].camera.target);
-  Vector3 v2 = Vector3(gPlayerVisuals[0].camera.cam);
+  /* camera.cam and camera.target are float[3]; HMM has no array-ctor so spell
+     out the components. */
+  const float* cam = gPlayerVisuals[0].camera.cam;
+  const float* tgt = gPlayerVisuals[0].camera.target;
+  listener._location = HMM_V3(cam[0], cam[1], cam[2]);
+  HMM_Vec3 v1 = HMM_V3(tgt[0], tgt[1], tgt[2]);
+  HMM_Vec3 v2 = HMM_V3(cam[0], cam[1], cam[2]);
   listener._direction = v1 - v2;
 
   // listener._location = players[0]->_location;
   // listener._direction = players[0]->_velocity;
   listener._velocity = players[0]->_velocity;
 
-  listener._up = Vector3(0, 0, 1);
+  listener._up = HMM_V3(0, 0, 1);
 
   sound->SetMixMusic(gSettingsCache.playMusic);
   sound->SetMixFX(gSettingsCache.playEffects);

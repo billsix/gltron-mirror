@@ -80,18 +80,13 @@ static void drawSpires(float radius) {
   glBegin(GL_TRIANGLES);
 
   for (i = 0; i < NUM_SPIRES; i++) {
-    vec3_Cross(&right, vectors + i, &zUnit);
-    vec3_Normalize(&right, &right);
-    vec3_Scale(&right, &right, SPIRE_WIDTH);
-
-    vec3_Cross(&left, &zUnit, vectors + i);
-    vec3_Normalize(&left, &left);
-    vec3_Scale(&left, &left, SPIRE_WIDTH);
+    right = HMM_MulV3F(HMM_NormV3(HMM_Cross(vectors[i], zUnit)), SPIRE_WIDTH);
+    left = HMM_MulV3F(HMM_NormV3(HMM_Cross(zUnit, vectors[i])), SPIRE_WIDTH);
 
     glColor4f(1, 1, 1, 0.0);
-    glVertex3fv(right.v);
-    glVertex3f(radius * vectors[i].v[0], radius * vectors[i].v[1], 0.0);
-    glVertex3fv(left.v);
+    glVertex3fv(right.Elements);
+    glVertex3f(radius * vectors[i].X, radius * vectors[i].Y, 0.0);
+    glVertex3fv(left.Elements);
   }
 
   glEnd();

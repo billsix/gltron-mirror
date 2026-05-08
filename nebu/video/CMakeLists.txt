@@ -1,5 +1,5 @@
 add_library(nebu_video STATIC
-  2d.c camera.c console.c font.c mesh.c pixels.c
+  2d.c console.c font.c mesh.c pixels.c
   video_system.c video_utility.c)
 target_include_directories(nebu_video PRIVATE ${CMAKE_SOURCE_DIR})
 target_link_libraries(nebu_video

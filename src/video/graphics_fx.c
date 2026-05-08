@@ -31,11 +31,10 @@ void drawGlow(Camera* pCam, Player* pTarget, PlayerVisual* pV, Visual* d,
   glLoadMatrixf(mat);
 
   {
-    vec3 v;
-    v.v[0] = x - pCam->cam[0];
-    v.v[1] = y - pCam->cam[1];
-    v.v[2] = 0 - pCam->cam[2];
-    dist = vec3_Length(&v);
+    vec3 v = HMM_V3(x - pCam->cam[0],
+                    y - pCam->cam[1],
+                    0 - pCam->cam[2]);
+    dist = HMM_LenV3(v);
   }
   {
     const float fMin = 30;

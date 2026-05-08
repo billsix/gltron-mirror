@@ -33,8 +33,8 @@ static float dy(void) {
 }
 
 float getRecognizerAngle(vec2* velocity) {
-  float dxval = velocity->v[0];
-  float dyval = velocity->v[0];
+  float dxval = velocity->X;
+  float dyval = velocity->X;
 
   float phi = acosf(dxval / sqrtf(dxval * dxval + dyval * dyval));
   if (dyval < 0) {
@@ -45,14 +45,14 @@ float getRecognizerAngle(vec2* velocity) {
 
 void getRecognizerPositionVelocity(vec2* p, vec2* v) {
   float max = ((gltron_Mesh*)resource_Get(gTokenRecognizer, eRT_GLtronTriMesh))
-                  ->BBox.vSize.v[0] *
+                  ->BBox.vSize.X *
               rec_scale_factor;
   float rec_boundry = box2_Diameter(&game2->level->boundingBox) - max;
   box2_Center(p, &game2->level->boundingBox);
-  p->v[0] += x() * rec_boundry / 2.0f;
-  p->v[1] += y() * rec_boundry / 2.0f;
-  v->v[0] = dx() * rec_boundry / 100.f;
-  v->v[1] = dy() * rec_boundry / 100.f;
+  p->X += x() * rec_boundry / 2.0f;
+  p->Y += y() * rec_boundry / 2.0f;
+  v->X = dx() * rec_boundry / 100.f;
+  v->Y = dy() * rec_boundry / 100.f;
 }
 
 void drawRecognizerShadow(void) {
@@ -68,7 +68,7 @@ void drawRecognizerShadow(void) {
 
   glPushMatrix();
   glMultMatrixf(shadow_matrix);
-  glTranslatef(p.v[0], p.v[1], RECOGNIZER_HEIGHT);
+  glTranslatef(p.X, p.Y, RECOGNIZER_HEIGHT);
   glRotatef(dirx, 0, 0, 1); /* up */
   glScalef(rec_scale_factor, rec_scale_factor, rec_scale_factor);
   glEnable(GL_NORMALIZE);
@@ -95,7 +95,7 @@ void drawRecognizer(void) {
   getRecognizerPositionVelocity(&p, &v);
   dirx = getRecognizerAngle(&v);
 
-  glTranslatef(p.v[0], p.v[1], RECOGNIZER_HEIGHT);
+  glTranslatef(p.X, p.Y, RECOGNIZER_HEIGHT);
   glRotatef(dirx, 0, 0, 1); /* up */
 
   glScalef(rec_scale_factor, rec_scale_factor, rec_scale_factor);

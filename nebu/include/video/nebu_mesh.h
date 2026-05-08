@@ -1,7 +1,7 @@
 #ifndef NEBU_MESH_H
 #define NEBU_MESH_H
 
-#include "base/nebu_vector.h"
+#include "base/nebu_geom.h"
 enum {
   NEBU_MESH_POSITION = 0x0001,
   NEBU_MESH_NORMAL = 0x0002,

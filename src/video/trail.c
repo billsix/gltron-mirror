@@ -22,14 +22,11 @@ static float normal2[] = {0.0, 1.0, 0.0};
    the z component is ignored
  */
 float getDist(segment2* s, float* eye) {
-  vec2 n, tmp;
-
-  n.v[0] = s->vStart.v[0] + s->vDirection.v[1];
-  n.v[1] = s->vStart.v[1] - s->vDirection.v[0];
-  tmp.v[0] = eye[0] - s->vStart.v[0];
-  tmp.v[1] = eye[1] - s->vStart.v[1];
-  if (n.v[0] == n.v[1] == 0) return vec2_Length(&tmp);
-  return (float)fabs(vec2_Dot(&n, &tmp) / vec2_Length(&n));
+  vec2 n = HMM_V2(s->vStart.X + s->vDirection.Y,
+                  s->vStart.Y - s->vDirection.X);
+  vec2 tmp = HMM_V2(eye[0] - s->vStart.X, eye[1] - s->vStart.Y);
+  if (n.X == n.Y == 0) return HMM_LenV2(tmp);
+  return (float)fabs(HMM_DotV2(n, tmp) / HMM_LenV2(n));
 }
 
 /*
@@ -43,11 +40,11 @@ float getSegmentEndX(Data* data, int dist) {
   float tlength, blength;
   segment2* s = data->trails + data->trailOffset;
 
-  if (dirsX[data->dir] == 0) return s->vStart.v[0] + s->vDirection.v[0];
+  if (dirsX[data->dir] == 0) return s->vStart.X + s->vDirection.X;
 
   tlength = segment2_Length(s);
   blength = (tlength < 2 * BOW_LENGTH) ? tlength / 2 : BOW_LENGTH;
-  return s->vStart.v[0] + s->vDirection.v[0] -
+  return s->vStart.X + s->vDirection.X -
          dists[dist] * blength * dirsX[data->dir];
 }
 
@@ -55,11 +52,11 @@ float getSegmentEndY(Data* data, int dist) {
   float tlength, blength;
   segment2* s = data->trails + data->trailOffset;
 
-  if (dirsY[data->dir] == 0) return s->vStart.v[1] + s->vDirection.v[1];
+  if (dirsY[data->dir] == 0) return s->vStart.Y + s->vDirection.Y;
 
   tlength = segment2_Length(s);
   blength = (tlength < 2 * BOW_LENGTH) ? tlength / 2 : BOW_LENGTH;
-  return s->vStart.v[1] + s->vDirection.v[1] -
+  return s->vStart.Y + s->vDirection.Y -
          dists[dist] * blength * dirsY[data->dir];
 }
 
@@ -122,14 +119,14 @@ void drawTrailLines(Player* p, PlayerVisual* pV) {
     // trail_top[3] = alpha;
     glColor4fv(trail_top);
 
-    if (s->vDirection.v[1] == 0)
+    if (s->vDirection.Y == 0)
       normal = normal1;
     else
       normal = normal2;
     glNormal3fv(normal);
-    glVertex3f(s->vStart.v[0], s->vStart.v[1], height);
-    glVertex3f(s->vStart.v[0] + s->vDirection.v[0],
-               s->vStart.v[1] + s->vDirection.v[1], height);
+    glVertex3f(s->vStart.X, s->vStart.Y, height);
+    glVertex3f(s->vStart.X + s->vDirection.X,
+               s->vStart.Y + s->vDirection.Y, height);
     s++;
   }
   glEnd();
@@ -144,7 +141,7 @@ void drawTrailLines(Player* p, PlayerVisual* pV) {
 
   glBegin(GL_LINES);
 
-  glVertex3f(s->vStart.v[0], s->vStart.v[1], height);
+  glVertex3f(s->vStart.X, s->vStart.Y, height);
   glVertex3f(getSegmentEndX(data, 0), getSegmentEndY(data, 0), height);
 
   glEnd();

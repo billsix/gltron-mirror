@@ -26,11 +26,10 @@ void draw2D(nebu_Rect* pRect) {
   glColor3f(1, 1, 1);
   glBegin(GL_LINES);
   for (i = 0; i < game2->level->nBoundaries; i++) {
-    vec2 v;
     segment2* s = game2->level->boundaries + i;
-    vec2_Add(&v, &s->vStart, &s->vDirection);
-    glVertex2fv(s->vStart.v);
-    glVertex2fv(v.v);
+    vec2 v = HMM_AddV2(s->vStart, s->vDirection);
+    glVertex2fv(s->vStart.Elements);
+    glVertex2fv(v.Elements);
   }
   glEnd();
 
@@ -69,17 +68,17 @@ void draw2D(nebu_Rect* pRect) {
     glBegin(GL_LINES);
     for (trail = p->data->trails;
          trail != p->data->trails + p->data->trailOffset; trail++) {
-      glVertex2f(trail->vStart.v[0], trail->vStart.v[1]);
-      glVertex2f(trail->vStart.v[0] + trail->vDirection.v[0],
-                 trail->vStart.v[1] + trail->vDirection.v[1]);
+      glVertex2f(trail->vStart.X, trail->vStart.Y);
+      glVertex2f(trail->vStart.X + trail->vDirection.X,
+                 trail->vStart.Y + trail->vDirection.Y);
     }
     if (trail != p->data->trails) {
       trail--;
-      glVertex2f(trail->vStart.v[0] + trail->vDirection.v[0],
-                 trail->vStart.v[1] + trail->vDirection.v[1]);
+      glVertex2f(trail->vStart.X + trail->vDirection.X,
+                 trail->vStart.Y + trail->vDirection.Y);
       glVertex2f(floorf(x), floorf(y));
     } else {
-      glVertex2f(trail->vStart.v[0], trail->vStart.v[1]);
+      glVertex2f(trail->vStart.X, trail->vStart.Y);
       glVertex2f(floorf(x), floorf(y));
     }
 

@@ -5,6 +5,7 @@
 #include "video/nebu_video_utility.h"
 #include "video/nebu_renderer_gl.h"
 #include "base/nebu_math.h"
+#include "base/nebu_geom.h"
 
 #include <string.h>
 
@@ -22,35 +23,23 @@ void doPerspective(float fov, float ratio, float znear, float zfar) {
 }
 
 void doLookAt(float* cam, float* target, float* up) {
-  float m[16];
-  vec3 x, y, z;
+  vec3 vCam = HMM_V3(cam[0], cam[1], cam[2]);
+  vec3 vTarget = HMM_V3(target[0], target[1], target[2]);
+  vec3 vUp = HMM_V3(up[0], up[1], up[2]);
 
-  vec3_Sub(&z, (vec3*)cam, (vec3*)target);
-  vec3_Normalize(&z, &z);
-  vec3_Cross(&x, (vec3*)up, &z);
-  vec3_Normalize(&x, &x);
-  vec3_Cross(&y, &z, &x);
-  vec3_Normalize(&y, &y);
+  vec3 z = HMM_NormV3(HMM_SubV3(vCam, vTarget));
+  vec3 x = HMM_NormV3(HMM_Cross(vUp, z));
+  vec3 y = HMM_NormV3(HMM_Cross(z, x));
 
-#define M(row, col) m[col * 4 + row]
-  M(0, 0) = x.v[0];
-  M(0, 1) = x.v[1];
-  M(0, 2) = x.v[2];
-  M(0, 3) = 0.0;
-  M(1, 0) = y.v[0];
-  M(1, 1) = y.v[1];
-  M(1, 2) = y.v[2];
-  M(1, 3) = 0.0;
-  M(2, 0) = z.v[0];
-  M(2, 1) = z.v[1];
-  M(2, 2) = z.v[2];
-  M(2, 3) = 0.0;
-  M(3, 0) = 0.0;
-  M(3, 1) = 0.0;
-  M(3, 2) = 0.0;
-  M(3, 3) = 1.0;
-#undef M
-  glMultMatrixf(m);
+  /* The view rotation has the basis vectors as ROWS, not columns — that's
+     the world-to-camera inverse rotation. HMM_Mat4 is column-major, so
+     each Column[c] holds the c-th component of every basis vector. */
+  matrix m;
+  m.Columns[0] = HMM_V4(x.X, y.X, z.X, 0);
+  m.Columns[1] = HMM_V4(x.Y, y.Y, z.Y, 0);
+  m.Columns[2] = HMM_V4(x.Z, y.Z, z.Z, 0);
+  m.Columns[3] = HMM_V4(0, 0, 0, 1);
+  glMultMatrixf(m.Elements[0]);
 
   /* Translate Eye to Origin */
   glTranslatef(-cam[0], -cam[1], -cam[2]);

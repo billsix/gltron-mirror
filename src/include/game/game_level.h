@@ -1,7 +1,7 @@
 #ifndef GAME_LEVEL_H
 #define GAME_LEVEL_H
 
-#include "base/nebu_vector.h"
+#include "base/nebu_geom.h"
 
 typedef struct game_spawnpoint {
   vec2 v;

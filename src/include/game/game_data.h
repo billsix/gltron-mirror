@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#include "base/nebu_vector.h"
+#include "base/nebu_geom.h"
 #include "base/nebu_util.h"
 #include "base/nebu_system.h"
 #include "base/nebu_types.h"
