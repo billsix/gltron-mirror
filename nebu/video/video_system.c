@@ -190,3 +190,6 @@ void nebu_Video_CheckErrors(const char* where) {
   GLenum error = glGetError();
   if (error != GL_NO_ERROR) printf("[glError: %s] - %d\n", where, error);
 }
+
+SDL_Window* nebu_Video_GetWindow(void) { return gWindow; }
+SDL_GLContext nebu_Video_GetContext(void) { return gContext; }

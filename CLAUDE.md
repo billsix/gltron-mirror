@@ -50,8 +50,8 @@ Index:
 - [AI freezes on second round](docs/plans/ai-freezes-on-second-round.md) — **fixed**, see plan for explanation.
 - [Port build system from autotools to CMake](docs/plans/cmake-port.md) — **draft**, awaiting answers to open questions.
 - [AppImage build target](docs/plans/appimage-target.md) — **shipped (host-dependent)**; future work to make the AppImage self-contained is captured in the plan.
-- [SDL window architecture cleanup](docs/plans/sdl-window-architecture.md) — **not started**, surface at session start and ask Bill before beginning.
-- [SDL2 → SDL3 port](docs/plans/sdl3-port.md) — **not started**, gated on the window-architecture plan; ask Bill before beginning.
+- [SDL window architecture cleanup](docs/plans/sdl-window-architecture.md) — **shipped** (Option A, accessors).
+- [SDL2 → SDL3 port](docs/plans/sdl3-port.md) — **not started**, ungated now; ask Bill before beginning.
 - [OpenGL fixed-function → 3.3 core profile port](docs/plans/opengl-core-profile-port.md) — **not started**, surface at session start and ask Bill before beginning.
 - [Modernization survey](docs/plans/modernization-survey.md) — **survey doc** (2026-05-08); inventory of antiquated libraries/subsystems with a recommended sequence. Read before picking any "modernize X" task.
 

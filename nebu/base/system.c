@@ -1,4 +1,5 @@
 #include "base/nebu_system.h"
+#include "video/nebu_video_system.h"
 
 #include "SDL.h"
 #include <stdio.h>
@@ -101,9 +102,9 @@ void nebu_System_SwapBuffers() {
   fps_dt = now - fps_last;
   fps_last = now;
   nebu_Time_SetCurrentFrameTime(now);
-  SDL_Window* current_win = SDL_GL_GetCurrentWindow();
-  if (current_win) {
-    SDL_GL_SwapWindow(current_win);
+  SDL_Window* window = nebu_Video_GetWindow();
+  if (window) {
+    SDL_GL_SwapWindow(window);
   }
 }
 

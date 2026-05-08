@@ -1,6 +1,8 @@
 #ifndef NEBU_VIDEO_SYSTEM_H
 #define NEBU_VIDEO_SYSTEM_H
 
+#include "SDL.h"
+
 #define SYSTEM_RGB 1
 #define SYSTEM_DOUBLE 2
 #define SYSTEM_DEPTH 4
@@ -24,5 +26,9 @@ void nebu_Video_GetDimension(int* x, int* y);
 
 void nebu_Video_WarpPointer(int x, int y);
 void nebu_Video_CheckErrors(const char* where);
+
+// Use these instead of SDL_GL_GetCurrentWindow / SDL_GL_GetCurrentContext.
+SDL_Window*   nebu_Video_GetWindow(void);
+SDL_GLContext nebu_Video_GetContext(void);
 
 #endif

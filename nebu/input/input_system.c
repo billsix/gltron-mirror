@@ -62,16 +62,16 @@ void nebu_Input_Init(void) {
 }
 
 void nebu_Input_Grab(void) {
-  SDL_Window* current_win = SDL_GL_GetCurrentWindow();
-  if (current_win) {
-    SDL_SetWindowGrab(current_win, SDL_TRUE);
+  SDL_Window* window = nebu_Video_GetWindow();
+  if (window) {
+    SDL_SetWindowGrab(window, SDL_TRUE);
   }
 }
 
 void nebu_Input_Ungrab(void) {
-  SDL_Window* current_win = SDL_GL_GetCurrentWindow();
-  if (current_win) {
-    SDL_SetWindowGrab(current_win, SDL_FALSE);
+  SDL_Window* window = nebu_Video_GetWindow();
+  if (window) {
+    SDL_SetWindowGrab(window, SDL_FALSE);
   }
 }
 

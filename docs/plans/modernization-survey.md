@@ -26,6 +26,7 @@ Ordered roughly by ratio of (value × confidence) to (risk × effort):
 4. **SDL window architecture cleanup** — already planned; surfaces the global
    gWindow before doing anything else SDL- or GL-context-shaped.
    See [sdl-window-architecture.md](sdl-window-architecture.md).
+   **DONE 2026-05-08 (Option A — accessors).**
 5. **Lua 5.0.2 → Lua 5.4 (system package)** — biggest single modernization win.
    Drops the entire vendored `lua5/` tree, removes deprecated API calls, and
    gives users a current sandbox/GC. ~50 lines of glue code to update.

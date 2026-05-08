@@ -1,7 +1,13 @@
 # Re-think how the SDL2 window is plumbed through the codebase
 
-**Status:** not started — Bill flagged it 2026-04-28 and wants to discuss
-the approach before any code moves.
+**Status:** **done 2026-05-08** (Option A from the survey discussion).
+Single-window forever; replaced the three `SDL_GL_GetCurrentWindow()`
+queries with `nebu_Video_GetWindow()` accessors. The static `gWindow` /
+`gContext` in `nebu/video/video_system.c` are still there but are now
+genuinely encapsulated — the only outside path is the accessor. If
+multi-window or a level-editor preview ever shows up, the path from
+A → B (struct threaded through) is mechanical: turn the static into a
+struct field, change the accessor signature.
 
 ## Background
 
