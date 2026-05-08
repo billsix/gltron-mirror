@@ -26,9 +26,7 @@ target_link_libraries(gltron PRIVATE
   nebu_scripting
   nebu_filesystem
   nebu_base
-  lualib
   lua
-  lib3ds
   OpenGL::GL
   GLEW::GLEW
   PNG::PNG

@@ -12,7 +12,7 @@ introduce a modern renderer abstraction unless explicitly asked.**
 - Runs on **Linux** and **Windows**. macOS builds and runs as of `21113968`,
   with a known hack around SDL2 sound (see commit message).
 - Audio uses **SDL2_sound**.
-- Scripting embedded via **Lua 5** (`lua5/`).
+- Scripting embedded via **system Lua 5.4** (linked via `find_package(Lua)`).
 - Build system: **CMake ≥ 3.21** (Ninja recommended). See `INSTALL` for the
   full dep list and option flags. Out-of-tree only.
 - A Fedora-based **podman** dev container is provided (`Makefile.docker`,
@@ -32,7 +32,7 @@ introduce a modern renderer abstraction unless explicitly asked.**
 - `src/include/` — public headers; game data structs live in
   `src/include/game/game_data.h`.
 - `nebu/` — small in-tree engine library (Nebu).
-- `lib3ds/`, `lua5/` — vendored deps.
+- (vendored deps fully removed; Lua and lib3ds were dropped in favour of system packages / dead-code excision)
 - `data/`, `art/`, `levels/`, `music/`, `sounds/` — assets.
 - `scripts/` — Lua game scripts.
 
@@ -53,6 +53,7 @@ Index:
 - [SDL window architecture cleanup](docs/plans/sdl-window-architecture.md) — **not started**, surface at session start and ask Bill before beginning.
 - [SDL2 → SDL3 port](docs/plans/sdl3-port.md) — **not started**, gated on the window-architecture plan; ask Bill before beginning.
 - [OpenGL fixed-function → 3.3 core profile port](docs/plans/opengl-core-profile-port.md) — **not started**, surface at session start and ask Bill before beginning.
+- [Modernization survey](docs/plans/modernization-survey.md) — **survey doc** (2026-05-08); inventory of antiquated libraries/subsystems with a recommended sequence. Read before picking any "modernize X" task.
 
 When starting a new task, add a one-line entry here pointing at a
 `docs/plans/<slug>.md` file, and keep the plan file updated with status,

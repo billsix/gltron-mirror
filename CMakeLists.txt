@@ -38,6 +38,13 @@ find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(PNG REQUIRED)
 find_package(ZLIB REQUIRED)
+find_package(Lua 5.4 REQUIRED)
+
+# CMake's FindLua exposes variables, not a target. Wrap them so existing
+# `target_link_libraries(... lua)` lines keep working.
+add_library(lua INTERFACE)
+target_include_directories(lua INTERFACE ${LUA_INCLUDE_DIR})
+target_link_libraries(lua INTERFACE ${LUA_LIBRARIES})
 
 if(GLTRON_NETWORK)
   pkg_check_modules(SDL2_NET REQUIRED IMPORTED_TARGET SDL2_net)
@@ -66,8 +73,6 @@ if(GLTRON_WARN)
     $<$<COMPILE_LANGUAGE:C,CXX>:-Wall -Werror>)
 endif()
 
-add_subdirectory(lib3ds)
-add_subdirectory(lua5)
 add_subdirectory(nebu)
 add_subdirectory(src)
 

@@ -16,11 +16,8 @@ lua_State* L;
 extern void init_c_interface(lua_State* L);
 
 void scripting_Init() {
-  L = lua_open();
-  luaopen_base(L);
-  luaopen_table(L);
-  luaopen_string(L);
-  luaopen_io(L);
+  L = luaL_newstate();
+  luaL_openlibs(L);
 
   // init_c_interface(L);
 }
@@ -125,6 +122,7 @@ int scripting_GetFloatResult(float* f) {
     return 0;
   } else {
     showStack();
+    lua_pop(L, 1); /* don't leak the bad value back to the caller */
     return 1;
   }
 }
@@ -136,6 +134,7 @@ int scripting_GetIntegerResult(int* i) {
     return 0;
   } else {
     showStack();
+    lua_pop(L, 1); /* don't leak the bad value back to the caller */
     return 1;
   }
 }
@@ -161,7 +160,7 @@ int scripting_GetStringResult(char** s) {
   if (lua_isstring(L, -1)) {
     int size;
     status = 0;
-    size = lua_strlen(L, -1) + 1;
+    size = lua_rawlen(L, -1) + 1;
     *s = malloc(size);
     memcpy(*s, lua_tostring(L, -1), size);
     /* printf("allocated string '%s' of size %d\n", *s, size); */
@@ -177,7 +176,7 @@ int scripting_CopyStringResult(char* s, int len) {
   if (lua_isstring(L, -1)) {
     int size, copy;
     status = 0;
-    size = lua_strlen(L, -1) + 1;
+    size = lua_rawlen(L, -1) + 1;
     if (size > len) {
       copy = len;
       status = 2;
@@ -192,7 +191,7 @@ int scripting_CopyStringResult(char* s, int len) {
 }
 
 int scripting_GetArraySize(int* i) {
-  *i = luaL_getn(L, -1);
+  *i = (int)lua_rawlen(L, -1);
   return 0;
 }
 
@@ -208,11 +207,11 @@ int scripting_Pop(void) {
   return 0;
 }
 
-int scripting_RunFile(const char* name) { return lua_dofile(L, name); }
+int scripting_RunFile(const char* name) { return luaL_dofile(L, name); }
 
 int scripting_Run(const char* command) {
   /* fprintf(stderr, "[command] %s\n", command); */
-  return lua_dostring(L, command);
+  return luaL_dostring(L, command);
 }
 
 int scripting_RunFormat(const char* format, ...) {
@@ -224,7 +223,7 @@ int scripting_RunFormat(const char* format, ...) {
   return scripting_Run(buf);
 }
 
-void scripting_RunGC() { lua_setgcthreshold(L, 0); }
+void scripting_RunGC() { lua_gc(L, LUA_GCSTEP, 0); }
 
 void Scripting_Idle() { scripting_RunGC(); }
 

@@ -29,6 +29,7 @@ RUN --mount=type=cache,target=/var/cache/libdnf5 \
                    libpng \
                    libpng-devel \
                    libvorbis-devel \
+                   lua-devel \
                    lldb  \
                    man  \
                    man-db  \
@@ -81,11 +82,8 @@ COPY data /gltron/data/
 COPY docs /gltron/docs/
 COPY INSTALL /gltron/INSTALL
 COPY levels /gltron/levels/
-COPY lib3ds /gltron/lib3ds/
-COPY lua5 /gltron/lua5/
 COPY music /gltron/music/
 COPY nebu /gltron/nebu/
-COPY nebutest /gltron/nebutest/
 COPY README /gltron/README
 COPY resource /gltron/resource/
 COPY scripts /gltron/scripts/
