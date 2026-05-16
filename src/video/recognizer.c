@@ -34,7 +34,7 @@ static float dy(void) {
 
 float getRecognizerAngle(vec2* velocity) {
   float dxval = velocity->X;
-  float dyval = velocity->X;
+  float dyval = velocity->Y;
 
   float phi = acosf(dxval / sqrtf(dxval * dxval + dyval * dyval));
   if (dyval < 0) {
