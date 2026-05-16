@@ -22,10 +22,9 @@ static float normal2[] = {0.0, 1.0, 0.0};
    the z component is ignored
  */
 float getDist(segment2* s, float* eye) {
-  vec2 n = HMM_V2(s->vStart.X + s->vDirection.Y,
-                  s->vStart.Y - s->vDirection.X);
+  vec2 n = HMM_V2(s->vDirection.Y, -s->vDirection.X);
   vec2 tmp = HMM_V2(eye[0] - s->vStart.X, eye[1] - s->vStart.Y);
-  if (n.X == n.Y == 0) return HMM_LenV2(tmp);
+  if (n.X == 0 && n.Y == 0) return HMM_LenV2(tmp);
   return (float)fabs(HMM_DotV2(n, tmp) / HMM_LenV2(n));
 }
 

@@ -461,7 +461,7 @@ void drawCam(int player) {
         HMM_SubV3(*(vec3*)gPlayerVisuals[player].camera.target,
                   *(vec3*)gPlayerVisuals[player].camera.cam));
     matrix matRotate = HMM_Rotate_RH(
-        90.0f * (float)gPlayerVisuals[player].camera.bIsGlancing,
+        HMM_AngleDeg(90.0f * (float)gPlayerVisuals[player].camera.bIsGlancing),
         *(vec3*)up);
     /* upper-3x3 transform: w=0 ignores the translation column */
     vLookAt = HMM_MulM4V4(matRotate, HMM_V4V(vLookAt, 0)).XYZ;
