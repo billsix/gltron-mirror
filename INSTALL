@@ -2,11 +2,11 @@ GLtron - Installation from source
 
 Requirements:
 
-  - A C99 / C++ compiler (gcc, clang)
+  - A C11 / C++ compiler (gcc, clang)
   - CMake >= 3.21 and a build tool (Ninja or GNU Make)
   - pkg-config
-  - SDL2 (libsdl2-dev / SDL2-devel)
-  - SDL2_sound (SDL2_sound-devel)
+  - SDL3 >= 3.2 (libsdl3-dev / SDL3-devel)
+  - SDL3_sound (SDL3_sound-devel)
   - OpenGL (libgl1-mesa-dev or vendor equivalent; the macOS framework is
     used automatically when building on macOS)
   - GLEW (libglew-dev / glew-devel)
@@ -15,7 +15,7 @@ Requirements:
 
 Optional:
 
-  - SDL2_net (only when building with -DGLTRON_NETWORK=ON)
+  - SDL3_net (only when building with -DGLTRON_NETWORK=ON)
 
 
 Building:
@@ -40,7 +40,7 @@ CMake options:
   -DCMAKE_BUILD_TYPE=Debug|Release|RelWithDebInfo|MinSizeRel
                                        (default: Release)
   -DGLTRON_WARN=ON                     enable -Wall -Werror (default: OFF)
-  -DGLTRON_NETWORK=ON                  experimental SDL2_net support
+  -DGLTRON_NETWORK=ON                  experimental SDL3_net support
                                        (default: OFF)
   -DGLTRON_SNAPSHOT_DIR=PATH           where screenshots are saved
                                        (default: ~)

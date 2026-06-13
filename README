@@ -1,28 +1,47 @@
-gltron, a 3d lightcycle game using OpenGL 
-Copyright (C) 1999 Andreas Umbach <marvin@dataway.ch>
+# gltron
 
-Soundtrack:
-gltron.it - 'Revenge of Cats' is copyright by Peter Hajba <skaven@remedy.fi>
+A 3D lightcycle game, originally by Andreas Umbach (1999). This fork, maintained
+by Bill Six (billsix@gmail.com), keeps gltron running on modern systems and uses
+it as a **teaching artifact for graphics concepts** — the fixed-function OpenGL
+pipeline is preserved on purpose.
 
-The latest manual & information can be found at
-http://www.gltron.org/
+## Status
 
-Installation from source:
+- Ported SDL 1.2 → SDL2 → **SDL3**; audio via **SDL3_sound**; scripting via system
+  **Lua 5.4**; linear algebra via vendored **HandmadeMath**. Written in **C11**.
+- Runs on Linux and Windows; macOS builds, but the SDL3 path hasn't been retested.
+- Build system: **CMake ≥ 3.21** (Ninja recommended), out-of-tree only.
 
-see the INSTALL file in this archive
+## Building
 
-License:
+Dependencies: SDL3 (≥ 3.2), SDL3_sound, OpenGL, GLEW, libpng, zlib, Lua 5.4.
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
+```sh
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+```
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+(See `INSTALL` for the full dependency and option list.)
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+### Containerized dev build (Fedora / podman)
+
+```sh
+make -f Makefile.docker image    # build the image; compiles gltron + runs ctest
+make -f Makefile.docker shell    # dev shell (X11/Wayland + audio forwarded)
+make -f Makefile.docker build    # re-run the CMake build against the source tree
+make -f Makefile.docker appimage # build a Linux AppImage into ./out/
+```
+
+## Runtime config
+
+User config lives at `~/.gltronrc` (and sometimes a `~/.gltron/` directory).
+Delete them to reset to defaults.
+
+## Soundtrack
+
+`gltron.it` — 'Revenge of Cats' by Peter Hajba <skaven@remedy.fi>.
+
+## License
+
+GNU GPL v2 (or later). See `COPYING`. Copyright © 1999 Andreas Umbach and
+contributors.

@@ -56,13 +56,17 @@ Index:
 - [OpenGL fixed-function → 3.3 core profile port](docs/plans/opengl-core-profile-port.md) — **not started**, surface at session start and ask Bill before beginning.
 - [Modernization survey](docs/plans/modernization-survey.md) — **survey doc** (2026-05-08); inventory of antiquated libraries/subsystems with a recommended sequence. Read before picking any "modernize X" task.
 - [Replace nebu math with HandmadeMath](docs/plans/handmademath-port.md) — **all 5 phases shipped 2026-05-08**. Linear algebra now lives in `<HandmadeMath.h>` (vendored at upstream `661fef0`, exposed via the `handmademath` CMake `INTERFACE` target). The surviving geometric helpers (`segment2_*`, `box2_*`, `box3_*`, `vec2_Orthogonal`, `vec3_TriNormalDirection`, `uintFromVec3`) live in `nebu/include/base/nebu_geom.{h,c}`. `vec2`/`vec3`/`matrix` are documented typedef aliases for the HMM types in that same header (kept for readability — drop if the inconsistency bites). C standard bumped 99 → 11. Files deleted along the way: `nebu/base/{vector,matrix,quat,camera}.c`, `nebu/include/base/{nebu_vector,nebu_matrix,nebu_quat,nebu_Vector3}.h`, `nebu/include/video/nebu_camera.h`, `src/game/game_level.c`. **Outstanding:** Bill should listen-test the SourceEngine pitch effect on his host to validate the Phase-2 audio rewrite (`Vector3 *` → `HMM_DotV3`).
+- [Post-round camera bug](docs/plans/post-round-camera-bug.md) — **open**; camera is misplaced during post-round playback (reported 2026-05-08).
+- Container plumbing fixes are tracked in [`tasks/container-build-cleanup.md`](tasks/container-build-cleanup.md) (stale `ENTRYPOINT`/`entrypoint.sh`, unused `BUILD_DOCS` arg, stale `format.sh` paths).
+
 When starting a new task, add a one-line entry here pointing at a
 `docs/plans/<slug>.md` file, and keep the plan file updated with status,
 approach, and open questions so the next session can pick it up cold.
 
 ## Conventions
 
-- C99, 2-space indent, formatted with the project `.clang-format`.
+- C11 (bumped from C99 by the HandmadeMath port), 2-space indent, formatted with
+  the project `.clang-format`.
 - Don't add new abstractions or "modernize" code as drive-by cleanup — the
   codebase is intentionally a teaching artifact. Match the surrounding style.
 - Prefer minimal, surgical fixes over refactors. If you spot something worth
