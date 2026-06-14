@@ -18,7 +18,7 @@ question is real). The point is as much to *understand the workflow* as to ship.
       (`io.github.billsix.GLtron.yaml`, which the `Dockerfile` already mirrors its
       module/dep list against), `AppRun`, the `.desktop` file, and any
       appstream/metainfo XML. Establish whether it builds today and what's missing.
-      Cross-reference the shipped AppImage path (`docs/plans/appimage-target.md`).
+      Cross-reference the shipped AppImage path (`tasks/archive/2026/04/27/appimage-target.md`).
 - [ ] **Learn the build workflow.** `flatpak-builder` basics: choosing a runtime +
       SDK (`org.freedesktop.Platform`/`Sdk`, which version), building locally
       (`flatpak-builder --force-clean --install build-dir manifest.yaml`), running
@@ -46,7 +46,7 @@ question is real). The point is as much to *understand the workflow* as to ship.
       - *Self-hosted:* `flatpak build-export` → a repo, `flatpak build-bundle` →
         a `.flatpak` bundle, and a `.flatpakref` for one-line install. Document
         what "deploying" means for each.
-- [ ] **Write it up.** Produce a runbook/plan in `docs/plans/flatpak.md` (per
+- [ ] **Write it up.** Produce a runbook/plan in `tasks/flatpak.md` (per
       gltron's convention) — build steps, the permission set, the config/save-file
       decision, and the chosen publish path — and add it to the
       `## Tasks / plans (in-flight)` index in `CLAUDE.md`.
@@ -59,7 +59,7 @@ question is real). The point is as much to *understand the workflow* as to ship.
   scaffolding* exists — the gaps are publishing know-how and correct
   config/save-file behavior in the sandbox.
 - This `tasks/` item tracks the investigation; the durable runbook belongs in
-  `docs/plans/`.
+  `tasks/`.
 - Mostly packaging, not game logic — but the config-path question can reach into
   the code, so keep changes there surgical and pedagogy-respecting.
 

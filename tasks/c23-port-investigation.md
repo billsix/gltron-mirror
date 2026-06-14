@@ -40,7 +40,7 @@ pedagogy or trigger a drive-by "modernization" of code that's deliberately old.
 - [ ] **Pedagogy check.** Decide whether any C23 idiom undercuts the
       "read it top-to-bottom, fixed-function" teaching intent. Scope accordingly.
 - [ ] **Write the plan.** Produce a phased port plan (per gltron's convention, as
-      `docs/plans/c23-port.md`) with steps, risk, the recommended feature set, and
+      `tasks/c23-port.md`) with steps, risk, the recommended feature set, and
       an explicit "is this worth doing?" recommendation. Add it to the
       `## Tasks / plans (in-flight)` index in `CLAUDE.md` once it exists.
 
@@ -48,7 +48,7 @@ pedagogy or trigger a drive-by "modernization" of code that's deliberately old.
 
 - Current standard is C11, bumped from C99 by the HandmadeMath port (2026-05-08).
 - This `tasks/` item tracks the *investigation*; the durable output (a port plan)
-  belongs in `docs/plans/` per gltron's convention.
+  belongs in `tasks/` per gltron's convention.
 
 ## Open questions
 

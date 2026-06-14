@@ -134,6 +134,6 @@ finalise the smoke test.
   worth a closer look — the message fires whenever the decoder hasn't
   filled enough buffer for the next mixer chunk. They appear during
   music load and may also appear under audio-thread pressure.
-- AppImage packaging (`docs/plans/appimage-target.md`) was previously
+- AppImage packaging (`tasks/archive/2026/04/27/appimage-target.md`) was previously
   bundling the host's SDL2-compat-shim; with a real SDL3 binary the
   bundling logic should be revisited.

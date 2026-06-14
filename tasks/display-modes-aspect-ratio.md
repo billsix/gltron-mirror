@@ -12,8 +12,8 @@ an unusual window size the 3D scene and the HUD/menus should adapt gracefully
 (no stretching, squashing, or mis-placed UI), the way a modern game does.
 
 Builds on the already-shipped single-window refactor
-(`docs/plans/sdl-window-architecture.md`) and the SDL3 port
-(`docs/plans/sdl3-port.md`). Fixed-function OpenGL stays — adapting the viewport
+(`tasks/archive/2026/05/10/sdl-window-architecture.md`) and the SDL3 port
+(`tasks/sdl3-port.md`). Fixed-function OpenGL stays — adapting the viewport
 and projection *is* part of the graphics lesson here; keep the surrounding style.
 
 ## Plan
@@ -43,7 +43,7 @@ and projection *is* part of the graphics lesson here; keep the surrounding style
       gltron's GUI/console system (which is partly Lua-scripted).
 - [ ] **Config + UI.** Persist resolution / fullscreen / chosen aspect behavior in
       `~/.gltronrc`, and surface them in the in-game settings menu.
-- [ ] **Write the plan.** Produce `docs/plans/display-modes-aspect-ratio.md` (per
+- [ ] **Write the plan.** Produce `tasks/display-modes-aspect-ratio.md` (per
       gltron's convention) with the chosen strategy, the offender list, a phased
       approach, and risks; add it to the `## Tasks / plans (in-flight)` index in
       `CLAUDE.md`.
@@ -55,7 +55,7 @@ and projection *is* part of the graphics lesson here; keep the surrounding style
 - Fixed-function pipeline is preserved on purpose; viewport/projection changes are
   legitimate graphics teaching content, but match the existing code style and keep
   edits surgical (no renderer-abstraction rewrites).
-- This `tasks/` item tracks the investigation; the durable plan goes in `docs/plans/`.
+- This `tasks/` item tracks the investigation; the durable plan goes in `tasks/`.
 
 ## Open questions
 
