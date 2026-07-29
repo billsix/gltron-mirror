@@ -240,7 +240,7 @@ an abandoned format. Might just be `.ftx` under another name.
 
 **Recommendation:** the format works, it's literally five lines of `sscanf`.
 Replacing it with stb_truetype (runtime TTF rasterization) or SDL_ttf would
-be a quality win (resolution-independent text), but it's a UX enhancement,
+be a quality win (resolution-independent text), but it's a UX improvement,
 not a modernization. **Skip unless a UX reason arises.** Delete `test.fbmp`
 since nothing reads it.
 

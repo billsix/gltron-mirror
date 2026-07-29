@@ -199,7 +199,7 @@ When picking this up:
    right, the post-crash `bIsGlancing` carry-over is the problem
    (and it's a pre-existing issue, not a regression).
 
-## Pre-existing bug worth noting (not the cause)
+## Pre-existing bug (not the cause)
 
 `getRecognizerAngle` in `src/video/recognizer.c:35` reads the
 velocity's X component into both `dxval` and `dyval`:

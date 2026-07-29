@@ -4,7 +4,7 @@
 Single-window forever; replaced the three `SDL_GL_GetCurrentWindow()`
 queries with `nebu_Video_GetWindow()` accessors. The static `gWindow` /
 `gContext` in `nebu/video/video_system.c` are still there but are now
-genuinely encapsulated — the only outside path is the accessor. If
+fully encapsulated — the only outside path is the accessor. If
 multi-window or a level-editor preview ever shows up, the path from
 A → B (struct threaded through) is mechanical: turn the static into a
 struct field, change the accessor signature.

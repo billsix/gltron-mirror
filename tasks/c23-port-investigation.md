@@ -6,7 +6,7 @@
 ## Goal
 
 Investigate what moving gltron from its current **C11** baseline to **C23** would
-provide, decide which modern C features would genuinely benefit *this* codebase
+provide, decide which modern C features would actually benefit *this* codebase
 (and which would just be churn), and produce a port plan with a clear
 recommendation on whether it's worth doing at all.
 
