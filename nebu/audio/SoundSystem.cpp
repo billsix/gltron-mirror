@@ -75,14 +75,13 @@ extern "C" {
 /* SDL3 hands us an audio stream and asks for `additional_amount` more bytes
  * of audio. Render via the legacy callback into a stack buffer and feed it
  * to the stream. */
-void c_callback(void* userdata, SDL_AudioStream* stream,
-                int additional_amount, int /*total_amount*/) {
+void c_callback(void* userdata, SDL_AudioStream* stream, int additional_amount,
+                int /*total_amount*/) {
   if (additional_amount <= 0) return;
   Uint8 buf[8192];
   while (additional_amount > 0) {
-    int chunk = additional_amount < (int)sizeof(buf)
-                  ? additional_amount
-                  : (int)sizeof(buf);
+    int chunk = additional_amount < (int)sizeof(buf) ? additional_amount
+                                                     : (int)sizeof(buf);
     ((System*)userdata)->Callback(buf, chunk);
     SDL_PutAudioStreamData(stream, buf, chunk);
     additional_amount -= chunk;

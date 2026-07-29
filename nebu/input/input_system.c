@@ -18,10 +18,10 @@ static int mouse_y = -1;
 enum { eMaxKeyState = 1024 };
 static int keyState[eMaxKeyState];
 
-/* Map SDL_JoystickID -> dense slot index (0..MAX_JOY-1). SDL3's event.jaxis.which
- * and event.jbutton.which carry instance IDs rather than 0..N indices, but the
- * rest of the input layer (SYSTEM_JOY_OFFSET arithmetic, joy_axis_state[] in
- * the event handler) still wants a small index. */
+/* Map SDL_JoystickID -> dense slot index (0..MAX_JOY-1). SDL3's
+ * event.jaxis.which and event.jbutton.which carry instance IDs rather than 0..N
+ * indices, but the rest of the input layer (SYSTEM_JOY_OFFSET arithmetic,
+ * joy_axis_state[] in the event handler) still wants a small index. */
 enum { MAX_JOY = 4 };
 static SDL_JoystickID joystick_ids[MAX_JOY];
 static int n_joysticks;
@@ -258,10 +258,10 @@ void nebu_Intern_HandleInput(SDL_Event* event) {
       break;
     case SDL_EVENT_MOUSE_BUTTON_DOWN:
     case SDL_EVENT_MOUSE_BUTTON_UP:
-      SystemMouse(event->button.button,
-                  event->button.down ? SYSTEM_MOUSEPRESSED
-                                     : SYSTEM_MOUSERELEASED,
-                  (int)event->button.x, (int)event->button.y);
+      SystemMouse(
+          event->button.button,
+          event->button.down ? SYSTEM_MOUSEPRESSED : SYSTEM_MOUSERELEASED,
+          (int)event->button.x, (int)event->button.y);
       break;
     case SDL_EVENT_MOUSE_MOTION:
       SystemMouseMotion((int)event->motion.x, (int)event->motion.y);

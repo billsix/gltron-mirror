@@ -51,8 +51,8 @@ void storeVertex(TrailMesh* pMesh, int offset, segment2* s,
   vec3* pNormals = pMesh->pNormals + offset;
   vec2* pTexCoords = pMesh->pTexCoords + offset;
   float fUStart;
-  vec3 pvNormals[] = {HMM_V3(1, 0, 0), HMM_V3(-1, 0, 0),
-                      HMM_V3(0, 1, 0), HMM_V3(0, -1, 0)};
+  vec3 pvNormals[] = {HMM_V3(1, 0, 0), HMM_V3(-1, 0, 0), HMM_V3(0, 1, 0),
+                      HMM_V3(0, -1, 0)};
 
   int iNormal;
   if (s->vDirection.X == 0)
@@ -82,8 +82,7 @@ void storeIndices(TrailMesh* pMesh, int indexOffset, int vertexOffset) {
   int i;
   int winding;
 
-  if (pMesh->pVertices[vertexOffset].X ==
-      pMesh->pVertices[vertexOffset + 2].X)
+  if (pMesh->pVertices[vertexOffset].X == pMesh->pVertices[vertexOffset + 2].X)
     winding = (pMesh->pVertices[vertexOffset].Y <=
                pMesh->pVertices[vertexOffset + 2].Y)
                   ? 0

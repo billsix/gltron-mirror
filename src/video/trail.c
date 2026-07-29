@@ -124,8 +124,8 @@ void drawTrailLines(Player* p, PlayerVisual* pV) {
       normal = normal2;
     glNormal3fv(normal);
     glVertex3f(s->vStart.X, s->vStart.Y, height);
-    glVertex3f(s->vStart.X + s->vDirection.X,
-               s->vStart.Y + s->vDirection.Y, height);
+    glVertex3f(s->vStart.X + s->vDirection.X, s->vStart.Y + s->vDirection.Y,
+               height);
     s++;
   }
   glEnd();

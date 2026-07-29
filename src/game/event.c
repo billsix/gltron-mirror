@@ -214,10 +214,10 @@ int applyWallAcceleration(int player, int dt) {
     segments[i].vStart = vPos;
   }
 
-  segments[eLeft].vDirection = HMM_V2((float)dirsX[dirLeft],
-                                      (float)dirsY[dirLeft]);
-  segments[eRight].vDirection = HMM_V2((float)dirsX[dirRight],
-                                       (float)dirsY[dirRight]);
+  segments[eLeft].vDirection =
+      HMM_V2((float)dirsX[dirLeft], (float)dirsY[dirLeft]);
+  segments[eRight].vDirection =
+      HMM_V2((float)dirsX[dirRight], (float)dirsY[dirRight]);
 
   left = FLT_MAX;
   right = FLT_MAX;
@@ -315,8 +315,8 @@ void doMovement(int dt) {
 
         getPositionFromData(&x, &y, data);
         movement.vStart = HMM_V2(x, y);
-        movement.vDirection = HMM_V2(t * dirsX[data->dir],
-                                     t * dirsY[data->dir]);
+        movement.vDirection =
+            HMM_V2(t * dirsX[data->dir], t * dirsY[data->dir]);
 
         current->vDirection.X += t * dirsX[data->dir];
         current->vDirection.Y += t * dirsY[data->dir];

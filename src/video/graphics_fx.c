@@ -31,9 +31,7 @@ void drawGlow(Camera* pCam, Player* pTarget, PlayerVisual* pV, Visual* d,
   glLoadMatrixf(mat);
 
   {
-    vec3 v = HMM_V3(x - pCam->cam[0],
-                    y - pCam->cam[1],
-                    0 - pCam->cam[2]);
+    vec3 v = HMM_V3(x - pCam->cam[0], y - pCam->cam[1], 0 - pCam->cam[2]);
     dist = HMM_LenV3(v);
   }
   {

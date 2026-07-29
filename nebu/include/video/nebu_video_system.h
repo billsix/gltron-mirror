@@ -28,7 +28,7 @@ void nebu_Video_WarpPointer(int x, int y);
 void nebu_Video_CheckErrors(const char* where);
 
 // Use these instead of SDL_GL_GetCurrentWindow / SDL_GL_GetCurrentContext.
-SDL_Window*   nebu_Video_GetWindow(void);
+SDL_Window* nebu_Video_GetWindow(void);
 SDL_GLContext nebu_Video_GetContext(void);
 
 #endif

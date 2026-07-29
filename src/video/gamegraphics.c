@@ -457,9 +457,9 @@ void drawCam(int player) {
   glLoadIdentity();
 
   {
-    vec3 vLookAt = HMM_NormV3(
-        HMM_SubV3(*(vec3*)gPlayerVisuals[player].camera.target,
-                  *(vec3*)gPlayerVisuals[player].camera.cam));
+    vec3 vLookAt =
+        HMM_NormV3(HMM_SubV3(*(vec3*)gPlayerVisuals[player].camera.target,
+                             *(vec3*)gPlayerVisuals[player].camera.cam));
     matrix matRotate = HMM_Rotate_RH(
         HMM_AngleDeg(90.0f * (float)gPlayerVisuals[player].camera.bIsGlancing),
         *(vec3*)up);

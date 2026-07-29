@@ -45,13 +45,12 @@ SourceMusic::~SourceMusic() {
 
 void SourceMusic::CreateSample(void) {
   /* SDL3_sound's Sound_NewSampleFromFile detects the extension itself. */
-  _sample =
-      Sound_NewSampleFromFile(_filename, _system->GetAudioInfo(),
-                              _sample_buffersize);
+  _sample = Sound_NewSampleFromFile(_filename, _system->GetAudioInfo(),
+                                    _sample_buffersize);
 
   if (_sample == NULL) {
-    fprintf(stderr, "[error] failed loading sample from %s: %s\n",
-            _filename, Sound_GetError());
+    fprintf(stderr, "[error] failed loading sample from %s: %s\n", _filename,
+            Sound_GetError());
     return;
   }
 
@@ -92,11 +91,11 @@ int SourceMusic::Mix(Uint8* data, int len) {
       fprintf(stderr, "wrap around in buffer (%d, %d, %d)\n", len, _read,
               _buffersize);
 
-      SDL_MixAudio(data, _buffer + _read, SDL_AUDIO_S16,
-                   _buffersize - _read, _volume);
+      SDL_MixAudio(data, _buffer + _read, SDL_AUDIO_S16, _buffersize - _read,
+                   _volume);
       len -= _buffersize - _read;
-      SDL_MixAudio(data + _buffersize - _read, _buffer, SDL_AUDIO_S16,
-                   len, _volume);
+      SDL_MixAudio(data + _buffersize - _read, _buffer, SDL_AUDIO_S16, len,
+                   _volume);
       _read = len;
     }
   } else {

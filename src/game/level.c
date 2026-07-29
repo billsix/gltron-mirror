@@ -30,8 +30,7 @@ void computeBoundingBox(game_level* l) {
 
   box2_Init(&l->boundingBox);
   for (i = 0; i < l->nBoundaries; i++) {
-    vec2 vEnd =
-        HMM_AddV2(l->boundaries[i].vStart, l->boundaries[i].vDirection);
+    vec2 vEnd = HMM_AddV2(l->boundaries[i].vStart, l->boundaries[i].vDirection);
     box2_Extend(&l->boundingBox, l->boundaries[i].vStart);
     box2_Extend(&l->boundingBox, vEnd);
   }

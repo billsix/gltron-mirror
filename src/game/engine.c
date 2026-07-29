@@ -17,8 +17,9 @@
 #include "base/nebu_debug_memory.h"
 
 void Player_GetPosition(Player* pPlayer, float* pX, float* pY) {
-  vec2 v = HMM_AddV2(pPlayer->data->trails[pPlayer->data->trailOffset].vStart,
-                     pPlayer->data->trails[pPlayer->data->trailOffset].vDirection);
+  vec2 v =
+      HMM_AddV2(pPlayer->data->trails[pPlayer->data->trailOffset].vStart,
+                pPlayer->data->trails[pPlayer->data->trailOffset].vDirection);
   *pX = v.X;
   *pY = v.Y;
 }

@@ -52,12 +52,12 @@ void ai_getDistances(int player, AI_Distances* distances) {
     segments[i].vStart = vPos;
   }
 
-  segments[eFront].vDirection = HMM_V2((float)dirsX[data->dir],
-                                       (float)dirsY[data->dir]);
-  segments[eLeft].vDirection = HMM_V2((float)dirsX[dirLeft],
-                                      (float)dirsY[dirLeft]);
-  segments[eRight].vDirection = HMM_V2((float)dirsX[dirRight],
-                                       (float)dirsY[dirRight]);
+  segments[eFront].vDirection =
+      HMM_V2((float)dirsX[data->dir], (float)dirsY[data->dir]);
+  segments[eLeft].vDirection =
+      HMM_V2((float)dirsX[dirLeft], (float)dirsY[dirLeft]);
+  segments[eRight].vDirection =
+      HMM_V2((float)dirsX[dirRight], (float)dirsY[dirRight]);
   segments[eBackleft].vDirection =
       HMM_NormV2(HMM_V2((float)dirsX[dirLeft] - dirsX[data->dir],
                         (float)dirsY[dirLeft] - dirsY[data->dir]));
@@ -135,8 +135,8 @@ void ai_getConfig(int player, int target, AI_Configuration* config) {
 
   getPositionFromIndex(&config->player.vStart.X, &config->player.vStart.Y,
                        player);
-  getPositionFromIndex(&config->opponent.vStart.X,
-                       &config->opponent.vStart.Y, target);
+  getPositionFromIndex(&config->opponent.vStart.X, &config->opponent.vStart.Y,
+                       target);
 
   data = game->player[player].data;
   config->player.vDirection =
@@ -179,9 +179,9 @@ void ai_getConfig(int player, int target, AI_Configuration* config) {
     seg1.vStart = config->opponent.vStart;
     seg1.vDirection = config->opponent.vDirection;
     seg2.vStart = config->player.vStart;
-    seg2.vDirection = HMM_MulV2F(
-        HMM_NormV2(vec2_Orthogonal(config->opponent.vDirection)),
-        HMM_LenV2(config->player.vDirection));
+    seg2.vDirection =
+        HMM_MulV2F(HMM_NormV2(vec2_Orthogonal(config->opponent.vDirection)),
+                   HMM_LenV2(config->player.vDirection));
 
     segment2_Intersect(&config->intersection, &config->t_opponent,
                        &config->t_player, &seg1, &seg2);

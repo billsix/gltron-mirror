@@ -15,8 +15,8 @@ extern "C" {
 /* SDL3 audio-stream callback shape: SDL hands us the stream and asks for at
  * least `additional_amount` more bytes. We render via System::Callback into a
  * scratch buffer and feed it via SDL_PutAudioStreamData. */
-void c_callback(void* userdata, SDL_AudioStream* stream,
-                int additional_amount, int total_amount);
+void c_callback(void* userdata, SDL_AudioStream* stream, int additional_amount,
+                int total_amount);
 }
 
 class Listener {
