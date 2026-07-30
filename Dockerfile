@@ -89,6 +89,7 @@ COPY resource /gltron/resource/
 COPY scripts /gltron/scripts/
 COPY sounds /gltron/sounds/
 COPY src /gltron/src/
+COPY third_party /gltron/third_party/
 COPY TODO /gltron/TODO
 COPY tools /gltron/tools/
 
