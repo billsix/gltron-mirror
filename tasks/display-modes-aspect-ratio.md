@@ -1,6 +1,8 @@
 # Modernize display handling: fullscreen, resolutions, arbitrary aspect ratio
 
 **Status:** proposed — not started
+**Priority:** 5
+**Difficulty:** 7
 **Created:** 2026-06-13
 
 ## Goal

@@ -5,6 +5,8 @@ of antiquated pieces of the codebase (libraries, formats, subsystems) with
 recommendations on what to replace, drop, or restructure. This is the
 inventory; individual items get their own `tasks/<slug>.md` files
 when picked up (moved to `tasks/archive/<YYYY>/<MM>/<DD>/` when complete).
+**Priority:** 6
+**Difficulty:** 5
 
 The fixed-function OpenGL pipeline is **out of scope** for this survey
 (intentionally retained — see [opengl-core-profile-port.md](opengl-core-profile-port.md)

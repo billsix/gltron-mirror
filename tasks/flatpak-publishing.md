@@ -1,6 +1,8 @@
 # Investigate Flatpak: building, publishing, and save-file/config handling
 
 **Status:** proposed — not started
+**Priority:** 7
+**Difficulty:** 5
 **Created:** 2026-06-13
 
 ## Goal

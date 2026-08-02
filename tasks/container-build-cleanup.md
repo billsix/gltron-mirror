@@ -1,6 +1,8 @@
 # Clean up the podman container build (Dockerfile / Makefile.docker / entrypoint)
 
 **Status:** proposed — not started
+**Priority:** 4
+**Difficulty:** 2
 **Created:** 2026-06-13
 
 ## Goal

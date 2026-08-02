@@ -4,6 +4,8 @@
 Phase-5 build. Symptom (Bill's words): *"after a round, there's a
 playback section ... It doesn't seem to look at the correct place, or
 isn't positioned in the right place, I don't know which."*
+**Priority:** 3
+**Difficulty:** 5
 
 This is a separate symptom from the Phase-4 doLookAt transposition,
 which Bill confirmed fixed for normal play. The post-round path either

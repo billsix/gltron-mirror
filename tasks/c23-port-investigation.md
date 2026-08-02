@@ -1,6 +1,8 @@
 # Investigate porting gltron from C11 to C23
 
 **Status:** proposed — not started
+**Priority:** 7
+**Difficulty:** 4
 **Created:** 2026-06-13
 
 ## Goal

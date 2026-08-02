@@ -1,6 +1,8 @@
 # Port from SDL2 to SDL3
 
 **Status:** **shipped 2026-05-08** on Linux. macOS path not retested.
+**Priority:** 6
+**Difficulty:** 5
 
 ## What landed
 

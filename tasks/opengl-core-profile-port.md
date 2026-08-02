@@ -3,6 +3,8 @@
 **Status:** not started — Bill flagged it 2026-04-28. Independent of the
 SDL plans (could be tackled in any order), but big enough to discuss
 scope with him before starting.
+**Priority:** 8
+**Difficulty:** 9
 
 ## Goal
 
