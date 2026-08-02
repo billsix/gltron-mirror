@@ -36,6 +36,9 @@ introduce a modern renderer abstraction unless explicitly asked.**
 - (vendored deps fully removed; Lua and lib3ds were dropped in favour of system packages / dead-code excision)
 - `data/`, `art/`, `levels/`, `music/`, `sounds/` — assets.
 - `scripts/` — Lua game scripts.
+- `tools/` — dev/build helper scripts (asset/texture/font conversion:
+  `crash-tex.pl`, `font-tex.pl`, `artpack-conversion/`). Distinct from
+  runtime `scripts/`.
 
 ## Runtime config
 
