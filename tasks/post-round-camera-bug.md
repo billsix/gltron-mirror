@@ -1,6 +1,12 @@
 # Investigate post-round camera misplacement / misorientation
 
-**Status:** open. Reported by Bill 2026-05-08 after the HandmadeMath
+**Status:** fix applied for the one post-round-specific orientation bug
+found (glance state leaking into the observer camera). Left open — not
+archived — because it could not be confirmed against Bill's exact repro
+(the bug is conditional on crashing while holding a glance key; a sharper
+symptom or a GUI run is still wanted to confirm it is *the* thing Bill saw).
+See "Resolution (2026-08-03)" at the bottom.
+Reported by Bill 2026-05-08 after the HandmadeMath
 Phase-5 build. Symptom (Bill's words): *"after a round, there's a
 playback section ... It doesn't seem to look at the correct place, or
 isn't positioned in the right place, I don't know which."*
@@ -201,21 +207,83 @@ When picking this up:
    right, the post-crash `bIsGlancing` carry-over is the problem
    (and it's a pre-existing issue, not a regression).
 
-## Pre-existing bug (not the cause)
+## Pre-existing bug (not the cause) — already fixed
 
-`getRecognizerAngle` in `src/video/recognizer.c:35` reads the
-velocity's X component into both `dxval` and `dyval`:
+`getRecognizerAngle` in `src/video/recognizer.c` used to read the
+velocity's X component into both `dxval` and `dyval`. **As of the current
+tree it already reads `velocity->Y` for `dyval`** (recognizer.c:37), so
+this is fixed — leaving the note for history only. It only affected the
+recognizer's *visual orientation* (the `glRotatef` in `drawRecognizer`),
+not the observer camera's lookAt vector, so it was never the cause of the
+camera mis-placement anyway.
 
-```c
-float dxval = velocity->X;
-float dyval = velocity->X;   // should be ->Y
-```
+## Resolution (2026-08-03)
 
-This was identical in the original (`velocity->v[0]` for both). It
-only affects the recognizer's *visual orientation* (the `glRotatef`
-in `drawRecognizer`), not the observer camera's lookAt vector. Worth
-fixing for cosmetic reasons, but not the cause of the camera
-mis-placement Bill is reporting.
+**Root cause (of the one post-round-specific orientation bug in the code):
+`observerCamera` never clears `cam->bIsGlancing`.**
+
+Walk of the post-round path confirms the observer camera is the *only*
+post-round-specific camera code (during play the human follows their own
+cycle via `playerCamera`; `drawRecognizer` is drawn during play too, so a
+recognizer-mesh/BBox regression — H2 — would show up mid-round, not only
+after, ruling H2 out as the post-round symptom). Within that path:
+
+- `drawCam` (`src/video/gamegraphics.c:462-464`) rotates the look
+  direction by `90 * cam->bIsGlancing` every frame, in *both* play and
+  observer mode.
+- `bIsGlancing` is set to `+1` / `-1` on glance-key **down** and back to
+  `0` on **up** (`src/input/input.c:114,117,128,131`).
+- Only `initCamera` clears it (`camera.c:152`). `observerCamera` did not.
+
+So if the player crashes **while holding a glance key**, `bIsGlancing`
+stays non-zero into the post-round playback, and the recognizer-follow
+view is rotated 90 degrees off to the side — camera positioned correctly
+(at the recognizer) but "looking at the wrong place." That matches the
+"looks at the wrong place OR isn't positioned right, not sure which" half
+of Bill's report (position right, orientation wrong).
+
+This is confirmed **pre-existing**, not a HandmadeMath-port regression:
+the pre-port `observerCamera` (`6edb5e9^`) also failed to clear
+`bIsGlancing`, and `bIsGlancing` was only ever reset in `initCamera` there
+too. Matches this doc's H1.
+
+**Related observation (NOT reverted): the port changed the glance angle
+magnitude.** Pre-port, `matrixRotationAxis(&m, 90.0f * bIsGlancing, up)`
+fed the angle straight into `cos()/sin()`, i.e. **90 radians** (≈116.8°
+after mod 2*pi). The port rewrote it as
+`HMM_Rotate_RH(HMM_AngleDeg(90.0f * bIsGlancing), up)` — **90 degrees**.
+90° is the obviously-intended glance angle, so the port's value is *more*
+correct; I did not revert it. It only changes the *magnitude* of the stale
+rotation, not whether the leak happens. Left as-is by design.
+
+**Fix applied:** clear `cam->bIsGlancing = 0` at the top of
+`observerCamera` in `src/game/camera.c`, mirroring `initCamera`, with a
+comment explaining why. One line + comment; surgical, matches surrounding
+style.
+
+**Verification:**
+- `src/game/camera.c` syntax-checked with
+  `gcc -std=c11 -fsyntax-only -Isrc/include -Inebu/include
+  -Ithird_party/HandmadeMath src/game/camera.c` — clean (exit 0), both
+  before and after the edit.
+- `doLookAt` re-derived against the pre-port version (`6edb5e9^`)
+  column-by-column — the port is a faithful translation (columns match),
+  so the lookAt matrix is not a suspect. Recorded here so it is not
+  re-chased.
+- **Not run:** full `make -f Makefile.docker image` container build
+  (heavy; shared 32G store with other agents) and the Xvfb GUI runtime
+  check. So the fix is verified at the source/compile level and by code
+  tracing, **not** by watching the post-round camera in a live run.
+
+**Remaining uncertainty / follow-up for Bill:** the fix is correct on its
+own merits (the playback camera should never be in a glance state), but I
+could not confirm it reproduces Bill's exact symptom, because the leak
+only triggers when you crash mid-glance — whereas Bill's report reads as
+happening every round. If the misplacement still shows *without* glancing
+at crash time, the next suspect is H1's numeric sibling ruled unlikely
+here (H2 BBox / H3 crash-position), and the right next step is the debug
+print in step 2 of "Investigation order" on a round ended *without*
+touching a glance key.
 
 ## Decision criteria for "done"
 

@@ -157,6 +157,15 @@ void observerCamera(Camera* cam) {
   vec2 p, v;
   getRecognizerPositionVelocity(&p, &v);
 
+  /* The post-round playback camera must never inherit a glance: if the
+     player crashed while holding a glance key, bIsGlancing is still +/-1
+     and drawCam would rotate this recognizer-follow view 90 degrees off to
+     the side, so the playback "looks at the wrong place". initCamera clears
+     it for the in-round cameras; the observer path never did. Clear it here
+     too. (Pre-existing bug, present before the HandmadeMath port; the port
+     only changed the stale rotation from 90 radians to 90 degrees.) */
+  cam->bIsGlancing = 0;
+
   cam->cam[0] = p.X;
   cam->cam[1] = p.Y;
   cam->cam[2] = RECOGNIZER_HEIGHT;
