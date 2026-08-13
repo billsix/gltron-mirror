@@ -285,6 +285,10 @@ here (H2 BBox / H3 crash-position), and the right next step is the debug
 print in step 2 of "Investigation order" on a round ended *without*
 touching a glance key.
 
+**Runtime confirmation is now its own task: `tasks/verify-post-round-camera-fix.md`**
+(Bill, 2026-08-03) — the source-level fix is staged; that task covers watching it
+in a live/Xvfb run, especially the crash-without-glancing case.
+
 ## Decision criteria for "done"
 
 The bug is identified when there's a reproducible, single-line root

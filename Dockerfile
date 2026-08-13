@@ -2,72 +2,19 @@ FROM registry.fedoraproject.org/fedora:44
 
 ARG USE_GRAPHICS=1
 
+# System-package installation lives in per-group scripts (entrypoint/0N-install-*.sh),
+# host-runnable with no container runtime; the scripts take no options -- WHICH optional
+# groups run is decided here by the ARG `if` blocks. The dnf cache mount, the tsflags
+# `sed`, and keepcache stay in the Dockerfile (build plumbing). 01-install-base.sh also
+# does `dnf upgrade`.
+COPY entrypoint/01-install-base.sh entrypoint/02-install-graphics.sh /usr/local/bin/
+
 RUN --mount=type=cache,target=/var/cache/libdnf5 \
     --mount=type=cache,target=/var/lib/dnf \
     sed -i -e "s@tsflags=nodocs@#tsflags=nodocs@g" /etc/dnf/dnf.conf && \
     echo "keepcache=True" >> /etc/dnf/dnf.conf && \
-    dnf upgrade -y && \
-    dnf install -y --skip-unavailable \
-                   SDL3 \
-                   SDL3-devel \
-                   SDL3_sound \
-                   SDL3_sound-devel \
-                   clang  \
-                   clang-tools-extra  \
-                   cmake \
-                   desktop-file-utils \
-                   emacs  \
-                   ffmpeg \
-                   file \
-                   fuse-libs \
-                   g++  \
-                   gcc  \
-                   gdb  \
-                   glew  \
-                   glew-devel \
-                   libogg libogg-devel \
-                   libpng \
-                   libpng-devel \
-                   libvorbis-devel \
-                   lua-devel \
-                   lldb  \
-                   man  \
-                   man-db  \
-                   man-pages  \
-                   mesa-libGLU-devel \
-                   mikmod \
-                   mikmod-devel \
-                   nano  \
-                   ninja-build \
-                   patchelf \
-                   squashfs-tools \
-                   tmux  \
-                   vorbis-tools \
-                   wget \
-                   zlib \
-                   zlib-devel; \
-    if [ "$USE_GRAPHICS" = "1" ]; then \
-       dnf install -y \
-                      mesa-dri-drivers  \
-                      libXScrnSaver \
-                      libXtst \
-                      libXcomposite \
-                      libXcursor \
-                      libXdamage \
-                      libXfixes \
-                      libXft \
-                      libXi \
-                      libXinerama \
-                      libXmu \
-                      libXrandr \
-                      libXrender \
-                      libXres \
-                      libXv \
-                      libXxf86vm \
-                      libglvnd-gles \
-                      mesa-demos \
-                      vulkan-tools  ; \
-         fi ; \
+    /usr/local/bin/01-install-base.sh && \
+    if [ "$USE_GRAPHICS" = "1" ]; then /usr/local/bin/02-install-graphics.sh; fi && \
     echo 'set debuginfod enabled off' > /root/.gdbinit
 
 COPY .clang-tidy /gltron/.clang-tidy

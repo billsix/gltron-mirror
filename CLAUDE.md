@@ -56,7 +56,7 @@ Active:
 - [OpenGL fixed-function → 3.3 core profile port](tasks/opengl-core-profile-port.md) — **not started**, surface at session start and ask Bill before beginning.
 - [Modernization survey](tasks/modernization-survey.md) — **survey doc** (2026-05-08); inventory of antiquated libraries/subsystems with a recommended sequence. Read before picking any "modernize X" task.
 - [SDL2 → SDL3 port](tasks/sdl3-port.md) — **shipped 2026-05-08** on Linux; macOS not retested (work remains).
-- [Post-round camera bug](tasks/post-round-camera-bug.md) — **open**; camera is misplaced during post-round playback (reported 2026-05-08).
+- [Post-round camera bug](tasks/post-round-camera-bug.md) — **fix applied (staged), runtime-unconfirmed**; root cause was glance-state (`bIsGlancing`) leaking into the observer camera on a crash-while-glancing. Runtime confirmation is tracked in [Verify post-round camera fix](tasks/verify-post-round-camera-fix.md) (reported 2026-05-08, diagnosed/fixed 2026-08-03).
 - Container plumbing fixes are tracked in [`tasks/container-build-cleanup.md`](tasks/container-build-cleanup.md) (stale `ENTRYPOINT`/`entrypoint.sh`, unused `BUILD_DOCS` arg, stale `format.sh` paths).
 
 Completed (in `tasks/archive/`):
