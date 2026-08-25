@@ -57,10 +57,10 @@ Active:
 - [Modernization survey](tasks/modernization-survey.md) — **survey doc** (2026-05-08); inventory of antiquated libraries/subsystems with a recommended sequence. Read before picking any "modernize X" task.
 - [SDL2 → SDL3 port](tasks/sdl3-port.md) — **shipped 2026-05-08** on Linux; macOS not retested (work remains).
 - [Post-round camera bug](tasks/post-round-camera-bug.md) — **fix applied (staged), runtime-unconfirmed**; root cause was glance-state (`bIsGlancing`) leaking into the observer camera on a crash-while-glancing. Runtime confirmation is tracked in [Verify post-round camera fix](tasks/verify-post-round-camera-fix.md) (reported 2026-05-08, diagnosed/fixed 2026-08-03).
-- Container plumbing fixes are tracked in [`tasks/container-build-cleanup.md`](tasks/container-build-cleanup.md) (stale `ENTRYPOINT`/`entrypoint.sh`, unused `BUILD_DOCS` arg, stale `format.sh` paths).
 
 Completed (in `tasks/archive/`):
 
+- [Container build cleanup](tasks/archive/2026/08/25/container-build-cleanup.md) — **shipped 2026-08-25** (3 core fixes: deleted the stale pgu-docs `entrypoint.sh` + dead `ENTRYPOINT`, which un-breaks `build`; dropped the undefined `BUILD_DOCS` arg; `format.sh` → `find nebu src/`). Image build verified. Optional `lint.sh` left as an open decision.
 - [AI freezes on second round](tasks/archive/2026/04/27/ai-freezes-on-second-round.md) — **fixed**, see plan for explanation.
 - [Port build system from autotools to CMake](tasks/archive/2026/04/27/cmake-port.md) — implemented and verified.
 - [AppImage build target](tasks/archive/2026/04/27/appimage-target.md) — **shipped (host-dependent)**; future work to make the AppImage self-contained is captured in the plan.

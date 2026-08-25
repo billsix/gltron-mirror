@@ -1,6 +1,11 @@
 # Clean up the podman container build (Dockerfile / Makefile.docker / entrypoint)
 
-**Status:** proposed — not started
+**Status:** DONE 2026-08-25 (3 core fixes). Deleted `entrypoint/entrypoint.sh` (was pgu-docs'
+`cd /pgu/docs` script) and removed the dead `ENTRYPOINT ["/entrypoint.sh"]` — which also un-breaks the
+`build` target (its `bash -lc '…'` now runs directly). Dropped the undefined `--build-arg BUILD_DOCS`
+from `Makefile.docker`. Fixed `format.sh` to `find nebu src/` (was `lib3ds/ nebutest/ nebu src/`, the
+first two gone) — runs clean now (rc=0). The optional `lint.sh` (4th item) is **left as an open
+decision** ("decide whether in scope"), not done, per the repo's don't-add-abstractions convention.
 **Priority:** 4
 **Difficulty:** 2
 **Created:** 2026-06-13

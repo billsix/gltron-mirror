@@ -52,4 +52,3 @@ COPY .clang-format /gltron/
 
 RUN echo "source ~/.extrabashrc" >> ~/.bashrc
 
-ENTRYPOINT ["/entrypoint.sh"]
