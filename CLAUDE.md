@@ -51,6 +51,11 @@ Some setups also leave a `~/.gltron` directory. Deleting these is the standard
 Active work lives under `tasks/` and completed work is moved to
 `tasks/archive/<YYYY>/<MM>/<DD>/` so it survives across Claude sessions.
 
+**Reference docs:** `tasks/reference/camera-and-observer-pipeline.md` (added 2026-08-27) —
+the per-frame camera dispatch + the post-round observer/recognizer switch; read it before
+the camera code (it grounds `post-round-camera-bug.md`). Note: the `modernization-survey`
+was reconciled + archived 2026-08-27 (its deletions were already executed).
+
 Active:
 
 - [OpenGL fixed-function → 3.3 core profile port](tasks/opengl-core-profile-port.md) — **not started**, surface at session start and ask Bill before beginning.

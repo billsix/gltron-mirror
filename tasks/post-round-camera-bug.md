@@ -207,17 +207,19 @@ When picking this up:
    right, the post-crash `bIsGlancing` carry-over is the problem
    (and it's a pre-existing issue, not a regression).
 
-## Pre-existing bug (not the cause) — already fixed
+## Pre-existing bug worth noting (not the cause) — RESOLVED, this note is stale
 
-`getRecognizerAngle` in `src/video/recognizer.c` used to read the
-velocity's X component into both `dxval` and `dyval`. **As of the current
-tree it already reads `velocity->Y` for `dyval`** (recognizer.c:37), so
-this is fixed — leaving the note for history only. It only affected the
-recognizer's *visual orientation* (the `glRotatef` in `drawRecognizer`),
-not the observer camera's lookAt vector, so it was never the cause of the
-camera mis-placement anyway.
+**Update 2026-08-27 (verified):** the current code at `src/video/recognizer.c:36` reads
+`float dyval = velocity->Y;` — **this bug is already fixed.** The claim below is stale and kept only for
+history. (See `tasks/reference/camera-and-observer-pipeline.md`.)
 
-## Resolution (2026-08-03)
+~~`getRecognizerAngle` in `src/video/recognizer.c:35` reads the
+velocity's X component into both `dxval` and `dyval`:~~
+
+```c
+float dxval = velocity->X;
+float dyval = velocity->X;   // should be ->Y  — NO LONGER TRUE: code now reads ->Y
+```
 
 **Root cause (of the one post-round-specific orientation bug in the code):
 `observerCamera` never clears `cam->bIsGlancing`.**
