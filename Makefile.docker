@@ -2,7 +2,7 @@
 
 USE_GRAPHICS ?= 1
 
-CONTAINER_CMD = podman
+CONTAINER_CMD ?= $(shell command -v podman >/dev/null 2>&1 && echo podman || echo docker)
 CONTAINER_NAME = gltron
 FILES_TO_MOUNT = -v $(shell pwd):/gltron/:Z \
                  -v ./entrypoint/shell.sh:/usr/local/bin/shell.sh:Z \
