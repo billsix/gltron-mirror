@@ -59,18 +59,20 @@ was reconciled + archived 2026-08-27 (its deletions were already executed).
 Active:
 
 - [OpenGL fixed-function → 3.3 core profile port](tasks/opengl-core-profile-port.md) — **not started**, surface at session start and ask Bill before beginning.
-- [Modernization survey](tasks/modernization-survey.md) — **survey doc** (2026-05-08); inventory of antiquated libraries/subsystems with a recommended sequence. Read before picking any "modernize X" task.
 - [SDL2 → SDL3 port](tasks/sdl3-port.md) — **shipped 2026-05-08** on Linux; macOS not retested (work remains).
 - [Post-round camera bug](tasks/post-round-camera-bug.md) — **fix applied (staged), runtime-unconfirmed**; root cause was glance-state (`bIsGlancing`) leaking into the observer camera on a crash-while-glancing. Runtime confirmation is tracked in [Verify post-round camera fix](tasks/verify-post-round-camera-fix.md) (reported 2026-05-08, diagnosed/fixed 2026-08-03).
+- [Verify HandmadeMath audio pitch](tasks/verify-handmademath-audio-pitch.md) — **blocked** on Bill's host listen-test of the SourceEngine pitch effect (the Phase-2 `Vector3 *` → `HMM_DotV3` rewrite).
 
-Completed (in `tasks/archive/`):
+Completed — one-line pointers; the full post-mortems (rationale, phases, rejected
+alternatives, deletions) live in the archived task docs:
 
-- [Container build cleanup](tasks/archive/2026/08/25/container-build-cleanup.md) — **shipped 2026-08-25** (3 core fixes: deleted the stale pgu-docs `entrypoint.sh` + dead `ENTRYPOINT`, which un-breaks `build`; dropped the undefined `BUILD_DOCS` arg; `format.sh` → `find nebu src/`). Image build verified. Optional `lint.sh` left as an open decision.
-- [AI freezes on second round](tasks/archive/2026/04/27/ai-freezes-on-second-round.md) — **fixed**, see plan for explanation.
-- [Port build system from autotools to CMake](tasks/archive/2026/04/27/cmake-port.md) — implemented and verified.
-- [AppImage build target](tasks/archive/2026/04/27/appimage-target.md) — **shipped (host-dependent)**; future work to make the AppImage self-contained is captured in the plan.
-- [SDL window architecture cleanup](tasks/archive/2026/05/10/sdl-window-architecture.md) — **shipped** (Option A, accessors).
-- [Replace nebu math with HandmadeMath](tasks/archive/2026/05/10/handmademath-port.md) — **all 5 phases shipped 2026-05-08**. Linear algebra now lives in `<HandmadeMath.h>` (vendored at upstream `661fef0`, exposed via the `handmademath` CMake `INTERFACE` target). The surviving geometric helpers (`segment2_*`, `box2_*`, `box3_*`, `vec2_Orthogonal`, `vec3_TriNormalDirection`, `uintFromVec3`) live in `nebu/include/base/nebu_geom.{h,c}`. `vec2`/`vec3`/`matrix` are documented typedef aliases for the HMM types in that same header (kept for readability — drop if the inconsistency bites). C standard bumped 99 → 11. Files deleted along the way: `nebu/base/{vector,matrix,quat,camera}.c`, `nebu/include/base/{nebu_vector,nebu_matrix,nebu_quat,nebu_Vector3}.h`, `nebu/include/video/nebu_camera.h`, `src/game/game_level.c`. **Outstanding:** Bill should listen-test the SourceEngine pitch effect on his host to validate the Phase-2 audio rewrite (`Vector3 *` → `HMM_DotV3`).
+- Container build cleanup — `tasks/archive/2026/08/25/container-build-cleanup.md`
+- AI freezes on second round — `tasks/archive/2026/04/27/ai-freezes-on-second-round.md`
+- Autotools → CMake port — `tasks/archive/2026/04/27/cmake-port.md`
+- AppImage build target (host-dependent) — `tasks/archive/2026/04/27/appimage-target.md`
+- SDL window architecture cleanup — `tasks/archive/2026/05/10/sdl-window-architecture.md`
+- Replace nebu math with HandmadeMath (all 5 phases) — `tasks/archive/2026/05/10/handmademath-port.md` (its one live follow-up is split into `tasks/verify-handmademath-audio-pitch.md`)
+- Modernization survey — `tasks/archive/2026/08/27/modernization-survey.md`
 
 When starting a new task, add a one-line entry under "Active" here pointing
 at a `tasks/<slug>.md` file, and keep the task file updated with status,
