@@ -4,6 +4,11 @@
 **Priority:** 7
 **Difficulty:** 4
 **Created:** 2026-06-13
+**Related:** `tasks/c-modernization-sweep.md` pins `-std=c23` and its **Phase 4 is the
+execution arm** of this investigation (C23 idioms: `nullptr`, standard attributes,
+`static_assert`). This doc stays the C23 decision record; it is not blocked by the
+sweep and the sweep is not blocked by it (they cross-reference). (back-pointer added
+2026-10-17, William Emerison Six <billsix@gmail.com>)
 
 ## Goal
 

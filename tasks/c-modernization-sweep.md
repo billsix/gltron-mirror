@@ -1,10 +1,63 @@
 # Behavior-preserving C modernization sweep
 
-**Status:** ready — scope decisions settled 2026-10-17; awaiting go-ahead to start (begin at Phase 0)
+**Status:** in progress — Phase 0 + Phase 1-worklist done 2026-10-17; worklist triage settled
+(see below); executing Phases 1-gate → 2 → 3 → 4
 **Priority:** 6
 **Difficulty:** 5
 **Created:** 2026-10-17 (William Emerison Six <billsix@gmail.com>)
 **Decisions settled:** 2026-10-17 (William Emerison Six <billsix@gmail.com>) — see Decisions below
+
+## Phase 1 worklist (captured 2026-10-17)
+
+Built the first-party tree under the C23 pin + the full raised warning set as plain
+warnings (no `-Werror`, keep-going). **C23 compatibility gate PASSES** — clean build,
+binary links, zero errors under `gnu23` (HandmadeMath `_Generic`, SDL3/SDL3_sound/GLEW/
+PNG/Lua headers, and the `.cpp` units all compile). Reproduce with
+`tasks/adhoc/c-modernization-sweep/discover.sh`; snapshot in that dir's `data/`.
+
+**493 warnings, all first-party** (zero from vendored/system — the `gltron_warnings`
+scoping already excludes them). By class (`data/by-class.txt`):
+
+| count | class | character | disposition |
+|------|-------|-----------|-------------|
+| 153 | `-Wincompatible-pointer-types-discards-qualifiers` (from `-Wwrite-strings`) | string literals → `char*` (96 are the `system_keynames.c` key-name table) | **policy Q2** — `const char*` tables/params vs drop `-Wwrite-strings` |
+| 130 | `-Wsign-conversion` | int↔`size_t`/`Uint32`; mix of real index/size + domain small-int | **policy Q3** — per-boundary |
+| 91 | `-Wimplicit-int-float-conversion` | int→float coords/math (graphics, audio) | **policy Q3** — mostly "not a smell" |
+| 64 | `-Wunused-parameter` | callback signatures (Lua `lua_State*`, libpng, SDL handlers) = externally-defined | **policy Q4** — `[[maybe_unused]]` vs `-Wno-unused-parameter` |
+| 12 | `-Wshadow` | | fix (surgical renames) |
+| 11 | `-Wshorten-64-to-32` | 64→32 narrowing | triage with Q3 |
+| 6 | `-Wpointer-sign` | `int*`→`GLuint*` at GL calls | fix |
+| 5 | `-Wunused-but-set-variable` | | fix/remove |
+| 4 | `-Wmissing-format-attribute`, 3 `-Wimplicit-int-conversion`, 3 `-Wimplicit-float-conversion`, 2 `-Wfloat-conversion` | | triage with Q2/Q3 |
+| 3 | `-Wheader-guard` | **real bug**: `dirsetup.h` `#define DIRESTUP_H` typo | **fix (Phase 2)** |
+| 2 | `-Wstring-plus-int` | `path.c` `PREF_DIR + 1` — *intentional* skip-the-`~`; rewrite to `&PREF_DIR[1]` | fix (behavior-preserving silence) |
+| 1 each | `-Wunused-variable`, `-Wunused-function`, `-Wimplicit-const-int-float-conversion`, `-Wformat-nonliteral` | `-Wformat-nonliteral` = the unbounded `sprintf(dst, PREF_DIR)` → Phase 2 | fix |
+
+The realization: driving all 493 to zero would be large signature/cast churn that fights
+the no-drive-by + teaching-artifact rule. So the real Phase-1 decision is **which flags
+stay in the enforced gate** (fix those to zero, opt out the hazards in-code) **vs which to
+drop** because on this artifact they flag mostly domain/preservation code. That is open
+questions 1–5 below.
+
+## Worklist-triage decisions (settled 2026-10-17, William Emerison Six <billsix@gmail.com>)
+
+Settled by the maintainer ("crush the task out" — proceed on the agent's recommendations).
+These shape which flags the enforced gate keeps and which warnings get fixed vs opted out:
+
+1. **First-party `.cpp` are in scope** for the genuine-bug + unused-param classes; conversions
+   judged by the same per-boundary policy as the C TUs. No C++ idiom rewrite in this sweep.
+2. **Keep `-Wwrite-strings`.** Make the read-only string tables/params `const char*`
+   (`system_keynames.c` key table is the bulk, self-contained). Opt out, in-code with a reason,
+   any site where a `char*` is externally dictated.
+3. **Keep `-Wsign-conversion` + `-Wshorten-64-to-32`**; fix the real index/size boundaries to
+   `size_t`/correct width, opt out the domain small-int sites. **Drop
+   `-Wimplicit-int-float-conversion`** from the gate — the 91 are intentional int-coord→float
+   graphics/audio math; casting each is churn with no safety gain.
+4. **`-Wno-unused-parameter`** in the gate — the 64 are externally-dictated callback signatures
+   (Lua `lua_State*`, libpng, SDL handlers), the standard's externally-defined-name exemption;
+   a tree-wide `[[maybe_unused]]` sweep is the churn the artifact rule warns against.
+5. **End state: gate on-by-default with `-Werror`**, flipped once the kept flags are driven to
+   zero (so the sweep can proceed warnings-visible-but-non-fatal in between).
 
 ## BLUF
 
@@ -94,26 +147,20 @@ Scope and standard are settled (see Decisions). Phase 0 is now purely sequencing
       runtime net before Phase 2 starts mutating memory/string code. The sweep doc's
       order still holds underneath: raised-warning-level build is the first gate,
       UBSan/ASan the runtime net.
-- [ ] **C23 compatibility gate (front-loaded because we pin C23 now, decision 2).**
-      Before adopting any C23 idiom, pin `-std` to C23 (Phase 1) and get a clean build
-      proving C23 mode doesn't break: vendored `third_party/HandmadeMath/HandmadeMath.h`
-      (its `_Generic` shorthand), the SDL3 / SDL3_sound / GLEW / PNG / Lua 5.4 headers,
-      and the `.cpp` units (`project(... C CXX)` — C23 pin is C-only; confirm the CXX
-      standard is untouched). **Cross-platform risk is the live one:** macOS clang is
-      fine, but **MSVC's C23 support is partial** — confirm the Windows toolchain we
-      claim (`CLAUDE.md` Status) still builds under C23, or record that Windows is
-      deferred/untested. If a header breaks only under strict C23, that is the one
-      place `gnu23` (extensions already ON) may be required — note it.
-- [ ] Add a Phase-0 back-pointer from `tasks/c23-port-investigation.md` to this task
-      (decision 3: that task stays the C23 decision record; Phase 4 here is its
-      execution arm). Keep inbound pointers honest per convention.
+- [x] **C23 compatibility gate (done 2026-10-17).** Pinned `-std` to C23 and built clean:
+      `gnu23` does not break `third_party/HandmadeMath/HandmadeMath.h` (`_Generic`), the
+      SDL3 / SDL3_sound / GLEW / PNG / Lua 5.4 headers, or the first-party `.cpp` units
+      (CXX standard left unpinned — C-only pin confirmed). 67 C TUs carry `-std=gnu23`
+      (verified in `compile_commands.json`, not just exit 0). **Windows is deferred/untested:**
+      the image is clang 22 / gcc 16 (both full C23); MSVC's partial C23 support was not
+      exercised here — record as a known gap per decision 2 rather than a blocker.
+- [x] Added the Phase-0 back-pointer from `tasks/c23-port-investigation.md` to this task
+      (decision 3). Inbound pointers honest.
 
 ### Phase 1 — Tier (a): let the toolchain build the worklist (mechanical, no hand-edits yet)
-- [ ] Pin `-std=c23` in `CMakeLists.txt` (`set(CMAKE_C_STANDARD 23)`; keep
-      `CMAKE_C_EXTENSIONS ON` for `realpath()`, so the effective flag is `gnu23`) and
-      **confirm the flag reaches the compile** (grep `compile_commands.json` — the
-      sweep doc warns a flag probe can silently no-op). The CXX standard is separate
-      and stays as-is.
+- [x] Pinned `-std=c23` in `CMakeLists.txt` (`set(CMAKE_C_STANDARD 23)`, extensions kept
+      ON → `gnu23`); flag confirmed on 67 C TUs in `compile_commands.json`. CXX untouched.
+      (done 2026-10-17)
 - [ ] Raise the first-party warning level **by default** (decision 5): add
       `-Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wvla
       -Wstrict-prototypes -Wold-style-definition -Wwrite-strings -Wformat=2` to the

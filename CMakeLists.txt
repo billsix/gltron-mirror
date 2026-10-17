@@ -13,12 +13,13 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     Debug Release RelWithDebInfo MinSizeRel)
 endif()
 
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 # GNU/POSIX extensions enabled to match the autotools default (no -std flag),
-# which is what code like nebu/filesystem/findpath.c relies on for realpath().
-# C11 is needed for HandmadeMath's _Generic shorthand
-# (see docs/plans/handmademath-port.md).
+# which is what code like nebu/filesystem/findpath.c relies on for realpath();
+# with the C23 pin the effective flag is gnu23. C11-or-later is also needed for
+# HandmadeMath's _Generic shorthand (see docs/plans/handmademath-port.md). The
+# CXX standard is intentionally left unpinned here (C-only pin).
 set(CMAKE_C_EXTENSIONS ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
