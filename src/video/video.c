@@ -192,7 +192,6 @@ void video_ResetData(void) {
 
   for (i = 0; i < game->players; i++) {
     PlayerVisual* pV = gPlayerVisuals + i;
-    Player* p = game->player + i;
     {
       char name[32];
       snprintf(name, sizeof name, "model_diffuse_%d", i);

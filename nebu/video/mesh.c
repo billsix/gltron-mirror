@@ -72,10 +72,11 @@ void nebu_Mesh_ComputeNormals(nebu_Mesh* pMesh) {
   int i, j;
 
   if (!pMesh->pNormals)
-    pMesh->pNormals = (float*)malloc(3 * sizeof(float) * pMesh->nVertices);
+    pMesh->pNormals =
+        (float*)malloc(3 * sizeof(float) * (size_t)pMesh->nVertices);
   pMesh->vertexformat |= NEBU_MESH_NORMAL;
 
-  memset(pMesh->pNormals, 0, 3 * sizeof(float) * pMesh->nVertices);
+  memset(pMesh->pNormals, 0, 3 * sizeof(float) * (size_t)pMesh->nVertices);
   for (i = 0; i < pMesh->nTriangles; i++) {
     float normal[3];
     nebu_Mesh_ComputeTriangleNormal(pMesh, i, normal);
@@ -124,23 +125,24 @@ nebu_Mesh* nebu_Mesh_Create(int flags, int nVertices, int nTriangles) {
   pMesh->nTriangles = nTriangles;
 
   if (flags & NEBU_MESH_POSITION)
-    pMesh->pVertices = (float*)malloc(3 * sizeof(float) * nVertices);
+    pMesh->pVertices = (float*)malloc(3 * sizeof(float) * (size_t)nVertices);
   else
     pMesh->pVertices = NULL;
 
   if (flags & NEBU_MESH_NORMAL)
-    pMesh->pNormals = (float*)malloc(3 * sizeof(float) * nVertices);
+    pMesh->pNormals = (float*)malloc(3 * sizeof(float) * (size_t)nVertices);
   else
     pMesh->pNormals = NULL;
 
   for (i = 0; i < NEBU_MESH_TEXCOORD_MAXCOUNT; i++) {
     if (flags & (NEBU_MESH_TEXCOORD0 << i))
-      pMesh->pTexCoords[i] = (float*)malloc(2 * sizeof(float) * nVertices);
+      pMesh->pTexCoords[i] =
+          (float*)malloc(2 * sizeof(float) * (size_t)nVertices);
     else
       pMesh->pTexCoords[i] = NULL;
   }
 
-  pMesh->pTriangles = (int*)malloc(3 * sizeof(int) * nTriangles);
+  pMesh->pTriangles = (int*)malloc(3 * sizeof(int) * (size_t)nTriangles);
   return pMesh;
 }
 

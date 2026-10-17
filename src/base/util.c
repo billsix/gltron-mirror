@@ -5,7 +5,7 @@
 
 void runScript(int ePath, const char* name) {
   char* s;
-  s = getPath(ePath, name);
+  s = getPath((ePathLocation)ePath, name);
   scripting_RunFile(s);
   free(s);
 }

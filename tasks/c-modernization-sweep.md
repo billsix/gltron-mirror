@@ -1,7 +1,9 @@
 # Behavior-preserving C modernization sweep
 
-**Status:** in progress — Phase 0 + Phase 1-worklist done 2026-10-17; worklist triage settled
-(see below); executing Phases 1-gate → 2 → 3 → 4
+**Status:** in progress — Phases 0-2 done + Phase 3 const-strings done 2026-10-17; sign-conversion
++ small mechanical classes fanning out (per-directory Edit-only workers); then Phase 4, then flip
+`-Werror` and verify in-image. Warning trajectory: 493 → 333 (gate) → 327 (Phase 2) → 231 → 174
+(Phase 3 const). 0 errors throughout; binary links at each step.
 **Priority:** 6
 **Difficulty:** 5
 **Created:** 2026-10-17 (William Emerison Six <billsix@gmail.com>)
@@ -38,6 +40,25 @@ the no-drive-by + teaching-artifact rule. So the real Phase-1 decision is **whic
 stay in the enforced gate** (fix those to zero, opt out the hazards in-code) **vs which to
 drop** because on this artifact they flag mostly domain/preservation code. That is open
 questions 1–5 below.
+
+## Findings & follow-ups surfaced during the sweep (2026-10-17)
+
+Preserved behavior-identically; **not fixed** here (out of scope — this sweep changes no
+behavior). Each is a candidate for its own task:
+
+- **Latent bug — `nebu/scripting/scripting.c` string-result clamp (optional).** The code
+  computes a clamped length `copy` (and a status 2) when `size > len`, but the `memcpy` still
+  uses the unclamped `size`. The clamp is dead. Kept `copy` with `[[maybe_unused]]`.
+- **Latent bug — `src/game/event.c` `crashTestPlayers` always returns 0 (optional).** An inner
+  `crash` (now renamed `jCrash` for `-Wshadow`) drives the inner loop's break, but the function
+  returns the *outer* `crash`, which is never set — so the function's result is always 0. Renamed
+  the inner only; behavior byte-identical. Worth checking whether callers rely on the (broken)
+  return.
+- **Optional header retypes (would remove local GL casts).** `video_level_shader.diffuse_texture_id`
+  (`int` in `video/video_level.h`) and `nebu_2d::tex_id` / `nebu_Font::pTextures` hold GL ids and
+  are really `GLuint`/`GLuint*`; and `trailStatesNormal(..., int texture)` takes a GL id as `int`.
+  The sweep cast at call sites per the no-cross-dir-header rule; retyping these fields/params to
+  the GL types would drop ~8 casts but is a separate, deliberate change.
 
 ## Worklist-triage decisions (settled 2026-10-17, William Emerison Six <billsix@gmail.com>)
 

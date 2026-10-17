@@ -94,7 +94,8 @@ void storeIndices(TrailMesh* pMesh, int indexOffset, int vertexOffset) {
                   : 0;
 
   for (i = 0; i < 6; i++) {
-    pMesh->pIndices[i + indexOffset] = ppBase[winding][i] + vertexOffset;
+    pMesh->pIndices[i + indexOffset] =
+        (unsigned short)(ppBase[winding][i] + vertexOffset);
   }
 }
 
@@ -173,7 +174,7 @@ void trailGeometry(Player* pPlayer, PlayerVisual* pV, TrailMesh* pMesh,
     curIndex += 6;
   }
 
-  pMesh->iUsed += curIndex - *piOffset;
+  pMesh->iUsed += (unsigned int)(curIndex - *piOffset);
   *piOffset = curIndex;
   *pvOffset = curVertex;
 }
@@ -212,7 +213,7 @@ void bowGeometry(Player* pPlayer, PlayerVisual* pV, TrailMesh* pMesh,
   vOffset += 2;
   storeIndices(pMesh, iOffset, vOffset - 4);
 
-  pMesh->iUsed += iOffset - *piOffset;
+  pMesh->iUsed += (unsigned int)(iOffset - *piOffset);
   *piOffset = iOffset;
   *pvOffset = vOffset;
 }

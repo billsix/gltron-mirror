@@ -33,7 +33,8 @@ float criticalDistance(void) { return 84.0f * game2->rules.speed; }
 void doComputerSimple(int player, int target, AI_Distances* distances) {
   AI* ai;
   Data* data;
-  Player *me, *him;
+  Player* me;
+  [[maybe_unused]] Player* him;
   int level;
 
   me = &(game->player[player]);

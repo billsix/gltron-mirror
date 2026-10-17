@@ -13,7 +13,8 @@ nebu_Surface* nebu_Surface_Create(int width, int height, int format) {
   pSurface->w = width;
   pSurface->h = height;
   pSurface->format = format;
-  pSurface->data = malloc(width * height * nebu_Surface_FormatSize[format]);
+  pSurface->data =
+      malloc((size_t)(width * height * nebu_Surface_FormatSize[format]));
   return pSurface;
 }
 
@@ -81,7 +82,7 @@ int nebu_Surface_SaveBMP(nebu_Surface* pSurface, const char* filename) {
 
     for (i = 0; i < y; i++)
       memcpy(((char*)temp->pixels) + temp->pitch * i,
-             pixels + 3 * x * (y - i - 1), x * 3);
+             pixels + 3 * x * (y - i - 1), (size_t)(x * 3));
 
     SDL_SaveBMP(temp, filename);
     SDL_DestroySurface(temp);
@@ -94,23 +95,20 @@ int nebu_Surface_SavePNG(nebu_Surface* pSurface, const char* filename) {
   png_infop info_ptr;
   png_byte** row_ptrs;
   int i;
-  int png_format, bitdepth, bytesperpixel;
+  int png_format, bitdepth;
 
   switch (pSurface->format) {
     case NEBU_SURFACE_FMT_RGB:
       png_format = PNG_COLOR_TYPE_RGB;
       bitdepth = 8;
-      bytesperpixel = 3;
       break;
     case NEBU_SURFACE_FMT_RGBA:
       png_format = PNG_COLOR_TYPE_RGBA;
       bitdepth = 8;
-      bytesperpixel = 4;
       break;
     case NEBU_SURFACE_FMT_ALPHA:
       png_format = PNG_COLOR_TYPE_GRAY;
       bitdepth = 8;
-      bytesperpixel = 1;
       break;
     default:
       fprintf(stderr, "[savepng] unsupported format\n");
@@ -135,13 +133,15 @@ int nebu_Surface_SavePNG(nebu_Surface* pSurface, const char* filename) {
   png_set_write_fn(png_ptr, 0, user_write_data, user_flush_data);
   /* png_init_io(png_ptr, fp); */
 
-  png_set_IHDR(png_ptr, info_ptr, pSurface->w, pSurface->h, bitdepth,
-               png_format, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
+  png_set_IHDR(png_ptr, info_ptr, (png_uint_32)pSurface->w,
+               (png_uint_32)pSurface->h, bitdepth, png_format,
+               PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
                PNG_FILTER_TYPE_DEFAULT);
   png_write_info(png_ptr, info_ptr);
 
   /* get pointers */
-  if (!(row_ptrs = (png_byte**)malloc(pSurface->h * sizeof(png_byte*)))) {
+  if (!(row_ptrs =
+            (png_byte**)malloc((size_t)pSurface->h * sizeof(png_byte*)))) {
     png_destroy_write_struct(&png_ptr, &info_ptr);
     return -1;
   }
@@ -189,6 +189,6 @@ void nebu_Surface_Blit(nebu_Surface* pSrcSurface, nebu_Rect* pSrcRect,
   for (v = 0; v < src.height; v++) {
     memcpy(pDstSurface->data + (v + dst.y) * dstPitch + dst.x * dstBpp,
            pSrcSurface->data + (v + src.y) * srcPitch + src.x * srcBpp,
-           src.width * srcBpp);
+           (size_t)(src.width * srcBpp));
   }
 }

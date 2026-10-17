@@ -43,15 +43,15 @@ unsigned int nebu_Time_GetElapsed() {
 }
 
 static int lastFrame = 0;
-void nebu_Time_SetCurrentFrameTime(unsigned t) { lastFrame = t; }
+void nebu_Time_SetCurrentFrameTime(unsigned t) { lastFrame = (int)t; }
 
 unsigned int nebu_Time_GetElapsedSinceLastFrame() {
-  return nebu_Time_GetElapsed() - lastFrame;
+  return nebu_Time_GetElapsed() - (unsigned int)lastFrame;
 }
 
 void nebu_Time_FrameDelay(unsigned int delay) {
   if (nebu_Time_GetElapsedSinceLastFrame() < delay)
-    nebu_System_Sleep(delay - nebu_Time_GetElapsedSinceLastFrame());
+    nebu_System_Sleep((int)(delay - nebu_Time_GetElapsedSinceLastFrame()));
   // nebu_Time_SetCurrentFrameTime( nebu_Time_GetElapsed() );
 }
 
@@ -104,10 +104,10 @@ void nebu_System_ExitLoop(int value) { return_code = value; }
 void nebu_System_PostRedisplay() { redisplay = 1; }
 
 void nebu_System_SwapBuffers() {
-  int now = nebu_Time_GetElapsed();
+  int now = (int)nebu_Time_GetElapsed();
   fps_dt = now - fps_last;
   fps_last = now;
-  nebu_Time_SetCurrentFrameTime(now);
+  nebu_Time_SetCurrentFrameTime((unsigned int)now);
   SDL_Window* window = nebu_Video_GetWindow();
   if (window) {
     SDL_GL_SwapWindow(window);
@@ -126,6 +126,8 @@ void nebu_System_SetCallback_MouseMotion(void (*mouseMotion)(int, int)) {
   current->mouseMotion = mouseMotion;
 }
 
-void nebu_System_SetCallback_Idle(void (*idle)(void)) { current->idle = idle; }
+void nebu_System_SetCallback_Idle(void (*idle_cb)(void)) {
+  current->idle = idle_cb;
+}
 
-void nebu_System_Sleep(int ms) { SDL_Delay(ms); }
+void nebu_System_Sleep(int ms) { SDL_Delay((Uint32)ms); }

@@ -89,14 +89,15 @@ png_texture* load_png_texture(const char* filename) {
   }
 
   tex = (png_texture*)malloc(sizeof(png_texture));
-  tex->data = malloc(x * y * zsize);
-  tex->width = x;
-  tex->height = y;
+  tex->data = malloc(x * y * (png_uint_32)zsize);
+  tex->width = (int)x;
+  tex->height = (int)y;
   tex->channels = zsize;
 
   /* get pointers */
   row_pointers = (png_byte**)malloc(y * sizeof(png_byte*));
-  for (i = 0; i < y; i++) row_pointers[i] = tex->data + (y - i - 1) * zsize * x;
+  for (i = 0; i < y; i++)
+    row_pointers[i] = tex->data + (y - i - 1) * (unsigned int)zsize * x;
 
   png_read_image(png_ptr, row_pointers);
   png_destroy_read_struct(&png_ptr, &info_ptr, 0);
@@ -130,7 +131,8 @@ png_texture* mipmap_png_texture(png_texture* source, int level, int clamp_u,
 
   mip->width = source->width / fx;
   mip->height = source->height / fy;
-  mip->data = (unsigned char*)malloc(mip->width * mip->height * mip->channels);
+  mip->data = (unsigned char*)malloc(
+      (size_t)(mip->width * mip->height * mip->channels));
 
   /* simple linear filtering */
   for (i = 0; i < mip->channels; i++) {

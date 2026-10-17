@@ -28,6 +28,7 @@ extern void scripting_PushInteger(int iValue);
 
 extern int scripting_RunFile(const char* name);
 extern int scripting_Run(const char* command);
+[[gnu::format(printf, 1, 2)]]
 extern int scripting_RunFormat(const char* format, ...);
 extern void scripting_RunGC();
 extern void scripting_Register(const char* name, int (*func)(lua_State* L));

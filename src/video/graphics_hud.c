@@ -42,7 +42,7 @@ int getFPS(void) {
   /* draws FPS in upper left corner of Display d */
   static int fps_h[FPS_HSIZE];
   static int pos = -FPS_HSIZE;
-  static int fps_min = 0;
+  [[maybe_unused]] static int fps_min = 0;
   static int fps_avg = 0;
 
   int dt = nebu_Time_GetTimeForLastFrame();
@@ -125,7 +125,7 @@ void getPauseString(char* buf, size_t bufsize, float* color) {
   static int lt = 0;
   int now;
 
-  now = nebu_Time_GetElapsed();
+  now = (int)nebu_Time_GetElapsed();
   d += (now - lt) / 500.0f;
   lt = now;
   /* printf("%.5f\n", delta); */
@@ -311,7 +311,7 @@ int c_drawTextFitIntoRect(lua_State* l) {
   box.vMax.X = width;
   box.vMax.Y = height;
   nebu_Font_RenderToBox((nebu_Font*)resource_Get(gTokenGameFont, eRT_Font),
-                        text, strlen(text), &box, flags);
+                        text, (int)strlen(text), &box, flags);
   free(text);
 
   return 0;
@@ -366,8 +366,8 @@ void drawCircle(float phiStart, float phiEnd, int nSegments, float r1, float r2,
 
   if (nSegments < 1) return;
 
-  pVertices = (float*)malloc((nSegments + 1) * 2 * 3 * sizeof(float));
-  pColors = (float*)malloc((nSegments + 1) * 2 * 3 * sizeof(float));
+  pVertices = (float*)malloc((size_t)((nSegments + 1) * 2 * 3) * sizeof(float));
+  pColors = (float*)malloc((size_t)((nSegments + 1) * 2 * 3) * sizeof(float));
 
   for (i = 0; i < nSegments + 1; i++) {
     float t = i / (float)nSegments;
@@ -384,16 +384,17 @@ void drawCircle(float phiStart, float phiEnd, int nSegments, float r1, float r2,
     rgb_interpolate(pColors + 3 * (2 * i + 1), t, c3, c4);
   }
 
-  pIndices = (unsigned int*)malloc((nSegments) * 2 * 3 * sizeof(unsigned int));
+  pIndices = (unsigned int*)malloc((size_t)((nSegments) * 2 * 3) *
+                                   sizeof(unsigned int));
 
   for (i = 0; i < nSegments; i++) {
-    pIndices[3 * (2 * i + 0) + 0] = (i + 0) * 2 + 0;
-    pIndices[3 * (2 * i + 0) + 1] = (i + 0) * 2 + 1;
-    pIndices[3 * (2 * i + 0) + 2] = (i + 1) * 2 + 0;
+    pIndices[3 * (2 * i + 0) + 0] = (unsigned int)((i + 0) * 2 + 0);
+    pIndices[3 * (2 * i + 0) + 1] = (unsigned int)((i + 0) * 2 + 1);
+    pIndices[3 * (2 * i + 0) + 2] = (unsigned int)((i + 1) * 2 + 0);
 
-    pIndices[3 * (2 * i + 1) + 0] = (i + 1) * 2 + 0;
-    pIndices[3 * (2 * i + 1) + 1] = (i + 0) * 2 + 1;
-    pIndices[3 * (2 * i + 1) + 2] = (i + 1) * 2 + 1;
+    pIndices[3 * (2 * i + 1) + 0] = (unsigned int)((i + 1) * 2 + 0);
+    pIndices[3 * (2 * i + 1) + 1] = (unsigned int)((i + 0) * 2 + 1);
+    pIndices[3 * (2 * i + 1) + 2] = (unsigned int)((i + 1) * 2 + 1);
   }
 
   glVertexPointer(3, GL_FLOAT, 0, pVertices);

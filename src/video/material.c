@@ -87,7 +87,8 @@ void readMaterialLibraryFromFile(char* filename, gltron_Mesh* pMesh) {
   }
 
   pMesh->nMaterials = iMaterial + 1;
-  pMesh->pMaterials = malloc(sizeof(gltron_Mesh_Material) * pMesh->nMaterials);
+  pMesh->pMaterials =
+      malloc(sizeof(gltron_Mesh_Material) * (size_t)pMesh->nMaterials);
   for (i = 0; i < pMesh->nMaterials; i++) {
     memcpy(pMesh->pMaterials + i, pMaterials + i, sizeof(gltron_Mesh_Material));
   }

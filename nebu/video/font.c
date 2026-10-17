@@ -52,7 +52,7 @@ K     75    -           32768      0  16384  800040
 
 void getLine(char* buf, int size, file_handle file) {
   do {
-    file_gets(file, buf, size);
+    file_gets(file, buf, (unsigned int)size);
   } while (buf[0] == '\n' || buf[0] == '#');
 }
 
@@ -102,12 +102,12 @@ nebu_Font* nebu_Font_Load(const char* filename, int fs_tag) {
   }
   /* font name - ignored */
   getLine(buf, sizeof(buf), file);
-  len = strlen(buf) + 1;
+  len = (int)(strlen(buf) + 1);
 
   nebu_Video_CheckErrors("before font load");
 
   /* prepare space for texture IDs  */
-  font->pTextures = (int*)malloc(font->nTextures * sizeof(int));
+  font->pTextures = (int*)malloc((size_t)font->nTextures * sizeof(int));
   glGenTextures(font->nTextures, (GLuint*)font->pTextures);
 
   /* the individual textures */
@@ -115,11 +115,11 @@ nebu_Font* nebu_Font_Load(const char* filename, int fs_tag) {
     char* texname;
     char* path;
     getLine(buf, sizeof(buf), file);
-    len = strlen(buf) + 1;
+    len = (int)(strlen(buf) + 1);
     if (buf[len - 2] == '\n') buf[len - 2] = 0;
-    texname = (char*)malloc(len);
-    memcpy(texname, buf, len);
-    glBindTexture(GL_TEXTURE_2D, font->pTextures[i]);
+    texname = (char*)malloc((size_t)len);
+    memcpy(texname, buf, (size_t)len);
+    glBindTexture(GL_TEXTURE_2D, (GLuint)font->pTextures[i]);
     // TODO: load texture
     path = nebu_FS_GetPath(fs_tag, texname);
     if (path) {
@@ -149,7 +149,7 @@ nebu_Font* nebu_Font_Load(const char* filename, int fs_tag) {
 }
 
 void nebu_Font_Free(nebu_Font* font) {
-  glDeleteTextures(font->nTextures, font->pTextures);
+  glDeleteTextures(font->nTextures, (const GLuint*)font->pTextures);
   free(font->pTextures);
   free(font);
 }
@@ -198,7 +198,7 @@ void nebu_Font_Render(nebu_Font* font, const char* text, int len) {
     // draw textured quad
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glBindTexture(GL_TEXTURE_2D, font->pTextures[texture]);
+    glBindTexture(GL_TEXTURE_2D, (GLuint)font->pTextures[texture]);
     glEnable(GL_TEXTURE_2D);
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 

@@ -13,7 +13,7 @@ unsigned char* scalePixelBitmap(unsigned char* source, int sw, int sh, int posx,
   row = dw / 8;
   if (dw % 8) row++;
 
-  data = (unsigned char*)malloc(row * dh);
+  data = (unsigned char*)malloc((size_t)(row * dh));
   for (y = 0; y < dh; y++) {
     byte = 0;
     for (x = 0; x < dw; x++) {
@@ -51,7 +51,7 @@ unsigned char* scalePixels(const unsigned char* source, int sw, int sh,
           "to (%d,%d), bytes: %d\n", posx, posy, posx + width, posy + width,
           sw, sh, dw, dh, bytes);
   */
-  data = (unsigned char*)malloc(dw * dh * bytes);
+  data = (unsigned char*)malloc((size_t)(dw * dh * bytes));
   for (y = 0; y < dh; y++) {
     for (x = 0; x < dw; x++) {
       int sx, sy, j;

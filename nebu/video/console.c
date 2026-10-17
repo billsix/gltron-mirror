@@ -11,15 +11,15 @@ char buf[BUFSIZE];
 
 void consoleAddLine(const char* text) {
 #define BUFSIZE 100
-  char buf[BUFSIZE];
+  char local_buf[BUFSIZE];
   if (strlen(text) > BUFSIZE - 20) return;
 
   // FIXME: get rid of hard limit
   // FIXME: escape "" properly
   // TODO: push string onto stack, and call lua function
   //       directly
-  snprintf(buf, sizeof buf, "console_AddLine(\"%s\")", text);
-  scripting_Run(buf);
+  snprintf(local_buf, sizeof local_buf, "console_AddLine(\"%s\")", text);
+  scripting_Run(local_buf);
 }
 
 void console_Seek(int range) {

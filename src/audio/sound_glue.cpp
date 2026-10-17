@@ -40,7 +40,7 @@ static Sound::Source3D* recognizerEngine;
 
 #define TURNLENGTH 250.0f
 
-static void output_decoders(void) {
+[[maybe_unused]] static void output_decoders(void) {
   const Sound_DecoderInfo** rc = Sound_AvailableDecoders();
   const Sound_DecoderInfo** i;
   const char** ext;
@@ -90,7 +90,7 @@ void Audio_Idle(void) {
       p3d->_location = HMM_V3(x, y, 0);
       float V = p->data->speed;
 
-      int dt = game2->time.current - p->data->turn_time;
+      int dt = (int)(game2->time.current - p->data->turn_time);
       if (dt < TURN_LENGTH) {
         float t = (float)dt / TURNLENGTH;
 

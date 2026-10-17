@@ -88,7 +88,7 @@ void initTimedemo(void) {
   printf("-- initializing timedemo\n");
 
   frames = 0;
-  startTime = nebu_Time_GetElapsed();
+  startTime = (int)nebu_Time_GetElapsed();
 
   nebu_srand(12313);
 
@@ -125,7 +125,7 @@ void initTimedemo(void) {
 }
 
 void exitTimedemo(void) {
-  int dt = nebu_Time_GetElapsed() - startTime;
+  int dt = (int)(nebu_Time_GetElapsed() - (unsigned int)startTime);
   if (dt) {
     displayMessage(TO_STDERR | TO_CONSOLE, "timedemo FPS: %.2f\n",
                    (float)frames / dt * 1000.0f);

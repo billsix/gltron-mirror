@@ -78,8 +78,8 @@ void idleGui(void) {
   nebu_System_PostRedisplay(); /* animate menu */
 }
 
-void keyboardConfigure(int state, int key, int x, int y) {
-  if (state != NEBU_INPUT_KEYSTATE_DOWN) return;
+void keyboardConfigure(int keyState, int key, int x, int y) {
+  if (keyState != NEBU_INPUT_KEYSTATE_DOWN) return;
 
   if (key != 27) /* don't allow escape */
   {
@@ -101,10 +101,10 @@ void keyboardConfigure(int state, int key, int x, int y) {
   nebu_System_ExitLoop(eSRC_GUI_Prompt_Escape);
 }
 
-void keyboardGui(int state, int key, int x, int y) {
+void keyboardGui(int keyState, int key, int x, int y) {
   char* pMenuName;
 
-  if (state == NEBU_INPUT_KEYSTATE_UP) return;
+  if (keyState == NEBU_INPUT_KEYSTATE_UP) return;
 
   scripting_Run("return Menu.current");
   scripting_GetStringResult(&pMenuName);
@@ -181,7 +181,8 @@ void initGui(void) {
 
 void gui_LoadResources(void) {
   char font_path[PATH_MAX];
-  snprintf(font_path, sizeof font_path, "%s%c%s", DATA_DIR, SEPARATOR, "data/babbage.ftx");
+  snprintf(font_path, sizeof font_path, "%s%c%s", DATA_DIR, SEPARATOR,
+           "data/babbage.ftx");
   pFont = nebu_Font_Load(font_path, PATH_ART);
   {
     char* path = nebu_FS_GetPath(PATH_ART, "gui.png");
@@ -208,9 +209,9 @@ void exitGui(void) {
   updateSettingsCache();  // GUI can change settings
 }
 
-void guiMouse(int buttons, int state, int x, int y) {
+void guiMouse(int buttons, int mouseState, int x, int y) {
   fprintf(stderr, "Mouse buttons: %d, State %d, Position (%d, %d)\n", buttons,
-          state, x, y);
+          mouseState, x, y);
 
   /* fprintf(stderr, "testing for state == %d\n", SYSTEM_MOUSEPRESSED); */
 }

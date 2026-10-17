@@ -52,7 +52,7 @@ void nebu_Input_Init(void) {
       int n;
       char* endptr;
       errno = 0;
-      n = strtol(NEBU_MAX_JOY, &endptr, 10);
+      n = (int)strtol(NEBU_MAX_JOY, &endptr, 10);
       if (n < 0) n = 0;
       if (n > MAX_JOY) n = MAX_JOY;
       if (!*endptr && !errno) max_joy = n;
@@ -141,7 +141,7 @@ void SystemMouseMotion(int x, int y) {
 
 const char* nebu_Input_GetKeyname(int key) {
   if (key < SYSTEM_CUSTOM_KEYS)
-    return SDL_GetKeyName(key);
+    return SDL_GetKeyName((SDL_Keycode)key);
   else {
     int i;
 

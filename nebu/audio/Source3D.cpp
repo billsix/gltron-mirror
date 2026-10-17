@@ -176,12 +176,12 @@ int Source3D::Mix(Uint8* data, int len) {
     if (vol > SOUND_VOL_THRESHOLD) {
       // copy clen bytes from the buffer to a temporary buffer
       if (clen <= _source->_buffersize - _position) {
-        memcpy(tmp, _source->_buffer + _position, clen);
+        memcpy(tmp, _source->_buffer + _position, (size_t)clen);
       } else {
         memcpy(tmp, _source->_buffer + _position,
-               _source->_buffersize - _position);
+               (size_t)(_source->_buffersize - _position));
         memcpy(tmp + _source->_buffersize - _position, _source->_buffer,
-               clen - (_source->_buffersize - _position));
+               (size_t)(clen - (_source->_buffersize - _position)));
       }
 
       fxPan(pan, vol, tmp, clen);

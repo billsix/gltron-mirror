@@ -186,7 +186,8 @@ int c_loadDirectory(lua_State* L) {
   }
   dir = (int)lua_tonumber(L, -1);
 
-  dirPath = getDirectory(dir);  // PATH_ART or PATH_LEVEL or PATH_MUSIC
+  dirPath =
+      getDirectory((ePathLocation)dir);  // PATH_ART or PATH_LEVEL or PATH_MUSIC
   files = readDirectoryContents(dirPath, NULL);
 
   lua_newtable(L);
@@ -216,8 +217,10 @@ int c_setArtPath(lua_State* l) {
   fprintf(stderr, "[status] loading artpack '%s'\n", artpack);
 
   // sprintf(art_dir_default, "%s%c%s", "art", SEPARATOR, "default");
-  snprintf(art_dir_default, sizeof art_dir_default, "%s%c%s", DATA_DIR, SEPARATOR, "art/default");
-  snprintf(art_dir_artpack, sizeof art_dir_artpack, "%s%c%s", "art", SEPARATOR, artpack);
+  snprintf(art_dir_default, sizeof art_dir_default, "%s%c%s", DATA_DIR,
+           SEPARATOR, "art/default");
+  snprintf(art_dir_artpack, sizeof art_dir_artpack, "%s%c%s", "art", SEPARATOR,
+           artpack);
 
   free(artpack);
 

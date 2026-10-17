@@ -56,7 +56,7 @@ void loadTexture(const char* filename, int format) {
     while (tex->width > 1 || tex->height > 1) {
       if (tex->width <= maxSize && tex->height <= maxSize) {
         glTexImage2D(GL_TEXTURE_2D, level, format, tex->width, tex->height, 0,
-                     internal, GL_UNSIGNED_BYTE, tex->data);
+                     (GLenum)internal, GL_UNSIGNED_BYTE, tex->data);
 #ifdef PRINTF_VERBOSE
         printf("uploading level %d, %dx%d texture\n", level, tex->width,
                tex->height);
@@ -69,7 +69,7 @@ void loadTexture(const char* filename, int format) {
     }
     /* upload 1x1 mip level */
     glTexImage2D(GL_TEXTURE_2D, level, format, tex->width, tex->height, 0,
-                 internal, GL_UNSIGNED_BYTE, tex->data);
+                 (GLenum)internal, GL_UNSIGNED_BYTE, tex->data);
 #ifdef PRINTF_VERBOSE
     printf("uploading level %d, %dx%d texture\n", level, tex->width,
            tex->height);

@@ -65,9 +65,9 @@ char* nebu_FS_GetPath(int tag, const char* filename) {
     if (pConfig->tag == tag) {
       int i;
       for (i = 0; i < pConfig->nDirs; i++) {
-        int length = strlen(pConfig->directories[i]) + 1 /* seperator */ +
-                     strlen(filename) + 1 /* terminator */;
-        char* path = (char*)malloc(length);
+        int length = (int)(strlen(pConfig->directories[i]) + 1 /* seperator */ +
+                           strlen(filename) + 1 /* terminator */);
+        char* path = (char*)malloc((size_t)length);
         sprintf(path, "%s%c%s", pConfig->directories[i], PATH_SEPARATOR,
                 filename);
         printf("trying %s\n", path);

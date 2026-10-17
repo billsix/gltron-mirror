@@ -24,8 +24,8 @@ SourceSample::~SourceSample() {
 }
 
 void SourceSample::Load(char* filename) {
-  Sound_Sample* sample =
-      Sound_NewSampleFromFile(filename, _system->GetAudioInfo(), _buffersize);
+  Sound_Sample* sample = Sound_NewSampleFromFile(
+      filename, _system->GetAudioInfo(), (Uint32)_buffersize);
   if (sample == NULL) {
     fprintf(stderr, "[error] failed loading sample from '%s': %s\n", filename,
             Sound_GetError());
@@ -34,9 +34,9 @@ void SourceSample::Load(char* filename) {
 
   Sound_DecodeAll(sample);
 
-  _buffersize = sample->buffer_size;
-  _buffer = new Uint8[_buffersize];
-  memcpy(_buffer, sample->buffer, _buffersize);
+  _buffersize = (int)sample->buffer_size;
+  _buffer = new Uint8[(size_t)_buffersize];
+  memcpy(_buffer, sample->buffer, (size_t)_buffersize);
 
   Sound_FreeSample(sample);
 
@@ -49,18 +49,20 @@ int SourceSample::Mix(Uint8* data, int len) {
   assert(len < _buffersize);
 
   if (len < _buffersize - _position) {
-    SDL_MixAudio(data, _buffer + _position, SDL_AUDIO_S16, len, _volume);
+    SDL_MixAudio(data, _buffer + _position, SDL_AUDIO_S16, (Uint32)len,
+                 _volume);
     _position += len;
   } else {
     SDL_MixAudio(data, _buffer + _position, SDL_AUDIO_S16,
-                 _buffersize - _position, _volume);
+                 (Uint32)(_buffersize - _position), _volume);
     len -= _buffersize - _position;
 
     if (_loop) {
       if (_loop != 255) _loop--;
 
       _position = 0;
-      SDL_MixAudio(data, _buffer + _position, SDL_AUDIO_S16, len, _volume);
+      SDL_MixAudio(data, _buffer + _position, SDL_AUDIO_S16, (Uint32)len,
+                   _volume);
       _position += len;
     } else {
       _isPlaying = 0;

@@ -1,0 +1,2 @@
+src/audio/sound_glue.cpp:43:13: warning: unused function 'output_decoders' [-Wunused-function]
+src/audio/sound_glue.cpp:93:36: warning: implicit conversion changes signedness: 'unsigned int' to 'int' [-Wsign-conversion]

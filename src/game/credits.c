@@ -35,15 +35,15 @@ const char* credits[] = {
     // "  Right Hemisphere:  3D exploration software",
     NULL};
 
-void mouseCredits(int buttons, int state, int x, int y) {
-  if (state == SYSTEM_MOUSEPRESSED) {
+void mouseCredits(int buttons, int mouseState, int x, int y) {
+  if (mouseState == SYSTEM_MOUSEPRESSED) {
     nebu_System_Exit();
     nebu_System_ExitLoop(eSRC_Quit);
   }
 }
 
-void keyCredits(int state, int k, int x, int y) {
-  if (state == NEBU_INPUT_KEYSTATE_UP) return;
+void keyCredits(int keyState, int k, int x, int y) {
+  if (keyState == NEBU_INPUT_KEYSTATE_UP) return;
   nebu_System_Exit();
   nebu_System_ExitLoop(eSRC_Quit);
 }
@@ -61,7 +61,7 @@ void drawCredits(void) {
   float h = gScreen->vp_h / 36.0f;
   int i;
   float colors[][3] = {{1.0, 0.0, 0.0}, {1.0, 1.0, 1.0}};
-  time = nebu_Time_GetElapsed() - coffset;
+  time = (int)(nebu_Time_GetElapsed() - (unsigned int)coffset);
 
   glClearColor(.0, .0, .0, .0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -80,7 +80,7 @@ void displayCredits(void) {
   nebu_System_SwapBuffers();
 }
 
-void initCredits(void) { coffset = nebu_Time_GetElapsed(); }
+void initCredits(void) { coffset = (int)nebu_Time_GetElapsed(); }
 
 Callbacks creditsCallbacks = {displayCredits,
                               idleCredits,

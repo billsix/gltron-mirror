@@ -17,8 +17,8 @@ nebu_Mesh* loadMesh(void);
 void video_FreeLevel(video_level* l) {
   nebu_Mesh_Free(l->floor);
   nebu_Mesh_Free(l->arena);
-  glDeleteTextures(1, &l->floor_shader.diffuse_texture_id);
-  glDeleteTextures(1, &l->arena_shader.diffuse_texture_id);
+  glDeleteTextures(1, (const GLuint*)&l->floor_shader.diffuse_texture_id);
+  glDeleteTextures(1, (const GLuint*)&l->arena_shader.diffuse_texture_id);
   free(l);
 }
 
@@ -29,7 +29,7 @@ void video_ScaleLevel(video_level* l, float fSize) {
 
 void video_Shader_Setup(video_level_shader* shader) {
   glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, shader->diffuse_texture_id);
+  glBindTexture(GL_TEXTURE_2D, (GLuint)shader->diffuse_texture_id);
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
 
@@ -47,8 +47,8 @@ int level_LoadTexture() {
 
   // FIXME: error checking
 
-  glGenTextures(1, &id);
-  glBindTexture(GL_TEXTURE_2D, id);
+  glGenTextures(1, (GLuint*)&id);
+  glBindTexture(GL_TEXTURE_2D, (GLuint)id);
   // printf("binding texture %d\n", id);
 
   scripting_GetValue("file");
@@ -136,11 +136,12 @@ nebu_Mesh* loadMesh(void) {
   scripting_GetArraySize(&pMesh->nVertices);
 
   if (pMesh->vertexformat & NEBU_MESH_POSITION)
-    pMesh->pVertices = malloc(pMesh->nVertices * 3 * sizeof(float));
+    pMesh->pVertices = malloc((size_t)(pMesh->nVertices * 3) * sizeof(float));
   if (pMesh->vertexformat & NEBU_MESH_NORMAL)
-    pMesh->pNormals = malloc(pMesh->nVertices * 3 * sizeof(float));
+    pMesh->pNormals = malloc((size_t)(pMesh->nVertices * 3) * sizeof(float));
   if (pMesh->vertexformat & NEBU_MESH_TEXCOORD0)
-    pMesh->pTexCoords[0] = malloc(pMesh->nVertices * 2 * sizeof(float));
+    pMesh->pTexCoords[0] =
+        malloc((size_t)(pMesh->nVertices * 2) * sizeof(float));
 
   for (i = 0; i < pMesh->nVertices; i++) {
     scripting_GetArrayIndex(i + 1);
@@ -178,7 +179,7 @@ nebu_Mesh* loadMesh(void) {
 
   scripting_GetValue("indices");
   scripting_GetArraySize(&pMesh->nTriangles);
-  pMesh->pTriangles = malloc(pMesh->nTriangles * 3 * sizeof(int));
+  pMesh->pTriangles = malloc((size_t)(pMesh->nTriangles * 3) * sizeof(int));
   for (i = 0; i < pMesh->nTriangles; i++) {
     scripting_GetArrayIndex(i + 1);
     for (j = 0; j < 3; j++) {
