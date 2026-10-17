@@ -1,7 +1,8 @@
 # Latent bugs surfaced by the C modernization sweep
 
-**Status:** in progress — **Bug 1 FIXED 2026-10-17** (commit e0ce0fb8, clang -Werror clean); **Bug 2
-needs a maintainer gameplay decision** (see below — it is a behavior change, not a clear safety fix).
+**Status:** DONE 2026-10-17 — Bug 1 fixed (e0ce0fb8, safety) and Bug 2 fixed (58a9361c, Option A,
+gameplay). One maintainer visual check remains: play a round and confirm crash/wall handling looks
+right (Bug 2 changed that logic; it builds clean but gameplay is visual).
 **Priority:** 5
 **Difficulty:** 3
 **Created:** 2026-10-17 (William Emerison Six <billsix@gmail.com>)
@@ -71,16 +72,12 @@ internal `createEvent(i, EVENT_CRASH)`), but the wall test can then fire a *seco
 the same step. So fixing it (make it return the detected state) is a **behavior change to crash/wall
 handling**, not a safety no-op.
 
-**DECISION FOR THE MAINTAINER (not applied — this is the "is the broken behavior load-bearing?"
-call on a teaching artifact):**
-- Option A (recommended) — restore the intent: set the function-level `crash` when a player-crash is
-  found (e.g. `crash = 1;` where `jCrash = 1;`, or `return jCrash` appropriately) so the caller skips
-  the wall test after a player-crash and the double `EVENT_CRASH` can't happen. Small, matches the
-  caller's evident `if (!crash)` design. **Changes gameplay** (verify a round looks right).
-- Option B — declare it vestigial: if the current behavior (always also wall-testing) is what the
-  game has always done and is considered fine, leave the logic and either make the function `void` or
-  add a one-line comment that the return is intentionally unused. No gameplay change.
-Not fixed pending your call, since either way it is a deliberate gameplay decision.
+**RESOLVED 2026-10-17 — Option A applied (commit 58a9361c).** Set the function-level `crash = 1`
+when a player-crash is detected (in the `if (jCrash)` outer-break), so `return crash` reflects it; the
+caller now skips the wall test after a player-crash per its evident `if (!crash)` design, preventing
+the double `EVENT_CRASH`. This is a deliberate gameplay change the maintainer chose — it builds clean
+under clang `-Werror`, but a visual round-check is the remaining confirmation (crash behavior is not
+exercised by any automated test beyond compile).
 
 ## Verification
 

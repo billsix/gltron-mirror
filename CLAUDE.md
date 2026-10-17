@@ -68,7 +68,6 @@ was reconciled + archived 2026-08-27 (its deletions were already executed).
 Active:
 
 - [Promote static analysis to a fatal gate](tasks/lint-fatal-gate.md) — **proposed, needs go-ahead**; drive the advisory clang-tidy/Cppcheck findings to an enforced gate, the static-analysis counterpart to the compiler `-Werror` gate the modernization sweep landed. First decision: which checks to enforce vs disable (teaching-artifact churn risk).
-- [Latent bugs surfaced by the C sweep](tasks/latent-bugs-from-c-sweep.md) — **Bug 1 FIXED** (`scripting_CopyStringResult` buffer overflow, e0ce0fb8); **Bug 2 needs a maintainer gameplay decision** (`crashTestPlayers` always returns 0 → wall-test runs even after a player-crash / possible double `EVENT_CRASH`; fixing it changes gameplay — see the task's Option A/B).
 - [OpenGL fixed-function → 3.3 core profile port](tasks/opengl-core-profile-port.md) — **not started**, surface at session start and ask Bill before beginning.
 - [SDL2 → SDL3 port](tasks/sdl3-port.md) — **shipped 2026-05-08** on Linux; macOS not retested (work remains).
 - [Post-round camera bug](tasks/post-round-camera-bug.md) — **fix applied (staged), runtime-unconfirmed**; root cause was glance-state (`bIsGlancing`) leaking into the observer camera on a crash-while-glancing. Runtime confirmation is tracked in [Verify post-round camera fix](tasks/verify-post-round-camera-fix.md) (reported 2026-05-08, diagnosed/fixed 2026-08-03).
@@ -87,6 +86,7 @@ alternatives, deletions) live in the archived task docs:
 - ASan + UBSan(trap) sanitizer gate — `tasks/archive/2026/10/17/add-sanitizer-gate.md`
 - Behavior-preserving C modernization sweep (C23 pin, `-Werror` warning gate clean under clang+gcc, 493→0 first-party warnings; nullptr/attributes; no third_party edits) — `tasks/archive/2026/10/17/c-modernization-sweep.md` (follow-up: `tasks/lint-fatal-gate.md`)
 - Standardize the container build + Emacs C support (`Makefile.docker`→`Makefile` on the fleet contract, portable `make format`, Emacs clangd/eglot + `make update-emacs-packages` + vendored `elpa/`) — `tasks/archive/2026/10/17/standardize-build-and-emacs.md` (one maintainer GUI check pending: clangd-in-emacs)
+- Latent bugs from the C sweep (Bug 1: `scripting_CopyStringResult` buffer overflow; Bug 2: `crashTestPlayers` always-0 → gameplay fix, Option A) — `tasks/archive/2026/10/17/latent-bugs-from-c-sweep.md` (one maintainer visual check pending: a round looks right)
 
 When starting a new task, add a one-line entry under "Active" here pointing
 at a `tasks/<slug>.md` file, and keep the task file updated with status,
