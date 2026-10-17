@@ -58,7 +58,7 @@ was reconciled + archived 2026-08-27 (its deletions were already executed).
 
 Active:
 
-- [Behavior-preserving C modernization sweep](tasks/c-modernization-sweep.md) — **proposed, needs go-ahead**; surgical safety/correctness + safe-idiom sweep toward the shared C coding standard (fix unbounded `sprintf`/unchecked `malloc`, add `bool`/narrow `const`/`static`, wire the warning + clang-tidy gate), opting out of teaching-artifact hazards. Sits between `c23-port-investigation.md` (its C23 arm) and `add-sanitizer-gate.md` (its verification net). 5 open questions.
+- [Behavior-preserving C modernization sweep](tasks/c-modernization-sweep.md) — **ready, awaiting go-ahead** (scope settled 2026-10-17); surgical safety/correctness + safe-idiom sweep of first-party code toward the shared C coding standard — pin C23, fix unbounded `sprintf`/unchecked `malloc`, add `bool`/narrow `const`/`static`, wire the warning + clang-tidy gate on by default — explicitly no `third_party/`/HandmadeMath edits, opting out of teaching-artifact hazards. `add-sanitizer-gate.md` lands first as its net; `c23-port-investigation.md` is its C23 decision arm.
 - [OpenGL fixed-function → 3.3 core profile port](tasks/opengl-core-profile-port.md) — **not started**, surface at session start and ask Bill before beginning.
 - [SDL2 → SDL3 port](tasks/sdl3-port.md) — **shipped 2026-05-08** on Linux; macOS not retested (work remains).
 - [Post-round camera bug](tasks/post-round-camera-bug.md) — **fix applied (staged), runtime-unconfirmed**; root cause was glance-state (`bIsGlancing`) leaking into the observer camera on a crash-while-glancing. Runtime confirmation is tracked in [Verify post-round camera fix](tasks/verify-post-round-camera-fix.md) (reported 2026-05-08, diagnosed/fixed 2026-08-03).

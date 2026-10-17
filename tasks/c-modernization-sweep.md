@@ -1,14 +1,16 @@
 # Behavior-preserving C modernization sweep
 
-**Status:** proposed — needs go-ahead
+**Status:** ready — scope decisions settled 2026-10-17; awaiting go-ahead to start (begin at Phase 0)
 **Priority:** 6
 **Difficulty:** 5
 **Created:** 2026-10-17 (William Emerison Six <billsix@gmail.com>)
+**Decisions settled:** 2026-10-17 (William Emerison Six <billsix@gmail.com>) — see Decisions below
 
 ## BLUF
 
-Sweep the ~14 KLOC of first-party C (`src/`, `nebu/`) toward the maintainer's
-shared C coding standard **class-by-class and behavior-preservingly** — fixing
+Sweep the ~14 KLOC of **first-party** C (`src/`, `nebu/`; pinned at **C23**, nothing
+under `third_party/` and no HandmadeMath edits) toward the maintainer's shared C
+coding standard **class-by-class and behavior-preservingly** — fixing
 the real safety bugs the standard names (unbounded `sprintf`, unchecked
 `malloc`, a leaked symbol) and adopting the safe idioms (`bool`, narrow `const`,
 fixed-width types *only where width matters*), while **explicitly opting out** of
@@ -85,28 +87,45 @@ the only CTest is `cmake -E true`, `CMakeLists.txt:108-118`).
 
 ## Plan (phased; each phase re-verifies before the next)
 
-### Phase 0 — Decisions + the verification net (do before any edit)
-- [ ] Settle the standard pin (open q 2) and the scope line (open q 1).
-- [ ] Settle whether the **sanitizer gate** (`tasks/add-sanitizer-gate.md`) lands
-      first as this sweep's verification net, or we sweep with build+clang-tidy
-      only (open q 4). The sweep doc is explicit that for an untested tree the
-      *build at a raised warning level* is the first gate and UBSan/ASan is the
-      runtime net; without a gate, each change is "mechanical + clang-tidy-clean +
-      stated-unverified."
+### Phase 0 — Land the verification net + C23 compatibility gate (do before any source edit)
+Scope and standard are settled (see Decisions). Phase 0 is now purely sequencing:
+- [ ] **Land the sanitizer gate first** (decision 4). Complete `tasks/add-sanitizer-gate.md`
+      (UBSan-trap + ASan under Xvfb/software GL, bounded run) so this sweep has a
+      runtime net before Phase 2 starts mutating memory/string code. The sweep doc's
+      order still holds underneath: raised-warning-level build is the first gate,
+      UBSan/ASan the runtime net.
+- [ ] **C23 compatibility gate (front-loaded because we pin C23 now, decision 2).**
+      Before adopting any C23 idiom, pin `-std` to C23 (Phase 1) and get a clean build
+      proving C23 mode doesn't break: vendored `third_party/HandmadeMath/HandmadeMath.h`
+      (its `_Generic` shorthand), the SDL3 / SDL3_sound / GLEW / PNG / Lua 5.4 headers,
+      and the `.cpp` units (`project(... C CXX)` — C23 pin is C-only; confirm the CXX
+      standard is untouched). **Cross-platform risk is the live one:** macOS clang is
+      fine, but **MSVC's C23 support is partial** — confirm the Windows toolchain we
+      claim (`CLAUDE.md` Status) still builds under C23, or record that Windows is
+      deferred/untested. If a header breaks only under strict C23, that is the one
+      place `gnu23` (extensions already ON) may be required — note it.
+- [ ] Add a Phase-0 back-pointer from `tasks/c23-port-investigation.md` to this task
+      (decision 3: that task stays the C23 decision record; Phase 4 here is its
+      execution arm). Keep inbound pointers honest per convention.
 
 ### Phase 1 — Tier (a): let the toolchain build the worklist (mechanical, no hand-edits yet)
-- [ ] Pin `-std` explicitly (per open q 2) and confirm the flag reaches the compile
-      (grep `compile_commands.json` — the sweep doc warns a flag probe can silently
-      no-op). Keep `CMAKE_C_EXTENSIONS ON` (realpath).
-- [ ] Raise the first-party warning level: add `-Wextra -Wpedantic -Wconversion
-      -Wsign-conversion -Wshadow -Wvla -Wstrict-prototypes -Wold-style-definition
-      -Wwrite-strings -Wformat=2` to the `gltron_warnings` INTERFACE lib (applied
-      to first-party code only, never vendored). Decide whether this becomes the
-      default or stays under `GLTRON_WARN` (open q 5).
-- [ ] Add a `lint` step that runs the already-configured `.clang-tidy` (scoped via
-      `-header-filter` to our sources, never `third_party/`/system headers) and
-      Cppcheck (`--enable=warning,style,performance,portability`). Capture both
-      outputs as the worklist. Diff + build after any `-fix` run.
+- [ ] Pin `-std=c23` in `CMakeLists.txt` (`set(CMAKE_C_STANDARD 23)`; keep
+      `CMAKE_C_EXTENSIONS ON` for `realpath()`, so the effective flag is `gnu23`) and
+      **confirm the flag reaches the compile** (grep `compile_commands.json` — the
+      sweep doc warns a flag probe can silently no-op). The CXX standard is separate
+      and stays as-is.
+- [ ] Raise the first-party warning level **by default** (decision 5): add
+      `-Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wvla
+      -Wstrict-prototypes -Wold-style-definition -Wwrite-strings -Wformat=2` to the
+      `gltron_warnings` INTERFACE lib, which is applied to **first-party code only,
+      never `nebu`'s vendored deps or `third_party/`**. Fold `-Wall -Werror` in so the
+      gate is on without needing `GLTRON_WARN=ON` (keep a knob to turn it *off* for a
+      quick local build if wanted, but default is on).
+- [ ] Add a `lint` step (default in the image gate) that runs the already-configured
+      `.clang-tidy` scoped via `-header-filter` to **our sources only — never
+      `third_party/` or system headers** — and Cppcheck
+      (`--enable=warning,style,performance,portability`). Capture both outputs as the
+      worklist. Diff + build after any `-fix` run.
 - [ ] **The output of Phase 1 is a categorized worklist** (class × count ×
       file:line), logged under `tasks/adhoc/c-modernization-sweep/data/`. Review it
       with Bill before Phase 2 — some warnings are preservation hazards to opt out
@@ -128,8 +147,9 @@ the only CTest is `cmake -E true`, `CMakeLists.txt:108-118`).
 - [ ] **`static` on `evasive_action`** (`computer_utilities.c:236`).
 
 ### Phase 3 — Safe idioms, class-by-class, surgical (re-verify after each class)
-- [ ] **`bool`/`true`/`false`** for variables and returns that are truth values
-      (not counts, not the `int` menu/action codes that are genuinely small ints).
+- [ ] **`bool`/`true`/`false`** (C23 keywords — no `<stdbool.h>` needed) for variables
+      and returns that are truth values (not counts, not the `int` menu/action codes
+      that are genuinely small ints).
 - [ ] **Narrow `const`**: input-pointer params as `const T *`, and locals never
       reassigned. **Opt out** of the sweep-doc hazards: address-taken / output-filled
       locals (`&x` into `fstat`/`getPositionFromIndex`-style out-params),
@@ -145,20 +165,35 @@ the only CTest is `cmake -E true`, `CMakeLists.txt:108-118`).
       reads clearer; do not reorder declarations purely to satisfy declare-at-use if
       it hurts the top-to-bottom read.
 
-### Phase 4 — C23 niceties (OPTIONAL; gated on open q 2/3 — this is where c23-port-investigation folds in)
-- [ ] Only if we pin C23: `nullptr` for the 173 `NULL`s (catches pointer-vs-int
-      mix-ups), standard attributes (`[[nodiscard]]` on allocators, `[[maybe_unused]]`,
-      `[[fallthrough]]`), keyword `bool`/`static_assert` (drop `<stdbool.h>` once
-      added). **Compatibility check** (from c23-investigation): verify C23 mode
-      doesn't break the vendored `third_party/HandmadeMath/HandmadeMath.h` `_Generic`
-      path, SDL3 / GLEW / Lua 5.4 headers, and the Windows/macOS toolchains we claim.
+### Phase 4 — C23 idioms (ACTIVE — C23 is pinned, decision 2; this is the execution arm of c23-port-investigation, decision 3)
+- [ ] `nullptr` for the 173 `NULL`s (catches pointer-vs-int mix-ups), standard
+      attributes (`[[nodiscard]]` on allocators, `[[maybe_unused]]`, `[[fallthrough]]`),
+      keyword `static_assert`. (Keyword `bool`/`true`/`false` already handled in
+      Phase 3 — no `<stdbool.h>` to add.)
+- [ ] All of this is **first-party only**. The C23 compatibility of vendored/system
+      headers was already established in Phase 0 by *consuming* them under C23 — if one
+      had broken, the fix is our pin/flags, **never** a patch to `third_party/` (see
+      decision: no third-party source changes).
+
+## Hard exclusion: no third-party / vendored source changes (decision, 2026-10-17)
+
+**This sweep touches first-party code only — nothing under `third_party/`, and no
+vendored single-header libraries.** Explicitly: **no HandmadeMath edits** (no
+"fixes", no modernization, no reformatting), and the same for any other vendored or
+system header. We only ever *consume* those headers; if one is unhappy under our C23
+pin or raised warnings, the response is to adjust *our* flags / `-header-filter` /
+suppressions at *our* call sites — never to patch the dependency. clang-tidy and the
+warning level are both already scoped to first-party sources, which enforces this
+mechanically. (`nebu/` is the in-tree first-party engine and IS in scope, but with a
+stable public surface — see below.)
 
 ## Preservation hazards specific to gltron (do NOT "fix" these)
 
 - **Fixed-function OpenGL** — untouched. That is the whole point of the fork; the
   core-profile port is its own deferred task (`tasks/opengl-core-profile-port.md`).
-- **HandmadeMath `_Generic`** (vendored, header-only, C11) — don't modernize vendored
-  code, and don't drop the C11-or-later pin it needs.
+- **HandmadeMath** (vendored, header-only) — out of scope entirely per the exclusion
+  above; consume it, don't touch it, and keep the C11-or-later pin its `_Generic`
+  shorthand needs.
 - **`assert(0)` as the error strategy** — this is gltron's chosen convention
   (`path.c:66,103`); the standard asks for *one* strategy stated in CLAUDE.md, not
   that we replace this one. Record it in CLAUDE.md rather than rewriting call sites.
@@ -183,34 +218,32 @@ the only CTest is `cmake -E true`, `CMakeLists.txt:108-118`).
 
 ## Relationship to the two adjacent tasks
 
-- **`tasks/c23-port-investigation.md`** (Priority 7) overlaps Phase 4 and the feature
-  survey. Recommendation: keep it as the C23-decision record and let Phase 4 *be* its
-  execution, or fold it into this task — see open q 3. Don't archive/delete it without
-  go-ahead.
-- **`tasks/add-sanitizer-gate.md`** is the verification mechanism; this sweep is its
-  best justification (it gives the gate real bugs to catch). See open q 4.
+- **`tasks/c23-port-investigation.md`** (Priority 7) stays the **C23 decision record**;
+  **Phase 4 here is its execution arm** (decision 3). Add a back-pointer from it to
+  this task in Phase 0; don't archive/delete it without go-ahead.
+- **`tasks/add-sanitizer-gate.md`** is the verification mechanism and **lands first**
+  (decision 4) — this sweep is its best justification (it gives the gate real bugs to
+  catch).
 
-## Open questions
+## Decisions (settled 2026-10-17, William Emerison Six <billsix@gmail.com>)
 
-1. **Scope line.** Recommended: a **safety/correctness + safe-idioms surgical sweep**
-   (Phases 1–3 as written) — fix the `sprintf`/alloc bugs, add `bool`/narrow `const`/
-   `static`, turn on the warning gate; explicitly *not* a tree-wide declare-at-use /
-   reflow rewrite (that risks the read-top-to-bottom pedagogy and the no-drive-by
-   rule). Do you want exactly this scope, or narrower (bugs-only, Phase 2) / broader
-   (include the full stylistic sweep)?
-2. **Standard pin.** Recommended: pin **C17** for the sweep (well-supported on the
-   Windows/macOS toolchains the repo claims; removes the "unpinned → whatever the
-   compiler defaults to" nondeterminism) and treat **C23** idioms (`nullptr`,
-   attributes, keyword `bool`) as the optional Phase 4 behind a compatibility check.
-   Or: pin C23 now (image clang 22 / gcc 16 are fine) and accept the cross-platform
-   risk? One answer: C17-now / C23-now.
-3. **Fold or keep `c23-port-investigation.md`?** Recommended: keep it as the C23
-   decision doc and make Phase 4 its execution arm (cross-linked). Or should I fold
-   its content into this task and archive it? (a) keep separate, or (b) fold in.
-4. **Sanitizer gate first?** Recommended: land `add-sanitizer-gate.md` first so the
-   sweep has a runtime net. Or sweep now with build+clang-tidy only and add the gate
-   after? (a) gate-first, or (b) sweep-first.
-5. **Default the warning level?** Recommended: make the raised flags (and a `lint`
-   step) the default gate rather than leaving them under the off-by-default
-   `GLTRON_WARN`, so CI actually enforces tier (a). Or keep them opt-in? (a) default
-   on, or (b) keep opt-in.
+1. **Scope** = the **safety/correctness + safe-idioms surgical sweep** (Phases 1–4 as
+   written): fix the `sprintf`/alloc bugs, add `bool`/narrow `const`/`static`, adopt
+   the C23 idioms, turn on the warning + lint gate. **Not** a tree-wide
+   declare-at-use / reflow rewrite — that would risk the read-top-to-bottom pedagogy
+   and the no-drive-by rule.
+2. **Standard pin = C23 now** (`set(CMAKE_C_STANDARD 23)`, extensions on → `gnu23`).
+   Image clang 22 / gcc 16 are fine; the cross-platform risk (notably MSVC's partial
+   C23 support) is accepted and handled by the front-loaded **C23 compatibility gate**
+   in Phase 0 — if Windows can't build under C23, record it as deferred/untested
+   rather than blocking the sweep.
+3. **Keep `c23-port-investigation.md` separate** as the C23 decision doc; Phase 4 is
+   its execution. Cross-link both ways (Phase 0).
+4. **Sanitizer gate first** — land `add-sanitizer-gate.md` before Phase 2 mutates any
+   memory/string code.
+5. **Warning + lint gate on by default** — the raised `-W` flags and the clang-tidy/
+   Cppcheck `lint` step are the default image gate (not gated behind an off-by-default
+   `GLTRON_WARN`), so CI actually enforces tier (a).
+6. **No third-party / vendored source changes** (added per the maintainer, 2026-10-17)
+   — first-party only; explicitly no HandmadeMath edits. See the Hard exclusion
+   section above.
