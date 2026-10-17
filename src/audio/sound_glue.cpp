@@ -237,7 +237,7 @@ void Audio_LoadMusic(char* name) {
   music->SetType(Sound::eSoundMusic);
 
   char* sname = new char[32];
-  sprintf(sname, "music");
+  snprintf(sname, 32, "music");
   music->SetName(sname);
   sound->AddSource(music);
 }
@@ -269,7 +269,7 @@ void Audio_LoadPlayers(void) {
       sound->AddSource(players[i]);
 
       char* name = new char[32];
-      sprintf(name, "player %d", i);
+      snprintf(name, 32, "player %d", i);
       players[i]->SetName(name);
 
     } else {
@@ -278,7 +278,7 @@ void Audio_LoadPlayers(void) {
       sound->AddSource(players[i]);
 
       char* name = new char[32];
-      sprintf(name, "player %d", i);
+      snprintf(name, 32, "player %d", i);
       players[i]->SetName(name);
     }
   }
@@ -288,7 +288,7 @@ void Audio_LoadPlayers(void) {
   sound->AddSource(recognizerEngine);
 
   char* name = new char[32];
-  sprintf(name, "recognizer");
+  snprintf(name, 32, "recognizer");
   recognizerEngine->SetName(name);
 }
 

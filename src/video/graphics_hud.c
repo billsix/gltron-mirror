@@ -12,7 +12,7 @@
 
 #include "base/nebu_debug_memory.h"
 
-void getPauseString(char* buf, float* color);
+void getPauseString(char* buf, size_t bufsize, float* color);
 
 void hud_MaskSetup(int maskId, int maskIndex) {
   glEnable(GL_BLEND);
@@ -76,7 +76,7 @@ void drawHUD(Player* p, PlayerVisual* pV) {
   char pause_message[128];
   float pause_color[3];
 
-  getPauseString(pause_message, pause_color);
+  getPauseString(pause_message, sizeof pause_message, pause_color);
 
   glDisable(GL_DEPTH_TEST);
   glDepthMask(GL_FALSE);
@@ -97,8 +97,8 @@ void drawHUD(Player* p, PlayerVisual* pV) {
           - pause message r,g,b colors
   */
 
-  sprintf(
-      temp,
+  snprintf(
+      temp, sizeof temp,
       "drawHUD(%d, %d, %d, \"%s\", %f, %f, %f, %f, %d, \"%s\", %f, %f, %f)",
       pV->display.vp_w, pV->display.vp_h,
       gSettingsCache.show_scores ? p->data->score : -1,
@@ -117,9 +117,8 @@ void drawHUD(Player* p, PlayerVisual* pV) {
   glEnable(GL_DEPTH_TEST);
 }
 
-void getPauseString(char* buf, float* color) {
+void getPauseString(char* buf, size_t bufsize, float* color) {
   char pause[] = "Game is paused";
-  char winner[] = "Player %d wins!";
   char nowinner[] = "No one wins!";
   char starting[] = "Press a key to start";
   static float d = 0;
@@ -150,23 +149,23 @@ void getPauseString(char* buf, float* color) {
       color[2] =
           ((player_color[2] + ((sinf(d) + 1) / 2) * (1 - player_color[2])));
 
-      sprintf(buf, winner, game->winner + 1);
+      snprintf(buf, bufsize, "Player %d wins!", game->winner + 1);
     } else {
       color[0] = 1.0f;
       color[1] = (sinf(d) + 1) / 2;
       color[2] = (sinf(d) + 1) / 2;
-      sprintf(buf, "%s", nowinner);
+      snprintf(buf, bufsize, "%s", nowinner);
     }
   } else if (game->pauseflag & PAUSE_GAME_SUSPENDED) {
     color[0] = 1.0f;
     color[1] = (sinf(d) + 1) / 2;
     color[2] = (sinf(d) + 1) / 2;
-    sprintf(buf, "%s", pause);
+    snprintf(buf, bufsize, "%s", pause);
   } else if (game->pauseflag & PAUSE_GAME_STARTING) {
     color[0] = 1.0f;
     color[1] = (sinf(d) + 1) / 2;
     color[2] = (sinf(d) + 1) / 2;
-    sprintf(buf, "%s", starting);
+    snprintf(buf, bufsize, "%s", starting);
   } else {
     // game is running
     color[0] = 0;

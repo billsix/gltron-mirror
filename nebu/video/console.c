@@ -18,12 +18,12 @@ void consoleAddLine(const char* text) {
   // FIXME: escape "" properly
   // TODO: push string onto stack, and call lua function
   //       directly
-  sprintf(buf, "console_AddLine(\"%s\")", text);
+  snprintf(buf, sizeof buf, "console_AddLine(\"%s\")", text);
   scripting_Run(buf);
 }
 
 void console_Seek(int range) {
-  sprintf(buf, "console_SeekRelative(%d)", range);
+  snprintf(buf, sizeof buf, "console_SeekRelative(%d)", range);
   scripting_Run(buf);
 }
 

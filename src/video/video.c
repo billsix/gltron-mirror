@@ -195,13 +195,13 @@ void video_ResetData(void) {
     Player* p = game->player + i;
     {
       char name[32];
-      sprintf(name, "model_diffuse_%d", i);
+      snprintf(name, sizeof name, "model_diffuse_%d", i);
       scripting_GetGlobal(name, NULL);
       scripting_GetFloatArrayResult(pV->pColorDiffuse, 4);
-      sprintf(name, "model_specular_%d", i);
+      snprintf(name, sizeof name, "model_specular_%d", i);
       scripting_GetGlobal(name, NULL);
       scripting_GetFloatArrayResult(pV->pColorSpecular, 4);
-      sprintf(name, "trail_diffuse_%d", i);
+      snprintf(name, sizeof name, "trail_diffuse_%d", i);
       scripting_GetGlobal(name, NULL);
       scripting_GetFloatArrayResult(pV->pColorAlpha, 4);
     }

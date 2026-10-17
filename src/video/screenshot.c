@@ -25,7 +25,7 @@ static char* getNextFilename(const char* suffix, int* start_at) {
     if (path != NULL) free(path);
 
     (*start_at)++;
-    sprintf(fname, "%s-%s-%d%s", SCREENSHOT_PREFIX, VERSION, *start_at, suffix);
+    snprintf(fname, sizeof fname, "%s-%s-%d%s", SCREENSHOT_PREFIX, VERSION, *start_at, suffix);
     path = getPossiblePath(PATH_SNAPSHOTS, fname);
   } while (nebu_FS_Test(path));
 
