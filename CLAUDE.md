@@ -90,8 +90,24 @@ its entry to the "Completed" list.
 
 ## Conventions
 
-- C11 (bumped from C99 by the HandmadeMath port), 2-space indent, formatted with
-  the project `.clang-format`.
+- **C23** (`CMAKE_C_STANDARD 23`, extensions on → `gnu23`; bumped from C11 by the
+  behaviour-preserving modernization sweep 2026-10-17). 2-space indent, formatted with
+  the project `.clang-format`. Builds clean under both clang and gcc.
+- **Warning gate (enforced).** `gltron_warnings` applies the raised first-party warning
+  set (`-Wall -Wextra -Wpedantic -Wshadow -Wvla -Wwrite-strings -Wformat=2
+  -Wsign-conversion`, plus C-only and clang-only extras) with `-Werror`, **on by default**
+  (`-DGLTRON_WARN=OFF` for a quiet build; `-DGLTRON_WERROR=OFF` to downgrade to warnings).
+  Scoped to first-party code only — vendored/system headers come in as `SYSTEM` includes.
+  Deliberately **not** `-Wconversion` (dropped int→float) and `-Wno-unused-parameter`
+  (callback signatures). A new warning in code you touch is yours to fix at the source.
+- **Static analysis is advisory, not a gate.** `tools/lint.sh` runs clang-tidy
+  (bug-finding checks) + Cppcheck over first-party sources and always exits 0 — the project
+  `.clang-tidy` produces thousands of `readability-*` style findings on this deliberately-old
+  code, so it is NOT fatal. The compiler `-Werror` gate above is the enforced tier-(a).
+- **Error strategy: `assert(0)` / `assert(cond)` for unreachable/invariant failures**
+  (e.g. `src/filesystem/path.c`), and a returned `NULL`/`nullptr` with the owner contract
+  stated for allocators (e.g. `getPossiblePath` = caller frees, nullptr on failure). This
+  is gltron's chosen convention — don't replace the `assert`s with another scheme.
 - Don't add new abstractions or "modernize" code as drive-by cleanup — the
   codebase is intentionally a teaching artifact. Match the surrounding style.
 - Prefer minimal, surgical fixes over refactors. If you spot something worth
