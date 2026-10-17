@@ -16,7 +16,7 @@ void nebu_Video_rasonly(int x, int y, int width, int height) {
 }
 
 nebu_Surface* nebu_Video_GrabScreen(int width, int height) {
-  nebu_Surface* pSurface =
+  nebu_Surface* const pSurface =
       nebu_Surface_Create(width, height, NEBU_SURFACE_FMT_RGB);
   glPixelStorei(GL_PACK_ALIGNMENT, 1);
   glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pSurface->data);

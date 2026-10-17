@@ -38,12 +38,14 @@ enum {
 nebu_Font* nebu_Font_Load(const char* filename, int fs_tag);
 void nebu_Font_Free(nebu_Font* font);
 
-void nebu_Font_Render(nebu_Font* font, const char* text, int len);
-void nebu_Font_RenderFormatted(nebu_Font* font, nebu_Font_Format* format,
+void nebu_Font_Render(const nebu_Font* font, const char* text, int len);
+void nebu_Font_RenderFormatted(const nebu_Font* font,
+                               const nebu_Font_Format* format,
                                const char* text);
-void nebu_Font_RenderToBox(nebu_Font* font, const char* text, int len,
-                           box2* box, int flags);
-void nebu_Font_RenderToBoxFormatted(nebu_Font* font, nebu_Font_Format* format,
-                                    const char* text, box2* box);
+void nebu_Font_RenderToBox(const nebu_Font* font, const char* text, int len,
+                           const box2* box, int flags);
+void nebu_Font_RenderToBoxFormatted(const nebu_Font* font,
+                                    const nebu_Font_Format* format,
+                                    const char* text, const box2* box);
 
 #endif

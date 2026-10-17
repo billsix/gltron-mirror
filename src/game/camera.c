@@ -25,7 +25,7 @@ float cam_defaults[][3] = {
     {CAM_CIRCLE_DIST, PI / 3, 0}        /* free */
 };
 
-static void writeCamDefaults(Camera* cam, int type) {
+static void writeCamDefaults(const Camera* cam, int type) {
   cam_defaults[cam->type.type][type] = cam->movement[type];
 }
 
@@ -117,7 +117,7 @@ static void initOffsetCamera(Camera* cam) {
   cam->type.freedom[CAM_FREE_CHI] = 1;
 }
 
-void initCamera(Camera* cam, Data* data, int type) {
+void initCamera(Camera* cam, const Data* data, int type) {
   float x, y;
 
   getPositionFromData(&x, &y, data);
@@ -174,14 +174,14 @@ void observerCamera(Camera* cam) {
   cam->target[2] = RECOGNIZER_HEIGHT - 2;
 }
 
-void playerCamera(Player* p, int player) {
+void playerCamera(const Player* p, int player) {
   float dest[3];
   float tdest[3];
   float phi, chi, r;
   float x, y;
   int mouse_dx, mouse_dy;
   Camera* cam;
-  Data* data;
+  const Data* data;
   /* first, process all movement commands */
   /* that means, check for mouse input mainly */
 
@@ -315,7 +315,7 @@ void playerCamera(Player* p, int player) {
 
 void doCameraMovement(void) {
   int i;
-  Player* p;
+  const Player* p;
 
   for (i = 0; i < game->players; i++) {
     p = game->player + i;

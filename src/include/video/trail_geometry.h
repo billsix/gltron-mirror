@@ -15,14 +15,14 @@ typedef struct TrailMesh {
   unsigned int iUsed;
 } TrailMesh;
 
-void storeVertex(TrailMesh* pMesh, int offset, segment2* s, float t,
+void storeVertex(TrailMesh* pMesh, int offset, const segment2* s, float t,
                  float fFloor, float fTop, float fSegLength,
                  float fTotalLength);
 void storeIndices(TrailMesh* pMesh, int indexOffset, int vertexOffset);
-void trailGeometry(Player* pPlayer, PlayerVisual* pV, TrailMesh* pMesh,
-                   int* pVertexOffset, int* pIndexOffset);
-void bowGeometry(Player* pPlayer, PlayerVisual* pV, TrailMesh* pMesh,
-                 int* pVertexOffset, int* pIndexOffset);
+void trailGeometry(const Player* pPlayer, const PlayerVisual* pV,
+                   TrailMesh* pMesh, int* pVertexOffset, int* pIndexOffset);
+void bowGeometry(const Player* pPlayer, const PlayerVisual* pV,
+                 TrailMesh* pMesh, int* pVertexOffset, int* pIndexOffset);
 void trailRender(TrailMesh* pMesh);
 void trailStatesNormal(Player* pPlayer, int texture);
 void trailStatesShadowed(void);

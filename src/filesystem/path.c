@@ -65,7 +65,7 @@ printf("directories:\n"
 }
 
 char* getPath(ePathLocation eLocation, const char* filename) {
-  char* path = getPossiblePath(eLocation, filename);
+  char* const path = getPossiblePath(eLocation, filename);
   if (path == nullptr) return nullptr;
   if (nebu_FS_Test(path)) return path;
 
@@ -81,7 +81,7 @@ char* getPath(ePathLocation eLocation, const char* filename) {
 // Caller frees. Returns nullptr on allocation failure.
 [[nodiscard]] char* getPossiblePath(ePathLocation eLocation,
                                     const char* filename) {
-  char* path = malloc(PATH_MAX);
+  char* const path = malloc(PATH_MAX);
   if (path == nullptr) return nullptr;
   snprintf(path, PATH_MAX, "%s%c%s", getDirectory(eLocation), SEPARATOR,
            filename);

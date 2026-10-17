@@ -22,6 +22,6 @@ void video_LoadLevel(void);
 void video_FreeLevel(video_level* l);
 video_level* video_CreateLevel(void);
 void video_ScaleLevel(video_level* l, float fSize);
-void video_Shader_Setup(video_level_shader* shader);
-void video_Shader_Cleanup(video_level_shader* shader);
+void video_Shader_Setup(const video_level_shader* shader);
+void video_Shader_Cleanup(const video_level_shader* shader);
 #endif

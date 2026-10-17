@@ -23,8 +23,8 @@ SourceSample::~SourceSample() {
   // Source::~Source();
 }
 
-void SourceSample::Load(char* filename) {
-  Sound_Sample* sample = Sound_NewSampleFromFile(
+void SourceSample::Load(const char* filename) {
+  Sound_Sample* const sample = Sound_NewSampleFromFile(
       filename, _system->GetAudioInfo(), (Uint32)_buffersize);
   if (sample == nullptr) {
     fprintf(stderr, "[error] failed loading sample from '%s': %s\n", filename,

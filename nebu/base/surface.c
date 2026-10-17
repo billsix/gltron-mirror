@@ -9,7 +9,7 @@
 int nebu_Surface_FormatSize[] = {0, 3, 4, 1};
 
 nebu_Surface* nebu_Surface_Create(int width, int height, int format) {
-  nebu_Surface* pSurface = (nebu_Surface*)malloc(sizeof(nebu_Surface));
+  nebu_Surface* const pSurface = (nebu_Surface*)malloc(sizeof(nebu_Surface));
   pSurface->w = width;
   pSurface->h = height;
   pSurface->format = format;
@@ -24,16 +24,13 @@ void nebu_Surface_Free(nebu_Surface* pSurface) {
 }
 
 nebu_Surface* nebu_Surface_LoadPNG(const char* filename) {
-  nebu_Surface* pSurface;
-
   /* use old code to load texture, do format conversion */
   /* TODO: clean this up, throw away old format */
 
-  png_texture* pTex;
-  pTex = load_png_texture(filename);
+  png_texture* const pTex = load_png_texture(filename);
   if (!pTex) return nullptr;
 
-  pSurface = (nebu_Surface*)malloc(sizeof(nebu_Surface));
+  nebu_Surface* const pSurface = (nebu_Surface*)malloc(sizeof(nebu_Surface));
   pSurface->w = pTex->width;
   pSurface->h = pTex->height;
   switch (pTex->channels) {
@@ -64,19 +61,17 @@ static void user_write_data(png_structp png_ptr, png_bytep data,
 
 static void user_flush_data(png_structp png_ptr) { fflush(fp); }
 
-int nebu_Surface_SaveBMP(nebu_Surface* pSurface, const char* filename) {
+int nebu_Surface_SaveBMP(const nebu_Surface* pSurface, const char* filename) {
   int x, y;
-  unsigned char* pixels;
 
   x = pSurface->w;
   y = pSurface->h;
-  pixels = (unsigned char*)pSurface->data;
+  const unsigned char* const pixels = (unsigned char*)pSurface->data;
 
   {
-    SDL_Surface* temp;
     int i;
 
-    temp = SDL_CreateSurface(x, y, SDL_PIXELFORMAT_RGB24);
+    SDL_Surface* const temp = SDL_CreateSurface(x, y, SDL_PIXELFORMAT_RGB24);
 
     if (temp == nullptr) return -1;
 
@@ -90,7 +85,7 @@ int nebu_Surface_SaveBMP(nebu_Surface* pSurface, const char* filename) {
   return 0;
 }
 
-int nebu_Surface_SavePNG(nebu_Surface* pSurface, const char* filename) {
+int nebu_Surface_SavePNG(const nebu_Surface* pSurface, const char* filename) {
   png_structp png_ptr;
   png_infop info_ptr;
   png_byte** row_ptrs;
@@ -161,8 +156,9 @@ int nebu_Surface_SavePNG(nebu_Surface* pSurface, const char* filename) {
   return 0;
 }
 
-void nebu_Surface_Blit(nebu_Surface* pSrcSurface, nebu_Rect* pSrcRect,
-                       nebu_Surface* pDstSurface, nebu_Rect* pDstRect) {
+void nebu_Surface_Blit(const nebu_Surface* pSrcSurface,
+                       const nebu_Rect* pSrcRect, nebu_Surface* pDstSurface,
+                       const nebu_Rect* pDstRect) {
   nebu_Rect src, dst;
   int v, srcBpp, srcPitch, dstBpp, dstPitch;
 

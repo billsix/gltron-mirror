@@ -16,7 +16,7 @@ static void normalize(float* v) {
   }
 }
 
-void nebu_Mesh_DrawGeometry(nebu_Mesh* pMesh) {
+void nebu_Mesh_DrawGeometry(const nebu_Mesh* pMesh) {
   int i;
 
   glEnableClientState(GL_VERTEX_ARRAY);
@@ -51,7 +51,7 @@ void nebu_Mesh_DrawGeometry(nebu_Mesh* pMesh) {
   glClientActiveTextureARB(GL_TEXTURE0_ARB);
 }
 
-void nebu_Mesh_ComputeTriangleNormal(nebu_Mesh* pMesh, int triangle,
+void nebu_Mesh_ComputeTriangleNormal(const nebu_Mesh* pMesh, int triangle,
                                      float* normal) {
   float v1[3], v2[3];
   int a, b, c, i;
@@ -120,7 +120,7 @@ nebu_Mesh* nebu_Mesh_Create(int flags, int nVertices, int nTriangles) {
   // TODO: add error checking
   int i;
 
-  nebu_Mesh* pMesh = (nebu_Mesh*)malloc(sizeof(nebu_Mesh));
+  nebu_Mesh* const pMesh = (nebu_Mesh*)malloc(sizeof(nebu_Mesh));
   pMesh->nVertices = nVertices;
   pMesh->nTriangles = nTriangles;
 
@@ -146,6 +146,6 @@ nebu_Mesh* nebu_Mesh_Create(int flags, int nVertices, int nTriangles) {
   return pMesh;
 }
 
-void nebu_Mesh_ComputeBBox(nebu_Mesh* pMesh, box3* box) {
+void nebu_Mesh_ComputeBBox(const nebu_Mesh* pMesh, box3* box) {
   box3_Compute(box, (vec3*)pMesh->pVertices, pMesh->nVertices);
 }

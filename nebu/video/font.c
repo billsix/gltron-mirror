@@ -81,7 +81,7 @@ nebu_Font* nebu_Font_Load(const char* filename, int fs_tag) {
   int len;
   int texWidth, charWidth;
 
-  nebu_Font* font = (nebu_Font*)malloc(sizeof(nebu_Font));
+  nebu_Font* const font = (nebu_Font*)malloc(sizeof(nebu_Font));
 
   file = file_open(filename, "r");
   /* TODO(5): check for EOF errors in the following code */
@@ -123,7 +123,7 @@ nebu_Font* nebu_Font_Load(const char* filename, int fs_tag) {
     // TODO: load texture
     path = nebu_FS_GetPath(fs_tag, texname);
     if (path) {
-      nebu_Surface* p2d = nebu_Surface_LoadPNG(path);
+      nebu_Surface* const p2d = nebu_Surface_LoadPNG(path);
       // TODO: add mipmapping
       // TODO: assert that p2d->w, p2d->h are valid texture dimensions
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, p2d->w, p2d->h, 0, GL_RGBA,
@@ -159,7 +159,7 @@ void nebu_Font_GetCharsPerTexture(const nebu_Font* font, int* wx, int* wy) {
   *wy = (int)(1.0 / font->metrics.height);
 }
 
-void nebu_Font_Render(nebu_Font* font, const char* text, int len) {
+void nebu_Font_Render(const nebu_Font* font, const char* text, int len) {
   int i;
 
   nebu_Video_CheckErrors("before font render");
@@ -222,7 +222,8 @@ void nebu_Font_Render(nebu_Font* font, const char* text, int len) {
   nebu_Video_CheckErrors("after font render");
 }
 
-void nebu_Font_RenderFormatted(nebu_Font* font, nebu_Font_Format* format,
+void nebu_Font_RenderFormatted(const nebu_Font* font,
+                               const nebu_Font_Format* format,
                                const char* text) {
   // TODO: add word wrapping
 
@@ -248,8 +249,8 @@ void nebu_Font_RenderFormatted(nebu_Font* font, nebu_Font_Format* format,
   glPopMatrix();
 }
 
-void nebu_Font_RenderToBox(nebu_Font* font, const char* text, int len,
-                           box2* box, int flags) {
+void nebu_Font_RenderToBox(const nebu_Font* font, const char* text, int len,
+                           const box2* box, int flags) {
   float width, height, scalew, scaleh;
   int textLength;
   glPushMatrix();
@@ -291,5 +292,6 @@ void nebu_Font_RenderToBox(nebu_Font* font, const char* text, int len,
   glPopMatrix();
 }
 
-void nebu_Font_RenderToBoxFormatted(nebu_Font* font, nebu_Font_Format* format,
-                                    const char* text, box2* box) {}
+void nebu_Font_RenderToBoxFormatted(const nebu_Font* font,
+                                    const nebu_Font_Format* format,
+                                    const char* text, const box2* box) {}

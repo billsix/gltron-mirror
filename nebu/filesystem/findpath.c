@@ -50,8 +50,8 @@ void goto_installpath(const char* argv0) {
 
   strncpy(temppath, argv0, PATH_MAX);
   if (!strrchr(temppath, '/')) {
-    char* path;
-    char* last;
+    const char* path;
+    const char* last;
     int found;
 
     found = 0;

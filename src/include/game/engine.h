@@ -6,7 +6,7 @@
 
 void doLeftTurn(GameEvent* e);
 void doRightTurn(GameEvent* e);
-void doCrashPlayer(GameEvent* e);
+void doCrashPlayer(const GameEvent* e);
 void game_ResetData(void);
 void game_FreePlayers(Game* pGame, Game2* pGame2);
 void game_CreatePlayers(int players, Game** ppGame, Game2** ppGame2);

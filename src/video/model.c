@@ -22,16 +22,16 @@ typedef struct quadFace {
   int material;
 } quadFace;
 
-extern void readMaterialLibrary(char* buf, gltron_Mesh* pMesh);
-extern void setMaterial(char* buf, gltron_Mesh* pMesh, int* iGroup);
+extern void readMaterialLibrary(const char* buf, gltron_Mesh* pMesh);
+extern void setMaterial(const char* buf, const gltron_Mesh* pMesh, int* iGroup);
 
-void readVector(char* buf, vec3* pVertex) {
+void readVector(const char* buf, vec3* pVertex) {
   if (sscanf(buf, " %f %f %f ", &pVertex->X, &pVertex->Y, &pVertex->Z) != 3) {
     fprintf(stderr, "*** failed reading Vector from %s\n", buf);
   }
 }
 
-void readTriFace(char* buf, face* pFace, int* iFace, int iGroup) {
+void readTriFace(const char* buf, face* pFace, int* iFace, int iGroup) {
   // assumes model in "f %d//%d %d//%d %d//%d\n" format
   if (sscanf(buf, "f %d//%d %d//%d %d//%d ", pFace[*iFace].vertex + 0,
              pFace[*iFace].normal + 0, pFace[*iFace].vertex + 1,
@@ -44,7 +44,7 @@ void readTriFace(char* buf, face* pFace, int* iFace, int iGroup) {
   }
 }
 
-void readQuadFace(char* buf, quadFace* pFace, int* iFace, int iGroup) {
+void readQuadFace(const char* buf, quadFace* pFace, int* iFace, int iGroup) {
   // assumes model in "f %d//%d %d//%d %d//%d %d//%d\n" format
   if (sscanf(buf, "f %d//%d %d//%d %d//%d %d//%d", pFace[*iFace].vertex + 0,
              pFace[*iFace].normal + 0, pFace[*iFace].vertex + 1,
@@ -291,7 +291,7 @@ gltron_Mesh* gltron_Mesh_LoadFromFile(const char* filename,
   return pMesh;
 }
 
-void gltron_Mesh_Draw(gltron_Mesh* pMesh, gltron_MeshType iType) {
+void gltron_Mesh_Draw(const gltron_Mesh* pMesh, gltron_MeshType iType) {
   int i;
   int iFaceSize = 0;
   GLenum primitive = GL_TRIANGLES;
@@ -329,7 +329,7 @@ void gltron_Mesh_Draw(gltron_Mesh* pMesh, gltron_MeshType iType) {
   glDisableClientState(GL_NORMAL_ARRAY);
 }
 
-void gltron_Mesh_DrawExplosion(gltron_Mesh* pMesh, float fRadius) {
+void gltron_Mesh_DrawExplosion(const gltron_Mesh* pMesh, float fRadius) {
   int i, j, k;
 #define EXP_VECTORS 10
   float vectors[][3] = {{0.03f, -0.06f, -0.07f}, {0.04f, 0.08f, -0.03f},
@@ -345,7 +345,7 @@ void gltron_Mesh_DrawExplosion(gltron_Mesh* pMesh, float fRadius) {
     glMaterialf(GL_FRONT, GL_SHININESS, pMesh->pMaterials[i].shininess);
 
     for (j = 0; j < pMesh->pnFaces[i]; j++) {
-      float *normal, *vertex;
+      const float *normal, *vertex;
 
       normal = pMesh->pNormals + 3 * pMesh->ppIndices[i][3 * j];
 

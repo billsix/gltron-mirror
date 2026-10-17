@@ -31,7 +31,7 @@ void nebu_Clamp(float* f, float min, float max) {
 }
 
 nebu_List* nebu_List_Create(void) {
-  nebu_List* p = (nebu_List*)malloc(sizeof(nebu_List));
+  nebu_List* const p = (nebu_List*)malloc(sizeof(nebu_List));
   p->data = nullptr;
   p->next = nullptr;
   return p;
@@ -67,7 +67,7 @@ void nebu_List_RemoveAt(nebu_List* pItem, nebu_List* pPrevItem) {
     free(pItem);
   } else {
     // don't free list head, free the next item instead
-    nebu_List* pNext = pItem->next;
+    nebu_List* const pNext = pItem->next;
     *pItem = *pNext;
     free(pNext);
   }

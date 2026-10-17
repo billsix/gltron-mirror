@@ -58,7 +58,7 @@ void SourceMusic::CreateSample(void) {
   _decoded = 0;
 }
 
-void SourceMusic::Load(char* filename) {
+void SourceMusic::Load(const char* filename) {
   int n = (int)strlen(filename);
   _filename = new char[(size_t)(n + 1)];
   memcpy(_filename, filename, (size_t)(n + 1));

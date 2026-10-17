@@ -22,11 +22,11 @@ static nebu_List* pTokenList = nullptr;
 static int nextToken = 1;
 
 static Token* findToken(int token) {
-  nebu_List* p;
+  const nebu_List* p;
   assert(token);
   assert(pTokenList);
   for (p = pTokenList; p->next; p = p->next) {
-    Token* pToken = (Token*)p->data;
+    Token* const pToken = (Token*)p->data;
     if (pToken->token == token) return pToken;
   }
   return nullptr;
@@ -76,7 +76,7 @@ void resource_Free(int token) {
 }
 
 void resource_ReleaseAll(void) {
-  nebu_List* p;
+  const nebu_List* p;
   if (!pTokenList) return;
 
   for (p = pTokenList; p->next; p = p->next) {
@@ -85,7 +85,7 @@ void resource_ReleaseAll(void) {
 }
 
 void resource_FreeAll(void) {
-  nebu_List* p;
+  const nebu_List* p;
   if (!pTokenList) return;
 
   for (p = pTokenList; p->next; p = p->next) {
@@ -127,18 +127,18 @@ void* resource_Get(int token, int type) {
   return pToken->data;
 }
 
-static Token* findIdenticalToken(char* filename, int type) {
-  nebu_List* p;
+static Token* findIdenticalToken(const char* filename, int type) {
+  const nebu_List* p;
   if (!pTokenList) return nullptr;
   for (p = pTokenList; p->next; p = p->next) {
-    Token* pToken = (Token*)p->data;
+    Token* const pToken = (Token*)p->data;
     if (pToken->type == type && strcmp(filename, pToken->filename) == 0)
       return pToken;
   }
   return nullptr;
 }
 
-int resource_GetToken(char* filename, int type) {
+int resource_GetToken(const char* filename, int type) {
   Token* pToken;
 
   assert(!findIdenticalToken(filename, type));

@@ -22,9 +22,10 @@ extern int nebu_Surface_FormatSize[NEBU_SURFACE_FMT_MAX];
 
 nebu_Surface* nebu_Surface_Create(int width, int height, int format);
 nebu_Surface* nebu_Surface_LoadPNG(const char* filename);
-int nebu_Surface_SavePNG(nebu_Surface* pSurface, const char* filename);
-int nebu_Surface_SaveBMP(nebu_Surface* pSurface, const char* filename);
-void nebu_Surface_Blit(nebu_Surface* pSrcSurface, nebu_Rect* pSrcRect,
-                       nebu_Surface* pDstSurface, nebu_Rect* pDstRect);
+int nebu_Surface_SavePNG(const nebu_Surface* pSurface, const char* filename);
+int nebu_Surface_SaveBMP(const nebu_Surface* pSurface, const char* filename);
+void nebu_Surface_Blit(const nebu_Surface* pSrcSurface,
+                       const nebu_Rect* pSrcRect, nebu_Surface* pDstSurface,
+                       const nebu_Rect* pDstRect);
 void nebu_Surface_Free(nebu_Surface* pSurface);
 #endif

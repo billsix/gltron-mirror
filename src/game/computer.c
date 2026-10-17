@@ -30,11 +30,11 @@ AI_Parameters ai_params = {
 float criticalDistance(void) { return 84.0f * game2->rules.speed; }
 
 // play as if nothing concerned us
-void doComputerSimple(int player, int target, AI_Distances* distances) {
+void doComputerSimple(int player, int target, const AI_Distances* distances) {
   AI* ai;
   Data* data;
-  Player* me;
-  [[maybe_unused]] Player* him;
+  const Player* me;
+  [[maybe_unused]] const Player* him;
   int level;
 
   me = &(game->player[player]);
@@ -103,9 +103,9 @@ void doComputerSimple(int player, int target, AI_Distances* distances) {
 }
 
 // play against the other player, either cut him off, or take evasive action
-void doComputerActive(int player, int target, AI_Distances* distances) {
+void doComputerActive(int player, int target, const AI_Distances* distances) {
   Data* data = game->player[player].data;
-  AI* ai = game->player[player].ai;
+  const AI* const ai = game->player[player].ai;
 
   AI_Configuration config;
 

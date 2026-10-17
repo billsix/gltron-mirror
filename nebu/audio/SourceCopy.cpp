@@ -9,7 +9,7 @@ int SourceCopy::Mix(Uint8* data, int len) {
 
   float volume = _source->GetVolume();
   int buffersize = _source->_buffersize;
-  Uint8* buffer = (Uint8*)_source->_buffer;
+  const Uint8* const buffer = (Uint8*)_source->_buffer;
 
   assert(len < buffersize);
 

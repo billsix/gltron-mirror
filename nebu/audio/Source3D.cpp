@@ -28,7 +28,7 @@ int fxComputeShiftLen(float shift, int len) {
   return (int)((len - 1) * shift + 1);
 }
 
-int fxShift(float shift, Uint8* target, Uint8* source, int len) {
+int fxShift(float shift, Uint8* target, const Uint8* source, int len) {
   int i, j;
 
   // amount of samples to mix/write
@@ -43,9 +43,10 @@ int fxShift(float shift, Uint8* target, Uint8* source, int len) {
       pa = (int)(i * shift);
       t = (i * shift) - pa;
 
-      result = (Sint32)(*((Sint16*)target + j + 2 * i) * 1.0f +
-                        *((Sint16*)source + j + 2 * (pa + 0)) * (1.0f - t) +
-                        *((Sint16*)source + j + 2 * (pa + 1)) * (t));
+      result =
+          (Sint32)(*((Sint16*)target + j + 2 * i) * 1.0f +
+                   *((const Sint16*)source + j + 2 * (pa + 0)) * (1.0f - t) +
+                   *((const Sint16*)source + j + 2 * (pa + 1)) * (t));
 
 #define MAX_SINT16 ((1 << 15) - 1)
 #define MIN_SINT16 (-(1 << 15))

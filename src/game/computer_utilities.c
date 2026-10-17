@@ -37,7 +37,7 @@ void ai_getDistances(int player, AI_Distances* distances) {
   enum { eFront = 0, eLeft, eRight, eBackleft, eMax };
   segment2 segments[eMax];
   vec2 v, vPos;
-  Data* data = game->player[player].data;
+  const Data* const data = game->player[player].data;
   int dirLeft = (data->dir + 3) % 4;
   int dirRight = (data->dir + 1) % 4;
   int i, j;
@@ -68,7 +68,7 @@ void ai_getDistances(int player, AI_Distances* distances) {
 
   // loop over all segment
   for (i = 0; i < game->players; i++) {
-    segment2* wall = game->player[i].data->trails;
+    const segment2* wall = game->player[i].data->trails;
     if (game->player[i].data->trail_height < TRAIL_HEIGHT) continue;
 
     for (j = 0; j < game->player[i].data->trailOffset + 1; j++) {
@@ -91,7 +91,7 @@ void ai_getDistances(int player, AI_Distances* distances) {
   }
   for (i = 0; i < game2->level->nBoundaries; i++) {
     float t1, t2;
-    segment2* wall = game2->level->boundaries + i;
+    const segment2* const wall = game2->level->boundaries + i;
     if (segment2_Intersect(&v, &t1, &t2, segments + eFront, wall) && t1 > 0 &&
         t1 < *front && t2 >= 0 && t2 <= 1)
       *front = t1;
@@ -131,7 +131,7 @@ void ai_getDistances(int player, AI_Distances* distances) {
 }
 
 void ai_getConfig(int player, int target, AI_Configuration* config) {
-  Data* data;
+  const Data* data;
 
   getPositionFromIndex(&config->player.vStart.X, &config->player.vStart.Y,
                        player);
@@ -189,11 +189,11 @@ void ai_getConfig(int player, int target, AI_Configuration* config) {
   }
 }
 
-void ai_left(int player, AI_Distances* distances,
-             AI_Parameters* pAIParameters) {
+void ai_left(int player, const AI_Distances* distances,
+             const AI_Parameters* pAIParameters) {
   // printf("trying left turn...");
   AI* ai = game->player[player].ai;
-  Data* data = game->player[player].data;
+  const Data* const data = game->player[player].data;
   int level = gSettingsCache.ai_level;
 
   float save_distance =
@@ -209,11 +209,11 @@ void ai_left(int player, AI_Distances* distances,
   }
 }
 
-void ai_right(int player, AI_Distances* distances,
-              AI_Parameters* pAIParameters) {
+void ai_right(int player, const AI_Distances* distances,
+              const AI_Parameters* pAIParameters) {
   // printf("trying right turn...");
   AI* ai = game->player[player].ai;
-  Data* data = game->player[player].data;
+  const Data* const data = game->player[player].data;
   int level = gSettingsCache.ai_level;
 
   float save_distance =
@@ -237,8 +237,8 @@ static int evasive_action[8][4] = {{1, 1, 2, 2}, {1, 1, 2, 0}, {1, 1, 2, 0},
                                    {1, 1, 2, 0}, {2, 0, 1, 1}, {2, 0, 1, 1},
                                    {2, 0, 1, 1}, {2, 2, 1, 1}};
 
-void ai_action(int action, int player, AI_Distances* distances,
-               AI_Parameters* pAIParameters) {
+void ai_action(int action, int player, const AI_Distances* distances,
+               const AI_Parameters* pAIParameters) {
   switch (action) {
     case 0:
       break;
@@ -252,7 +252,8 @@ void ai_action(int action, int player, AI_Distances* distances,
 }
 
 void ai_aggressive(int player, int target, int location,
-                   AI_Distances* distances, AI_Parameters* pAIParameters) {
+                   const AI_Distances* distances,
+                   const AI_Parameters* pAIParameters) {
   int dirdiff =
       (4 + game->player[player].data->dir - game->player[target].data->dir) % 4;
 
@@ -262,8 +263,9 @@ void ai_aggressive(int player, int target, int location,
             pAIParameters);
 }
 
-void ai_evasive(int player, int target, int location, AI_Distances* distances,
-                AI_Parameters* pAIParameters) {
+void ai_evasive(int player, int target, int location,
+                const AI_Distances* distances,
+                const AI_Parameters* pAIParameters) {
   int dirdiff =
       (4 + game->player[player].data->dir - game->player[target].data->dir) % 4;
   // printf("evasive mode (%d,%d,%d)\n", player, target, location);

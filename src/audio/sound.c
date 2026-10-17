@@ -37,11 +37,10 @@ void Sound_loadFX(void) {
 
 void Sound_reloadTrack(void) {
   char* song;
-  char* path;
   scripting_GetGlobal("settings", "current_track", nullptr);
   scripting_GetStringResult(&song);
   fprintf(stderr, "[sound] loading song %s\n", song);
-  path = getPath(PATH_MUSIC, song);
+  char* const path = getPath(PATH_MUSIC, song);
   free(song);
   if (path == nullptr) {
     fprintf(stderr, "[sound] can't find song...exiting\n");
@@ -55,7 +54,7 @@ void Sound_reloadTrack(void) {
 
 void Sound_shutdown(void) { Audio_Quit(); }
 
-void Sound_load(char* name) { Audio_LoadMusic(name); }
+void Sound_load(const char* name) { Audio_LoadMusic(name); }
 
 void Sound_play(void) {
   Audio_SetMusicVolume(getSettingf("musicVolume"));
@@ -80,12 +79,11 @@ void Sound_setFxVolume(float volume) {
 }
 
 void Sound_initTracks(void) {
-  nebu_List* soundList;
-  nebu_List* p;
+  const nebu_List* p;
   int i;
 
   const char* const music_path = getDirectory(PATH_MUSIC);
-  soundList = readDirectoryContents(music_path, nullptr);
+  nebu_List* const soundList = readDirectoryContents(music_path, nullptr);
   if (soundList->next == nullptr) {
     fprintf(stderr, "[sound] no music files found...exiting\n");
     exit(1);  // FIXME: handle missing songs somewhere else
@@ -94,7 +92,7 @@ void Sound_initTracks(void) {
   i = 1;
   for (p = soundList; p->next != nullptr; p = p->next) {
     // bugfix: filter track list to readable files (and without directories)
-    char* path = getPossiblePath(PATH_MUSIC, (char*)p->data);
+    char* const path = getPossiblePath(PATH_MUSIC, (char*)p->data);
     if (path != nullptr && nebu_FS_Test(path)) {
       scripting_RunFormat("tracks[%d] = \"%s\"", i, (char*)p->data);
       i++;

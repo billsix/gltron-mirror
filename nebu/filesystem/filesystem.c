@@ -8,7 +8,7 @@
 #include "base/nebu_debug_memory.h"
 
 int nebu_FS_Test(const char* path) {
-  FILE* f = fopen(path, "r");
+  FILE* const f = fopen(path, "r");
   if (f) {
     fclose(f);
     return 1;
@@ -37,7 +37,7 @@ void nebu_FS_SetupPath(int tag, int nDirs, const char** directories) {
   }
 
   for (p = path_list; p->next != nullptr; p = p->next) {
-    nebu_FS_PathConfig* pConfig = (nebu_FS_PathConfig*)p->data;
+    nebu_FS_PathConfig* const pConfig = (nebu_FS_PathConfig*)p->data;
     if (pConfig->tag == tag) {
       // replace directories
       // TODO: consider memory management
@@ -51,7 +51,7 @@ void nebu_FS_SetupPath(int tag, int nDirs, const char** directories) {
   p->data = malloc(sizeof(nebu_FS_PathConfig));
   // append directories
   {
-    nebu_FS_PathConfig* pConfig = (nebu_FS_PathConfig*)p->data;
+    nebu_FS_PathConfig* const pConfig = (nebu_FS_PathConfig*)p->data;
     pConfig->tag = tag;
     pConfig->nDirs = nDirs;
     pConfig->directories = directories;
@@ -61,13 +61,13 @@ void nebu_FS_SetupPath(int tag, int nDirs, const char** directories) {
 char* nebu_FS_GetPath(int tag, const char* filename) {
   nebu_List* p;
   for (p = path_list; p->next != nullptr; p = p->next) {
-    nebu_FS_PathConfig* pConfig = (nebu_FS_PathConfig*)p->data;
+    const nebu_FS_PathConfig* const pConfig = (nebu_FS_PathConfig*)p->data;
     if (pConfig->tag == tag) {
       int i;
       for (i = 0; i < pConfig->nDirs; i++) {
         int length = (int)(strlen(pConfig->directories[i]) + 1 /* seperator */ +
                            strlen(filename) + 1 /* terminator */);
-        char* path = (char*)malloc((size_t)length);
+        char* const path = (char*)malloc((size_t)length);
         sprintf(path, "%s%c%s", pConfig->directories[i], PATH_SEPARATOR,
                 filename);
         printf("trying %s\n", path);

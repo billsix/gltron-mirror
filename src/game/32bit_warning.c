@@ -9,12 +9,13 @@
 #include "game/resource.h"
 
 extern nebu_Font* pFont;
-extern void drawMenu(Visual* d);
+extern void drawMenu(const Visual* d);
 extern void drawGuiBackground(void);
 
 void _32bit_warning_Display(void) {
-  nebu_Font* pInfoFont = (nebu_Font*)resource_Get(gTokenGameFont, eRT_Font);
-  nebu_Font* pMenuFont = pFont;
+  nebu_Font* const pInfoFont =
+      (nebu_Font*)resource_Get(gTokenGameFont, eRT_Font);
+  nebu_Font* const pMenuFont = pFont;
 
   glClearColor(0.0, 0.0, 0.2f, 0.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

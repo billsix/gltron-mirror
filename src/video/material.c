@@ -21,7 +21,7 @@ void loadDefaultMaterial(gltron_Mesh_Material* pMaterial) {
   pMaterial->map_diffuse = nullptr;
 }
 
-void readMaterialLibraryFromFile(char* filename, gltron_Mesh* pMesh) {
+void readMaterialLibraryFromFile(const char* filename, gltron_Mesh* pMesh) {
   gltron_Mesh_Material* pMaterials;
   int iMaterial;
 
@@ -95,7 +95,7 @@ void readMaterialLibraryFromFile(char* filename, gltron_Mesh* pMesh) {
   free(pMaterials);
 }
 
-void readMaterialLibrary(char* buf, gltron_Mesh* pMesh) {
+void readMaterialLibrary(const char* buf, gltron_Mesh* pMesh) {
   char filename[BUF_SIZE];
   if (sscanf(buf, " mtllib %s ", filename) != 1) {
     fprintf(stderr, "*** failing parsing filename from %s\n", buf);
@@ -104,7 +104,7 @@ void readMaterialLibrary(char* buf, gltron_Mesh* pMesh) {
   readMaterialLibraryFromFile(filename, pMesh);
 }
 
-void setMaterial(char* buf, gltron_Mesh* pMesh, int* iGroup) {
+void setMaterial(const char* buf, const gltron_Mesh* pMesh, int* iGroup) {
   char name[BUF_SIZE];
   int i;
 
@@ -132,7 +132,7 @@ void gltron_Mesh_SetMaterialAlpha(gltron_Mesh* pMesh, float fAlpha) {
 }
 
 void gltron_Mesh_SetMaterialColor(gltron_Mesh* pMesh, const char* name,
-                                  ColorType eType, float pColor[4]) {
+                                  ColorType eType, const float pColor[4]) {
   int i;
 
   for (i = 0; i < pMesh->nMaterials; i++) {

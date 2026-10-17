@@ -11,7 +11,7 @@ class SourceSample : public Source {
  public:
   SourceSample(System* system);
   virtual ~SourceSample();
-  void Load(char* filename);
+  void Load(const char* filename);
   virtual int Mix(Uint8* data, int len);
 
   Uint8* _buffer;

@@ -24,12 +24,10 @@ png_texture* load_png_texture(const char* filename) {
   unsigned int i;
   int bpc, color_type, zsize;
 
-  png_texture* tex;
   /* the following is defined in <png.h> */
   png_uint_32 x, y;
   png_structp png_ptr;
   png_infop info_ptr;
-  png_byte** row_pointers;
 
   f = fopen(filename, "rb");
   // fprintf(stderr, "[load_png_texture] opening %s\n", filename);
@@ -91,14 +89,14 @@ png_texture* load_png_texture(const char* filename) {
       return nullptr;
   }
 
-  tex = (png_texture*)malloc(sizeof(png_texture));
+  png_texture* const tex = (png_texture*)malloc(sizeof(png_texture));
   tex->data = malloc(x * y * (png_uint_32)zsize);
   tex->width = (int)x;
   tex->height = (int)y;
   tex->channels = zsize;
 
   /* get pointers */
-  row_pointers = (png_byte**)malloc(y * sizeof(png_byte*));
+  png_byte** const row_pointers = (png_byte**)malloc(y * sizeof(png_byte*));
   for (i = 0; i < y; i++)
     row_pointers[i] = tex->data + (y - i - 1) * (unsigned int)zsize * x;
 
@@ -119,15 +117,14 @@ void unload_png_texture(png_texture* tex) {
 #define SOURCE(X, Y, I) \
   (source->data + I + source->channels * (X + Y * source->width))
 
-png_texture* mipmap_png_texture(png_texture* source, int level, int clamp_u,
-                                int clamp_v) {
-  png_texture* mip;
+png_texture* mipmap_png_texture(const png_texture* source, int level,
+                                int clamp_u, int clamp_v) {
   int i;
   int x, y;
   int fx, fy;
 
   if (level != 1) return nullptr;
-  mip = (png_texture*)malloc(sizeof(png_texture));
+  png_texture* const mip = (png_texture*)malloc(sizeof(png_texture));
   mip->channels = source->channels;
   fx = (source->width > 1) ? 2 : 1;
   fy = (source->height > 1) ? 2 : 1;

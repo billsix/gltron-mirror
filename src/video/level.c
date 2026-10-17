@@ -27,13 +27,13 @@ void video_ScaleLevel(video_level* l, float fSize) {
   nebu_Mesh_Scale(l->arena, fSize);
 }
 
-void video_Shader_Setup(video_level_shader* shader) {
+void video_Shader_Setup(const video_level_shader* shader) {
   glEnable(GL_TEXTURE_2D);
   glBindTexture(GL_TEXTURE_2D, (GLuint)shader->diffuse_texture_id);
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
 
-void video_Shader_Cleanup(video_level_shader* shader) {
+void video_Shader_Cleanup(const video_level_shader* shader) {
   glDisable(GL_TEXTURE_2D);
 }
 

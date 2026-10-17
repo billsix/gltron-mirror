@@ -38,8 +38,7 @@ void checkSettings(void) {
 }
 
 void saveSettings(void) {
-  char* script;
-  script = getPath(PATH_SCRIPTS, "save.lua");
+  char* const script = getPath(PATH_SCRIPTS, "save.lua");
   scripting_RunFile(script);
   free(script);
 
@@ -48,7 +47,7 @@ void saveSettings(void) {
   scripting_Run("io.output(file)");
 #else
   {
-    char* path = getPossiblePath(PATH_PREFERENCES, RC_NAME);
+    char* const path = getPossiblePath(PATH_PREFERENCES, RC_NAME);
     if (path == nullptr) return;
     scripting_RunFormat("file = io.open(\"%s\", \"w\")", path);
     scripting_Run("io.output(file)");

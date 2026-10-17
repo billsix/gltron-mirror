@@ -4,8 +4,7 @@
 #include "base/nebu_debug_memory.h"
 
 void runScript(int ePath, const char* name) {
-  char* s;
-  s = getPath((ePathLocation)ePath, name);
+  char* const s = getPath((ePathLocation)ePath, name);
   scripting_RunFile(s);
   free(s);
 }

@@ -32,7 +32,7 @@ enum { eUninitialized, eInitialized };
 
 class System {
  public:
-  System(SDL_AudioSpec* spec);
+  System(const SDL_AudioSpec* spec);
   ~System();
   typedef SDL_AudioStreamCallback Audio_Callback;
   Audio_Callback GetCallback() { return c_callback; };
@@ -47,7 +47,7 @@ class System {
   void SetStatus(int eStatus) { _status = eStatus; };
 
  protected:
-  SDL_AudioSpec* _spec;
+  const SDL_AudioSpec* _spec;
   SDL_AudioSpec _info;
   Listener _listener;
   nebu_List _sources;

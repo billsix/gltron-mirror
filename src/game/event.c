@@ -75,8 +75,8 @@ int processEvent(GameEvent* e) {
 int crashTestPlayers(int i, const segment2* movement) {
   int j, k;
   int crash = 0;
-  Data* data = game->player[i].data;
-  segment2* cur = data->trails + data->trailOffset;
+  const Data* const data = game->player[i].data;
+  segment2* const cur = data->trails + data->trailOffset;
   // debug: only test player0 against himself
   // j = 0;
   // if(i == 0) {
@@ -86,7 +86,7 @@ int crashTestPlayers(int i, const segment2* movement) {
     if (game->player[j].data->trail_height < TRAIL_HEIGHT) continue;
 
     for (k = 0; k < game->player[j].data->trailOffset + 1; k++) {
-      segment2* wall;
+      const segment2* wall;
       vec2 v;
       float t1, t2;
 
@@ -120,8 +120,8 @@ int crashTestWalls(int i, const segment2* movement) {
   float t1, t2;
   int crash = 0;
 
-  Data* data = game->player[i].data;
-  segment2* cur = data->trails + data->trailOffset;
+  const Data* const data = game->player[i].data;
+  segment2* const cur = data->trails + data->trailOffset;
 
   for (j = 0; j < game2->level->nBoundaries; j++) {
     if (segment2_Intersect(&v, &t1, &t2, cur, game2->level->boundaries + j)) {
@@ -222,7 +222,7 @@ int applyWallAcceleration(int player, int dt) {
   right = FLT_MAX;
 
   for (i = 0; i < game->players; i++) {
-    segment2* wall = game->player[i].data->trails;
+    const segment2* wall = game->player[i].data->trails;
 
     if (i == player) continue;
     if (game->player[i].data->trail_height < TRAIL_HEIGHT) continue;
@@ -307,7 +307,7 @@ void doMovement(int dt) {
       t = dt / 100.0f * data->speed * fs;
 
       {  // movement
-        segment2* cur = data->trails + data->trailOffset;
+        segment2* const cur = data->trails + data->trailOffset;
         segment2 movement;
         int crash = 0;
         float x, y;

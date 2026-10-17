@@ -61,7 +61,7 @@ void doComputer(int player, int target);
 
 void resetScores(void);
 
-void doTurn(GameEvent* e, int direction);
+void doTurn(const GameEvent* e, int direction);
 
 void doMovement(int dt);
 void writePosition(int player);
@@ -81,5 +81,5 @@ void resetPlayerData(void);
 void initWalls(void);
 
 void getPositionFromIndex(float* x, float* y, int player);
-void getPositionFromData(float* x, float* y, Data* data);
+void getPositionFromData(float* x, float* y, const Data* data);
 #endif

@@ -24,7 +24,7 @@
 nebu_2d* pBackground = nullptr;
 nebu_Font* pFont = nullptr;
 
-void drawMenu(Visual* d);
+void drawMenu(const Visual* d);
 
 void drawGuiBackground(void) {
   nebu_Video_CheckErrors("gui background start");
@@ -220,7 +220,7 @@ void guiMouseMotion(int mx, int my) {
   /* TODO: add mouse cursor, highlighted areas, etc. */
 }
 
-void drawMenu(Visual* d) {
+void drawMenu(const Visual* d) {
   /* draw Menu pCurrent */
 
   int i;

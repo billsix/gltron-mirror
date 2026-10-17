@@ -36,6 +36,6 @@ void nebu_System_SwapBuffers();  // test ok
 void nebu_System_Sleep(int ms);  // test ok
 
 /* internal functions, not for public use */
-void nebu_Intern_HandleInput(SDL_Event* event);
+void nebu_Intern_HandleInput(const SDL_Event* event);
 
 #endif

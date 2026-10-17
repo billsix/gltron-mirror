@@ -41,7 +41,7 @@ static Sound::Source3D* recognizerEngine;
 #define TURNLENGTH 250.0f
 
 [[maybe_unused]] static void output_decoders(void) {
-  const Sound_DecoderInfo** rc = Sound_AvailableDecoders();
+  const Sound_DecoderInfo** const rc = Sound_AvailableDecoders();
   const Sound_DecoderInfo** i;
   const char** ext;
 
@@ -81,7 +81,7 @@ void Audio_Idle(void) {
   // iterate over all the players and update the engines
   if (sample_engine->IsPlaying()) {
     for (int i = 0; i < PLAYERS; i++) {
-      Player* p;
+      const Player* p;
       Sound::Source3D* p3d;
       float x, y;
       p3d = players[i];
@@ -169,7 +169,7 @@ void Audio_Idle(void) {
 }
 
 void Audio_CrashPlayer(int player) {
-  Sound::SourceCopy* copy = new Sound::SourceCopy(sample_crash);
+  Sound::SourceCopy* const copy = new Sound::SourceCopy(sample_crash);
   copy->Start();
   copy->SetRemovable();
   copy->SetType(Sound::eSoundFX);
@@ -182,7 +182,7 @@ void Audio_Init(void) {
   /* SDL3 SDL_AudioSpec is just {format, channels, freq} — no callback or
      buffer-size fields. The callback is attached by SDL_OpenAudioDeviceStream
      on the resulting SDL_AudioStream. */
-  SDL_AudioSpec* spec = new SDL_AudioSpec;
+  SDL_AudioSpec* const spec = new SDL_AudioSpec;
   spec->freq = 22050;
   spec->format = SDL_AUDIO_S16;
   spec->channels = 2;
@@ -230,7 +230,7 @@ void Audio_Quit(void) {
   }
 }
 
-void Audio_LoadMusic(char* name) {
+void Audio_LoadMusic(const char* name) {
   if (music != nullptr) {
     music->Stop();
     music->SetRemovable();
@@ -240,7 +240,7 @@ void Audio_LoadMusic(char* name) {
   if (getSettingi("loopMusic")) music->SetLoop(255);
   music->SetType(Sound::eSoundMusic);
 
-  char* sname = new char[kSoundSourceNameLen];
+  char* const sname = new char[kSoundSourceNameLen];
   snprintf(sname, kSoundSourceNameLen, "music");
   music->SetName(sname);
   sound->AddSource(music);
@@ -272,7 +272,7 @@ void Audio_LoadPlayers(void) {
       players[i]->SetType(Sound::eSoundFX);
       sound->AddSource(players[i]);
 
-      char* name = new char[kSoundSourceNameLen];
+      char* const name = new char[kSoundSourceNameLen];
       snprintf(name, kSoundSourceNameLen, "player %d", i);
       players[i]->SetName(name);
 
@@ -281,7 +281,7 @@ void Audio_LoadPlayers(void) {
       players[i]->SetType(Sound::eSoundFX);
       sound->AddSource(players[i]);
 
-      char* name = new char[kSoundSourceNameLen];
+      char* const name = new char[kSoundSourceNameLen];
       snprintf(name, kSoundSourceNameLen, "player %d", i);
       players[i]->SetName(name);
     }
@@ -291,12 +291,12 @@ void Audio_LoadPlayers(void) {
   recognizerEngine->Start();
   sound->AddSource(recognizerEngine);
 
-  char* name = new char[kSoundSourceNameLen];
+  char* const name = new char[kSoundSourceNameLen];
   snprintf(name, kSoundSourceNameLen, "recognizer");
   recognizerEngine->SetName(name);
 }
 
-void Audio_LoadSample(char* name, int number) {
+void Audio_LoadSample(const char* name, int number) {
   switch (number) {
     case 0:
       sample_engine = new Sound::SourceSample(sound);

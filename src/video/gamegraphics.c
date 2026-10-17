@@ -58,7 +58,7 @@ void drawGame(void) {
   glEnable(GL_DEPTH_TEST);
 
   for (i = 0; i < vp_max[gViewportType]; i++) {
-    Visual* d = &gPlayerVisuals[viewport_content[i]].display;
+    const Visual* const d = &gPlayerVisuals[viewport_content[i]].display;
 
     if (d->onScreen == 1) {
       glViewport(d->vp_x, d->vp_y, d->vp_w, d->vp_h);
@@ -87,7 +87,7 @@ float GetDistance(float *v, float *p, float *d) {
 
 static float dirangles[] = {0, -90, -180, 90, 180, -270};
 
-float getDirAngle(int time, Player* p) {
+float getDirAngle(int time, const Player* p) {
   int last_dir;
   float dirAngle;
 
@@ -104,7 +104,7 @@ float getDirAngle(int time, Player* p) {
   return dirAngle;
 }
 
-void doCycleTurnRotation(PlayerVisual* pV, Player* p) {
+void doCycleTurnRotation(const PlayerVisual* pV, const Player* p) {
   int neigung_dir = -1;
   int time = (int)(game2->time.current - p->data->turn_time);
   float dirAngle = getDirAngle(time, p);
@@ -125,8 +125,9 @@ void doCycleTurnRotation(PlayerVisual* pV, Player* p) {
 #undef neigung
 }
 
-void drawCycleShadow(PlayerVisual* pV, Player* p, int lod, int drawTurn) {
-  gltron_Mesh* cycle;
+void drawCycleShadow(const PlayerVisual* pV, const Player* p, int lod,
+                     int drawTurn) {
+  const gltron_Mesh* cycle;
   int turn_time = (int)(game2->time.current - p->data->turn_time);
 
   if (turn_time < TURN_LENGTH && !drawTurn) return;
@@ -166,10 +167,10 @@ void drawCycleShadow(PlayerVisual* pV, Player* p, int lod, int drawTurn) {
 }
 
 void drawCycle(int player, int lod, int drawTurn) {
-  Player* p = game->player + player;
-  PlayerVisual* pV = gPlayerVisuals + player;
+  Player* const p = game->player + player;
+  PlayerVisual* const pV = gPlayerVisuals + player;
 
-  gltron_Mesh* cycle =
+  gltron_Mesh* const cycle =
       (gltron_Mesh*)resource_Get(gpTokenLightcycles[lod], eRT_GLtronTriMesh);
   float x, y;
 
@@ -438,7 +439,7 @@ static float getReflectivity() {
 void drawCam(int player) {
   int i;
   float up[3] = {0, 0, 1};
-  Visual* d = &gPlayerVisuals[player].display;
+  const Visual* const d = &gPlayerVisuals[player].display;
 
   float reflectivity = getReflectivity();
   // compute shadow color based on glocal constant & reflectivity

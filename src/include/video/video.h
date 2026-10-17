@@ -199,12 +199,12 @@ void artpack_UnloadSurfaces(void);
 extern void loadTexture(const char* filename, int format);
 
 /* screenshot.c */
-extern void doBmpScreenShot(Visual* display);
-extern void doPngScreenShot(Visual* display);
+extern void doBmpScreenShot(const Visual* display);
+extern void doPngScreenShot(const Visual* display);
 
 /* probably common graphics stuff -> graphics.c */
 
-extern void rasonly(Visual* d);
+extern void rasonly(const Visual* d);
 
 extern int hsv2rgb(float, float, float, float*, float*, float*);
 extern void colorDisc(void);
@@ -217,15 +217,15 @@ extern void drawDebugTex(Visual* d);
 extern void drawPlayers(int player);
 extern void drawCam(int player);
 
-extern void draw2D(nebu_Rect* pRect);
+extern void draw2D(const nebu_Rect* pRect);
 
 /* trail.c */
-extern void drawTrailLines(Player* p, PlayerVisual* pV);
-extern void drawTrailShadow(Player* p, PlayerVisual* pV);
-extern float getSegmentUV(segment2* line);
-extern float getSegmentEndUV(segment2* line, Data* data);
-extern float getSegmentEndX(Data* data, int type);
-extern float getSegmentEndY(Data* data, int type);
+extern void drawTrailLines(const Player* p, const PlayerVisual* pV);
+extern void drawTrailShadow(const Player* p, const PlayerVisual* pV);
+extern float getSegmentUV(const segment2* line);
+extern float getSegmentEndUV(const segment2* line, Data* data);
+extern float getSegmentEndX(const Data* data, int type);
+extern float getSegmentEndY(const Data* data, int type);
 
 extern void freeVideoData(void);
 extern void initVideoData(void);

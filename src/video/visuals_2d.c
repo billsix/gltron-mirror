@@ -8,7 +8,7 @@
 
 /* draw a 2d map */
 
-void draw2D(nebu_Rect* pRect) {
+void draw2D(const nebu_Rect* pRect) {
   // TODO: modify for nebu_rect
   // get rid of the viewport requirement
   // assume rasonly is set, push/pop matrices
@@ -26,7 +26,7 @@ void draw2D(nebu_Rect* pRect) {
   glColor3f(1, 1, 1);
   glBegin(GL_LINES);
   for (i = 0; i < game2->level->nBoundaries; i++) {
-    segment2* s = game2->level->boundaries + i;
+    const segment2* const s = game2->level->boundaries + i;
     vec2 v = HMM_AddV2(s->vStart, s->vDirection);
     glVertex2fv(s->vStart.Elements);
     glVertex2fv(v.Elements);
@@ -34,9 +34,9 @@ void draw2D(nebu_Rect* pRect) {
   glEnd();
 
   for (i = 0; i < game->players; i++) {
-    Player* p = &game->player[i];
-    PlayerVisual* pV = gPlayerVisuals + i;
-    segment2* trail;
+    const Player* const p = &game->player[i];
+    const PlayerVisual* const pV = gPlayerVisuals + i;
+    const segment2* trail;
     float x, y;
 
     getPositionFromData(&x, &y, p->data);

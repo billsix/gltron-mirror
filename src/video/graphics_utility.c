@@ -9,7 +9,7 @@
 
 #include <string.h>
 
-void rasonly(Visual* d) {
+void rasonly(const Visual* d) {
   nebu_Video_rasonly(d->vp_x, d->vp_y, d->vp_w, d->vp_h);
 }
 
@@ -22,7 +22,7 @@ void doPerspective(float fov, float ratio, float znear, float zfar) {
   glFrustum(left, -left, -top, top, znear, zfar);
 }
 
-void doLookAt(float* cam, float* target, float* up) {
+void doLookAt(const float* cam, const float* target, const float* up) {
   vec3 vCam = HMM_V3(cam[0], cam[1], cam[2]);
   vec3 vTarget = HMM_V3(target[0], target[1], target[2]);
   vec3 vUp = HMM_V3(up[0], up[1], up[2]);
@@ -45,7 +45,8 @@ void doLookAt(float* cam, float* target, float* up) {
   glTranslatef(-cam[0], -cam[1], -cam[2]);
 }
 
-void drawText(nebu_Font* ftx, float x, float y, float size, const char* text) {
+void drawText(const nebu_Font* ftx, float x, float y, float size,
+              const char* text) {
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_TEXTURE_2D);

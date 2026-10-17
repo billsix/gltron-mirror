@@ -12,16 +12,17 @@
 
 enum { COLOR_TRAIL, COLOR_BRIGHT, COLOR_CYCLE };
 
-int cmpdir(segment2* line1, segment2* line2);
+int cmpdir(const segment2* line1, const segment2* line2);
 
-void float2ubyte(unsigned char* pubColor, float* pfColor) {
+void float2ubyte(unsigned char* pubColor, const float* pfColor) {
   pubColor[0] = (unsigned char)(pfColor[0] * 255.0f);
   pubColor[1] = (unsigned char)(pfColor[1] * 255.0f);
   pubColor[2] = (unsigned char)(pfColor[2] * 255.0f);
   pubColor[3] = (unsigned char)(pfColor[3] * 255.0f);
 }
 
-void storeColor(TrailMesh* pMesh, int offset, PlayerVisual* pV, int type) {
+void storeColor(TrailMesh* pMesh, int offset, const PlayerVisual* pV,
+                int type) {
   float color[] = {0, 0, 0, 1};
   float white[] = {1, 1, 1, 1};
 
@@ -43,7 +44,7 @@ void storeColor(TrailMesh* pMesh, int offset, PlayerVisual* pV, int type) {
   float2ubyte(pMesh->pColors + 4 * (offset + 1), color);
 }
 
-void storeVertex(TrailMesh* pMesh, int offset, segment2* s,
+void storeVertex(TrailMesh* pMesh, int offset, const segment2* s,
                  float t, /* 0: start, 1: end */
                  float fFloor, float fTop, float fSegLength,
                  float fTotalLength) {
@@ -99,16 +100,16 @@ void storeIndices(TrailMesh* pMesh, int indexOffset, int vertexOffset) {
   }
 }
 
-int cmpdir(segment2* s1, segment2* s2) {
+int cmpdir(const segment2* s1, const segment2* s2) {
   if ((s1->vDirection.X == 0 && s2->vDirection.X == 0) ||
       (s1->vDirection.Y == 0 && s2->vDirection.Y == 0))
     return 0;
   return 1;
 }
 
-void trailGeometry(Player* pPlayer, PlayerVisual* pV, TrailMesh* pMesh,
-                   int* pvOffset, int* piOffset) {
-  Data* pData = pPlayer->data;
+void trailGeometry(const Player* pPlayer, const PlayerVisual* pV,
+                   TrailMesh* pMesh, int* pvOffset, int* piOffset) {
+  const Data* pData = pPlayer->data;
   int curVertex = *pvOffset, curIndex = *piOffset;
   int i;
   float fTotalLength = 0;
@@ -179,9 +180,9 @@ void trailGeometry(Player* pPlayer, PlayerVisual* pV, TrailMesh* pMesh,
   *pvOffset = curVertex;
 }
 
-void bowGeometry(Player* pPlayer, PlayerVisual* pV, TrailMesh* pMesh,
-                 int* pvOffset, int* piOffset) {
-  Data* pData = pPlayer->data;
+void bowGeometry(const Player* pPlayer, const PlayerVisual* pV,
+                 TrailMesh* pMesh, int* pvOffset, int* piOffset) {
+  const Data* pData = pPlayer->data;
   segment2 s;
   int bdist = PLAYER_IS_ACTIVE(pPlayer) ? 2 : 3;
   int i;

@@ -5,7 +5,7 @@
 #include "base/nebu_debug_memory.h"
 
 namespace Sound {
-System::System(SDL_AudioSpec* spec) {
+System::System(const SDL_AudioSpec* spec) {
   _spec = spec;
   _sources.next = nullptr;
 
@@ -19,7 +19,7 @@ System::System(SDL_AudioSpec* spec) {
   _status = 0;  // sound system is not initialized
 }
 System::~System() {
-  for (nebu_List* p = &_sources; p->next; p = p->next) {
+  for (const nebu_List* p = &_sources; p->next; p = p->next) {
     delete (Source*)p->data;
   }
   if (_sources.next) nebu_List_Free(_sources.next);
@@ -34,7 +34,7 @@ void System::Callback(Uint8* data, int len) {
 
   if (_status == eUninitialized) return;
 
-  nebu_List* p;
+  const nebu_List* p;
   [[maybe_unused]] int sources_mixed = 0;
   for (p = &_sources; p->next != nullptr; p = p->next) {
     Source* s = (Source*)p->data;
@@ -60,7 +60,7 @@ void System::Idle(void) {
     if (source->IsRemovable() && !source->IsPlaying()) {
       // get rid of data
       p->data = p->next->data;
-      nebu_List* tmp = p->next;
+      nebu_List* const tmp = p->next;
       p->next = p->next->next;
       delete tmp;
       delete source;

@@ -11,7 +11,6 @@
 #include <unistd.h>
 
 nebu_List* readDirectoryContents(const char* dirname, const char* prefix) {
-  DIR* dir;
   struct dirent* entry;
   nebu_List *l, *p;
 
@@ -19,16 +18,15 @@ nebu_List* readDirectoryContents(const char* dirname, const char* prefix) {
   p = l;
   p->next = nullptr;
 
-  dir = opendir(dirname);
+  DIR* const dir = opendir(dirname);
   if (dir == nullptr) {
     fprintf(stderr, "warning: cannot open directory '%s'\n", dirname);
     return l;
   }
   while ((entry = readdir(dir)) != nullptr) {
-    char* name;
     if (prefix == nullptr || strstr(entry->d_name, prefix) == entry->d_name) {
       if (entry->d_name[0] != '.') {
-        name = malloc(strlen(entry->d_name) + 1);
+        char* const name = malloc(strlen(entry->d_name) + 1);
         memcpy(name, entry->d_name, strlen(entry->d_name) + 1);
         p->data = name;
         p->next = (nebu_List*)malloc(sizeof(nebu_List));

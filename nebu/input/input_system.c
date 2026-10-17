@@ -43,10 +43,10 @@ void nebu_Input_Init(void) {
   /* joystick */
   if (SDL_Init(SDL_INIT_JOYSTICK)) {
     int sdl_joystick_count = 0;
-    SDL_JoystickID* sdl_joysticks = SDL_GetJoysticks(&sdl_joystick_count);
+    SDL_JoystickID* const sdl_joysticks = SDL_GetJoysticks(&sdl_joystick_count);
 
     int max_joy = 2; /* default... override by setting NEBU_MAX_JOY */
-    char* NEBU_MAX_JOY = getenv("NEBU_MAX_JOY");
+    const char* const NEBU_MAX_JOY = getenv("NEBU_MAX_JOY");
 
     if (NEBU_MAX_JOY) {
       int n;
@@ -80,14 +80,14 @@ void nebu_Input_Init(void) {
 }
 
 void nebu_Input_Grab(void) {
-  SDL_Window* window = nebu_Video_GetWindow();
+  SDL_Window* const window = nebu_Video_GetWindow();
   if (window) {
     SDL_SetWindowMouseGrab(window, true);
   }
 }
 
 void nebu_Input_Ungrab(void) {
-  SDL_Window* window = nebu_Video_GetWindow();
+  SDL_Window* const window = nebu_Video_GetWindow();
   if (window) {
     SDL_SetWindowMouseGrab(window, false);
   }
@@ -152,7 +152,7 @@ const char* nebu_Input_GetKeyname(int key) {
   }
 }
 
-void nebu_Intern_HandleInput(SDL_Event* event) {
+void nebu_Intern_HandleInput(const SDL_Event* event) {
   const char* key_name;
   int key, state;
   static int joy_axis_state[MAX_JOY] = {0};

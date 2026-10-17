@@ -16,7 +16,7 @@
 
 #include "base/nebu_debug_memory.h"
 
-void Player_GetPosition(Player* pPlayer, float* pX, float* pY) {
+void Player_GetPosition(const Player* pPlayer, float* pX, float* pY) {
   vec2 v =
       HMM_AddV2(pPlayer->data->trails[pPlayer->data->trailOffset].vStart,
                 pPlayer->data->trails[pPlayer->data->trailOffset].vDirection);
@@ -28,7 +28,7 @@ void getPositionFromIndex(float* x, float* y, int player) {
   getPositionFromData(x, y, game->player[player].data);
 }
 
-void getPositionFromData(float* x, float* y, Data* data) {
+void getPositionFromData(float* x, float* y, const Data* data) {
   vec2 v = HMM_AddV2(data->trails[data->trailOffset].vStart,
                      data->trails[data->trailOffset].vDirection);
   *x = v.X;
@@ -72,7 +72,7 @@ void game_FreePlayers(Game* pGame, Game2* pGame2) {
 
   // Game
   for (i = 0; i < pGame->players; i++) {
-    Player* p = pGame->player + i;
+    const Player* p = pGame->player + i;
     free(p->ai);
     free(p->data->trails);
     free(p->data);
@@ -213,7 +213,7 @@ void resetScores(void) {
   for (i = 0; i < game->players; i++) game->player[i].data->score = 0;
 }
 
-void doCrashPlayer(GameEvent* e) {
+void doCrashPlayer(const GameEvent* e) {
   int j;
 
   Audio_CrashPlayer(e->player);
@@ -239,7 +239,7 @@ void newTrail(Data* data) {
   s->vDirection = HMM_V2(0, 0);
 }
 
-void doTurn(GameEvent* e, int direction) {
+void doTurn(const GameEvent* e, int direction) {
   Data* data = game->player[e->player].data;
   newTrail(data);
   data->last_dir = data->dir;

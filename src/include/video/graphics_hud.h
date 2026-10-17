@@ -4,6 +4,6 @@
 #include "game/game_data.h"  // Player
 #include "video/video.h"     // PlayerVisual
 
-void drawHUD(Player* p, PlayerVisual* pV);
+void drawHUD(const Player* p, const PlayerVisual* pV);
 
 #endif

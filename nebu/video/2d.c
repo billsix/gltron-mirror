@@ -9,7 +9,7 @@
 nebu_2d* nebu_2d_LoadPNG(const char* path, int flags) {
   nebu_2d* p2d = nullptr;
 
-  nebu_Surface* pSurface = nebu_Surface_LoadPNG(path);
+  nebu_Surface* const pSurface = nebu_Surface_LoadPNG(path);
   if (!pSurface) return nullptr;
 
   p2d = nebu_2d_Create(pSurface, flags);
@@ -18,7 +18,7 @@ nebu_2d* nebu_2d_LoadPNG(const char* path, int flags) {
   return p2d;
 }
 
-nebu_2d* nebu_2d_Create(nebu_Surface* pSurface, int flags) {
+nebu_2d* nebu_2d_Create(const nebu_Surface* pSurface, int flags) {
   nebu_2d* p2d;
   int source_format, target_format;
   int bpp, y;

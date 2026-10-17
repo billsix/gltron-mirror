@@ -21,7 +21,7 @@ static float normal2[] = {0.0, 1.0, 0.0};
    specified (eye) point
    the z component is ignored
  */
-float getDist(segment2* s, float* eye) {
+float getDist(const segment2* s, const float* eye) {
   vec2 n = HMM_V2(s->vDirection.Y, -s->vDirection.X);
   vec2 tmp = HMM_V2(eye[0] - s->vStart.X, eye[1] - s->vStart.Y);
   if (n.X == 0 && n.Y == 0) return HMM_LenV2(tmp);
@@ -35,9 +35,9 @@ float getDist(segment2* s, float* eye) {
 
 float dists[] = {BOW_DIST2, BOW_DIST3, BOW_DIST1, 0};
 
-float getSegmentEndX(Data* data, int dist) {
+float getSegmentEndX(const Data* data, int dist) {
   float tlength, blength;
-  segment2* s = data->trails + data->trailOffset;
+  const segment2* const s = data->trails + data->trailOffset;
 
   if (dirsX[data->dir] == 0) return s->vStart.X + s->vDirection.X;
 
@@ -47,9 +47,9 @@ float getSegmentEndX(Data* data, int dist) {
          dists[dist] * blength * dirsX[data->dir];
 }
 
-float getSegmentEndY(Data* data, int dist) {
+float getSegmentEndY(const Data* data, int dist) {
   float tlength, blength;
-  segment2* s = data->trails + data->trailOffset;
+  const segment2* const s = data->trails + data->trailOffset;
 
   if (dirsY[data->dir] == 0) return s->vStart.Y + s->vDirection.Y;
 
@@ -60,7 +60,7 @@ float getSegmentEndY(Data* data, int dist) {
 }
 
 /* getSegmentEndUV() calculates the texture coordinates for the last segment */
-float getSegmentEndUV(segment2* s, Data* data) {
+float getSegmentEndUV(const segment2* s, Data* data) {
   float tlength, blength;
   tlength = segment2_Length(s);
   blength = (tlength < 2 * BOW_LENGTH) ? tlength / 2 : BOW_LENGTH;
@@ -68,22 +68,24 @@ float getSegmentEndUV(segment2* s, Data* data) {
 }
 
 /* getSegmentUV gets UV coordinates for an ordinary segment */
-float getSegmentUV(segment2* s) { return segment2_Length(s) / DECAL_WIDTH; }
+float getSegmentUV(const segment2* s) {
+  return segment2_Length(s) / DECAL_WIDTH;
+}
 
 /*
    drawTrailLines() draws a white line on top of each trail segment
    the alpha value is reduced with increasing distance to the player
 */
 
-void drawTrailLines(Player* p, PlayerVisual* pV) {
-  segment2* s;
+void drawTrailLines(const Player* p, const PlayerVisual* pV) {
+  const segment2* s;
   float height;
 
-  float* normal;
+  const float* normal;
   float dist;
   float alpha;
-  Data* data;
-  Camera* cam;
+  const Data* data;
+  const Camera* cam;
 
   float trail_top[] = {1.0, 1.0, 1.0, 1.0};
 
@@ -161,7 +163,7 @@ void drawTrailLines(Player* p, PlayerVisual* pV) {
         at (-1,-1,1,0) (I hope that's correct)
 */
 
-void drawTrailShadow(Player* p, PlayerVisual* pV) {
+void drawTrailShadow(const Player* p, const PlayerVisual* pV) {
   int vOffset = 0;
   int iOffset = 0;
   TrailMesh mesh;

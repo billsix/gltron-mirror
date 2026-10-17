@@ -11,7 +11,7 @@ class SourceMusic : public Source {
  public:
   SourceMusic(System* system);
   virtual ~SourceMusic();
-  void Load(char* filename);
+  void Load(const char* filename);
   virtual int Mix(Uint8* data, int len);
   virtual void Idle(void);
 

@@ -39,15 +39,15 @@ typedef enum gltron_MeshType { TRI_MESH, QUAD_MESH } gltron_MeshType;
 
 gltron_Mesh* gltron_Mesh_LoadFromFile(const char* filename,
                                       gltron_MeshType type);
-void gltron_Mesh_Draw(gltron_Mesh* pMesh, gltron_MeshType type);
-void gltron_Mesh_DrawExplosion(gltron_Mesh* pMesh, float fRadius);
+void gltron_Mesh_Draw(const gltron_Mesh* pMesh, gltron_MeshType type);
+void gltron_Mesh_DrawExplosion(const gltron_Mesh* pMesh, float fRadius);
 void gltron_Mesh_Free(gltron_Mesh* pMesh);
 
 typedef enum ColorType { eAmbient = 0, eDiffuse, eSpecular } ColorType;
 
 void gltron_Mesh_SetMaterialAlpha(gltron_Mesh* pMesh, float fAlpha);
 void gltron_Mesh_SetMaterialColor(gltron_Mesh* pMesh, const char* name,
-                                  ColorType eType, float pColor[4]);
+                                  ColorType eType, const float pColor[4]);
 
 void gltron_Mesh_ComputeBBox(gltron_Mesh* pMesh);
 

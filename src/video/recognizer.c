@@ -32,7 +32,7 @@ static float dy(void) {
          yv[4] * yv[3] * sinf(yv[4] * alpha + yv[5]);
 }
 
-float getRecognizerAngle(vec2* velocity) {
+float getRecognizerAngle(const vec2* velocity) {
   float dxval = velocity->X;
   float dyval = velocity->Y;
 

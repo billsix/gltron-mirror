@@ -15,8 +15,8 @@ void Audio_Start(void);
 void Audio_Quit(void);
 
 void Audio_LoadPlayers(void);
-void Audio_LoadSample(char* name, int number);
-void Audio_LoadMusic(char* name);
+void Audio_LoadSample(const char* name, int number);
+void Audio_LoadMusic(const char* name);
 void Audio_PlayMusic(void);
 void Audio_StopMusic(void);
 void Audio_SetMusicVolume(float volume);

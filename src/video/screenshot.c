@@ -33,7 +33,7 @@ static char* getNextFilename(const char* suffix, int* start_at) {
   return path;
 }
 
-void doPngScreenShot(Visual* display) {
+void doPngScreenShot(const Visual* display) {
   static int last_png_num; /* store last free file index. */
   nebu_Surface* pScreen;
 
@@ -46,7 +46,7 @@ void doPngScreenShot(Visual* display) {
   free(path);
 }
 
-void doBmpScreenShot(Visual* display) {
+void doBmpScreenShot(const Visual* display) {
   static int last_bmp_num; /* store last free file index. */
   nebu_Surface* pScreen;
 

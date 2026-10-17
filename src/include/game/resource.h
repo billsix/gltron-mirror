@@ -21,6 +21,6 @@ void resource_ReleaseAll(void);
 void resource_FreeAll(void);
 void resource_Free(int token);
 void* resource_Get(int token, int type);
-int resource_GetToken(char* filename, int type);
+int resource_GetToken(const char* filename, int type);
 
 #endif /* RESOURCE_H */

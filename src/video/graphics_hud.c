@@ -71,7 +71,7 @@ int getFPS(void) {
   return fps_avg;
 }
 
-void drawHUD(Player* p, PlayerVisual* pV) {
+void drawHUD(const Player* p, const PlayerVisual* pV) {
   char temp[1024];
   char pause_message[128];
   float pause_color[3];
@@ -136,7 +136,8 @@ void getPauseString(char* buf, size_t bufsize, float* color) {
 
   if ((game->pauseflag & PAUSE_GAME_FINISHED) && game->winner != -1) {
     if (game->winner >= -1) {
-      float* player_color = gPlayerVisuals[game->winner].pColorAlpha;
+      const float* const player_color =
+          gPlayerVisuals[game->winner].pColorAlpha;
 
       /*
          make the 'Player wins' message oscillate between
@@ -178,8 +179,9 @@ void getPauseString(char* buf, size_t bufsize, float* color) {
 /* new hud stuff starts here */
 
 void drawCircle(float phiStart, float phiEnd, int nSegments, float r1, float r2,
-                float* c1, float* c2, float* c3, float* c4);
-void drawRect(float width, float height, float* colors);
+                const float* c1, const float* c2, const float* c3,
+                const float* c4);
+void drawRect(float width, float height, const float* colors);
 
 static void getColor(lua_State* l, float* out) {
   const char* names[] = {"r", "g", "b"};
@@ -348,7 +350,7 @@ int c_drawHUDMask(lua_State* l) {
   return 0;
 }
 
-void rgb_interpolate(float* color, float t, float* c1, float* c2) {
+void rgb_interpolate(float* color, float t, const float* c1, const float* c2) {
   int i;
   // printf("%.2f\n", t);
   for (i = 0; i < 3; i++) {
@@ -357,7 +359,8 @@ void rgb_interpolate(float* color, float t, float* c1, float* c2) {
 }
 
 void drawCircle(float phiStart, float phiEnd, int nSegments, float r1, float r2,
-                float* c1, float* c2, float* c3, float* c4) {
+                const float* c1, const float* c2, const float* c3,
+                const float* c4) {
   float* pVertices;
   float* pColors;
   unsigned int* pIndices;
@@ -412,7 +415,7 @@ void drawCircle(float phiStart, float phiEnd, int nSegments, float r1, float r2,
   free(pIndices);
 }
 
-void drawRect(float width, float height, float* colors) {
+void drawRect(float width, float height, const float* colors) {
   float vertices[12] = {0, 0, 0, 0, height, 0, width, height, 0, width, 0, 0};
 
   unsigned int indices[] = {0, 1, 2, 0, 2, 3};

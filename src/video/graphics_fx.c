@@ -6,8 +6,8 @@
 #include "base/nebu_math.h"
 #include "video/nebu_renderer_gl.h"
 
-void drawGlow(Camera* pCam, Player* pTarget, PlayerVisual* pV, Visual* d,
-              float dim) {
+void drawGlow(const Camera* pCam, const Player* pTarget, const PlayerVisual* pV,
+              const Visual* d, float dim) {
   float mat[4 * 4];
   float alpha, dist;
   float x, y;
