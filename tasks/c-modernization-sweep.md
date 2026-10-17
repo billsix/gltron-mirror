@@ -41,7 +41,7 @@ Read these before touching code:
    over refactors."). The user's explicit request for this task authorizes a
    *scoped* modernization; it does not loosen the teaching-artifact rule, it
    scopes the sweep to safety/correctness + safe idioms and forbids churn.
-4. `tasks/c23-port-investigation.md` and `tasks/add-sanitizer-gate.md` — the two
+4. `tasks/c23-port-investigation.md` and `tasks/archive/2026/10/17/add-sanitizer-gate.md` — the two
    existing tasks this one sits between (see Relationship, and open questions 3–4).
 
 ### Current state (surveyed 2026-10-17)
@@ -89,7 +89,7 @@ the only CTest is `cmake -E true`, `CMakeLists.txt:108-118`).
 
 ### Phase 0 — Land the verification net + C23 compatibility gate (do before any source edit)
 Scope and standard are settled (see Decisions). Phase 0 is now purely sequencing:
-- [ ] **Land the sanitizer gate first** (decision 4). Complete `tasks/add-sanitizer-gate.md`
+- [x] **Sanitizer gate landed first** (decision 4, done 2026-10-17). `tasks/archive/2026/10/17/add-sanitizer-gate.md`
       (UBSan-trap + ASan under Xvfb/software GL, bounded run) so this sweep has a
       runtime net before Phase 2 starts mutating memory/string code. The sweep doc's
       order still holds underneath: raised-warning-level build is the first gate,
@@ -143,7 +143,7 @@ Scope and standard are settled (see Decisions). Phase 0 is now purely sequencing
       `realloc` into a temp, `free`-then-NULL where a double-free/UAF is reachable,
       and write the one-line owner contract on functions returning owned memory
       (`getPossiblePath` = "caller frees"). Keep the game's by-design exit-time leaks
-      (tracked in `add-sanitizer-gate.md`'s LSan-off decision) — don't chase those.
+      (tracked in the sanitizer gate's LSan-off decision) — don't chase those.
 - [ ] **`static` on `evasive_action`** (`computer_utilities.c:236`).
 
 ### Phase 3 — Safe idioms, class-by-class, surgical (re-verify after each class)
@@ -208,7 +208,7 @@ stable public surface — see below.)
 - **Primary gate:** clean build at the raised warning level (Phase 1 flags), plus
   `.clang-tidy`/Cppcheck clean on first-party sources. This catches the bulk
   (uninitialized reads, pointer-decay `sizeof`, narrowing) per the sweep doc.
-- **Runtime net:** the UBSan-trap + ASan gate from `tasks/add-sanitizer-gate.md`,
+- **Runtime net:** the UBSan-trap + ASan gate from `tasks/archive/2026/10/17/add-sanitizer-gate.md`,
   run under Xvfb + software GL (that task already worked out the display problem and
   the bounded-run hook). If that gate is not landed first (open q 4), the sweep runs
   without a runtime net and **every change states what it could not verify** — do not
@@ -221,7 +221,7 @@ stable public surface — see below.)
 - **`tasks/c23-port-investigation.md`** (Priority 7) stays the **C23 decision record**;
   **Phase 4 here is its execution arm** (decision 3). Add a back-pointer from it to
   this task in Phase 0; don't archive/delete it without go-ahead.
-- **`tasks/add-sanitizer-gate.md`** is the verification mechanism and **lands first**
+- **`tasks/archive/2026/10/17/add-sanitizer-gate.md`** was the verification mechanism and **landed first** (done 2026-10-17)
   (decision 4) — this sweep is its best justification (it gives the gate real bugs to
   catch).
 
@@ -239,7 +239,7 @@ stable public surface — see below.)
    rather than blocking the sweep.
 3. **Keep `c23-port-investigation.md` separate** as the C23 decision doc; Phase 4 is
    its execution. Cross-link both ways (Phase 0).
-4. **Sanitizer gate first** — land `add-sanitizer-gate.md` before Phase 2 mutates any
+4. **Sanitizer gate first** — **done** (landed 2026-10-17); the net is in place before Phase 2 mutates any
    memory/string code.
 5. **Warning + lint gate on by default** — the raised `-W` flags and the clang-tidy/
    Cppcheck `lint` step are the default image gate (not gated behind an off-by-default

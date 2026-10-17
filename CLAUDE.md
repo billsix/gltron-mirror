@@ -28,7 +28,7 @@ introduce a modern renderer abstraction unless explicitly asked.**
   under **UBSan-trap** and **ASan** and runs it headless (Xvfb + Mesa llvmpipe, in
   timedemo mode), failing the image on any UB or memory error. Needs
   `USE_GRAPHICS=1`. Script: `tools/sanitizer-gate.sh`; headless-GL recipe + rationale
-  in `tasks/add-sanitizer-gate.md`.
+  in `tasks/archive/2026/10/17/add-sanitizer-gate.md`.
 
 ## Layout
 
@@ -64,7 +64,7 @@ was reconciled + archived 2026-08-27 (its deletions were already executed).
 
 Active:
 
-- [Behavior-preserving C modernization sweep](tasks/c-modernization-sweep.md) — **ready, awaiting go-ahead** (scope settled 2026-10-17); surgical safety/correctness + safe-idiom sweep of first-party code toward the shared C coding standard — pin C23, fix unbounded `sprintf`/unchecked `malloc`, add `bool`/narrow `const`/`static`, wire the warning + clang-tidy gate on by default — explicitly no `third_party/`/HandmadeMath edits, opting out of teaching-artifact hazards. `add-sanitizer-gate.md` lands first as its net; `c23-port-investigation.md` is its C23 decision arm.
+- [Behavior-preserving C modernization sweep](tasks/c-modernization-sweep.md) — **ready, awaiting go-ahead** (scope settled 2026-10-17); surgical safety/correctness + safe-idiom sweep of first-party code toward the shared C coding standard — pin C23, fix unbounded `sprintf`/unchecked `malloc`, add `bool`/narrow `const`/`static`, wire the warning + clang-tidy gate on by default — explicitly no `third_party/`/HandmadeMath edits, opting out of teaching-artifact hazards. its runtime net (the sanitizer gate, `tasks/archive/2026/10/17/add-sanitizer-gate.md`) landed 2026-10-17; `c23-port-investigation.md` is its C23 decision arm.
 - [OpenGL fixed-function → 3.3 core profile port](tasks/opengl-core-profile-port.md) — **not started**, surface at session start and ask Bill before beginning.
 - [SDL2 → SDL3 port](tasks/sdl3-port.md) — **shipped 2026-05-08** on Linux; macOS not retested (work remains).
 - [Post-round camera bug](tasks/post-round-camera-bug.md) — **fix applied (staged), runtime-unconfirmed**; root cause was glance-state (`bIsGlancing`) leaking into the observer camera on a crash-while-glancing. Runtime confirmation is tracked in [Verify post-round camera fix](tasks/verify-post-round-camera-fix.md) (reported 2026-05-08, diagnosed/fixed 2026-08-03).
@@ -80,7 +80,7 @@ alternatives, deletions) live in the archived task docs:
 - SDL window architecture cleanup — `tasks/archive/2026/05/10/sdl-window-architecture.md`
 - Replace nebu math with HandmadeMath (all 5 phases) — `tasks/archive/2026/05/10/handmademath-port.md` (its one live follow-up is split into `tasks/verify-handmademath-audio-pitch.md`)
 - Modernization survey — `tasks/archive/2026/08/27/modernization-survey.md`
-- ASan + UBSan(trap) sanitizer gate — `tasks/add-sanitizer-gate.md`
+- ASan + UBSan(trap) sanitizer gate — `tasks/archive/2026/10/17/add-sanitizer-gate.md`
 
 When starting a new task, add a one-line entry under "Active" here pointing
 at a `tasks/<slug>.md` file, and keep the task file updated with status,
