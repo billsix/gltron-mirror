@@ -17,6 +17,21 @@ The teaching value of the port is precisely the side-by-side: "here's
 what FFP does, and here's the GLSL/CPU code that produces the same
 pixels in core profile." Every drift from that defeats the lesson.
 
+## Related cleanup (optional; from the C modernization sweep 2026-10-17)
+
+The C modernization sweep (`tasks/archive/2026/10/17/c-modernization-sweep.md`) left a few
+**GL-id-holding fields/params typed as `int`**, casting `(GLuint)`/`(GLuint*)` locally at the GL
+call sites rather than retyping across a header (its no-cross-dir-header rule). Retyping these to
+the real GL types would drop ~8 local casts and is natural to fold into this port, since you will be
+rewriting that GL code anyway:
+
+- `video_level_shader.diffuse_texture_id` (`int` in `src/include/video/video_level.h`)
+- `nebu_2d::tex_id` (`int` in `nebu/include/.../nebu_2d.h`)
+- `nebu_Font::pTextures` (`int*` in `nebu/include/.../nebu_font.h`)
+- `trailStatesNormal(Player*, int texture)` param (prototype in `video/trail_geometry.h`)
+
+Not a prerequisite for the port; just the cheapest moment to do it. Keep behavior identical.
+
 ## What this plan should produce
 
 1. Inventory FFP usage. Surface map by category:
