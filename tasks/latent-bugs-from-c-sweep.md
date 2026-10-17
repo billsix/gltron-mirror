@@ -1,6 +1,7 @@
 # Latent bugs surfaced by the C modernization sweep
 
-**Status:** proposed — needs go-ahead
+**Status:** in progress — **Bug 1 FIXED 2026-10-17** (commit e0ce0fb8, clang -Werror clean); **Bug 2
+needs a maintainer gameplay decision** (see below — it is a behavior change, not a clear safety fix).
 **Priority:** 5
 **Difficulty:** 3
 **Created:** 2026-10-17 (William Emerison Six <billsix@gmail.com>)
@@ -36,9 +37,13 @@ currently kept alive with `[[maybe_unused]]`).
   callers over-provision so it never triggers? (`git grep -n scripting_CopyStringResult`.)
 - Confirm the intended contract: truncate-and-signal (status 2) is clearly the design.
 
-**Candidate fix (if confirmed):** `memcpy(s, lua_tostring(L, -1), (size_t)copy);` and drop the
-`[[maybe_unused]]` on `copy`. Then re-run the gates. (Compare with the sibling
-`scripting_GetStringResult`, which `malloc`s `size` itself and is fine.)
+**FIXED 2026-10-17 (commit e0ce0fb8).** Confirmed reachable: `gui.c:250` calls
+`scripting_CopyStringResult(pMenuName, 200)` (fixed 200-byte buffer), so a menu name > 200 bytes
+overflows; the `sizeof`-passing callers (`gui.c:325`/`338`) were already safe. Applied the candidate
+fix — `memcpy(..., (size_t)copy)` and dropped the `[[maybe_unused]]` (both `size` and `copy` are now
+used). Behavior changes only in the formerly-overflowing case (now truncates + returns status 2),
+matching the clamp's evident intent. The sibling `scripting_GetStringResult` `malloc`s `size` and is
+fine (unchanged). clang -Werror clean, binary links.
 
 ## Bug 2 — `crashTestPlayers` always returns 0
 
@@ -51,16 +56,31 @@ where the **outer** `crash` is initialized to 0 and never assigned — so the fu
 0. The actual crash is dispatched *inside* the function via `createEvent(i, EVENT_CRASH)`, so the
 game's crash handling likely runs through the event system regardless of the return value.
 
-**Decision needed before fixing:**
-- Inspect the caller: does anything branch on the returned `crash` (e.g. `if (crash) …`), or is the
-  assignment effectively dead because `EVENT_CRASH` already does the work? If the return is unused
-  in effect, this is harmless vestigial code; if a caller branch depends on it, it is a real
-  gameplay bug (crash-side logic that never runs).
+**Caller investigated 2026-10-17 — the return IS used, so this is a real (subtle) gameplay bug:**
+`src/game/event.c:325-338`:
+```c
+crash = crashTestPlayers(i, &movement);
+if (crash) { printf("player %d crashed into other players\n", i); ... }   // never runs (crash==0)
+if (!crash) {                                                             // always runs
+  crash = crashTestWalls(i, &movement); ...
+}
+```
+Because `crashTestPlayers` always returns 0: (a) the "crashed into other players" branch never runs,
+and (b) **wall-collision is tested even after a player-crash**. The crash itself still fires (the
+internal `createEvent(i, EVENT_CRASH)`), but the wall test can then fire a *second* `EVENT_CRASH` in
+the same step. So fixing it (make it return the detected state) is a **behavior change to crash/wall
+handling**, not a safety no-op.
 
-**Candidate fix (if the return is meant to be used):** return the detected state (e.g.
-`return jCrash;` hoisted, or set the outer `crash` when a crash is found). If vestigial: either
-change the signature to `void` or leave it with a one-line comment that the return is unused and the
-event system is authoritative. Either way, preserve the existing crash *behavior* exactly.
+**DECISION FOR THE MAINTAINER (not applied — this is the "is the broken behavior load-bearing?"
+call on a teaching artifact):**
+- Option A (recommended) — restore the intent: set the function-level `crash` when a player-crash is
+  found (e.g. `crash = 1;` where `jCrash = 1;`, or `return jCrash` appropriately) so the caller skips
+  the wall test after a player-crash and the double `EVENT_CRASH` can't happen. Small, matches the
+  caller's evident `if (!crash)` design. **Changes gameplay** (verify a round looks right).
+- Option B — declare it vestigial: if the current behavior (always also wall-testing) is what the
+  game has always done and is considered fine, leave the logic and either make the function `void` or
+  add a one-line comment that the return is intentionally unused. No gameplay change.
+Not fixed pending your call, since either way it is a deliberate gameplay decision.
 
 ## Verification
 
