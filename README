@@ -26,10 +26,10 @@ cmake --build build
 ### Containerized dev build (Fedora / podman)
 
 ```sh
-make -f Makefile.docker image    # build the image; compiles gltron + runs ctest
-make -f Makefile.docker shell    # dev shell (X11/Wayland + audio forwarded)
-make -f Makefile.docker build    # re-run the CMake build against the source tree
-make -f Makefile.docker appimage # build a Linux AppImage into ./out/
+make image    # build the image; compiles gltron + runs ctest
+make shell    # dev shell (X11/Wayland + audio forwarded)
+make build    # re-run the CMake build against the source tree
+make appimage # build a Linux AppImage into ./out/
 ```
 
 ## Runtime config

@@ -1,6 +1,10 @@
 # Standardize gltron's container build + add Emacs C support
 
-**Status:** proposed — needs go-ahead
+**Status:** in progress — **Phase 1 done 2026-10-17** (`Makefile.docker`→`Makefile` on the standard
+contract: `help` default, `PODMAN_RUN_FLAGS`, `shell-exec`, `image-export`/`import`, and a working
+portable **`make format`** — which also fixed a latent `format.sh` no-op where `find nebu src` ran
+from the wrong cwd in-container; docs repointed). **Phase 2 remaining:** the Emacs clangd/eglot
+vendoring + `make update-emacs-packages` + `clang-tools-extra`/`emacs` in the Dockerfile.
 **Priority:** 7
 **Difficulty:** 4
 **Created:** 2026-10-17 (William Emerison Six <billsix@gmail.com>)
@@ -32,16 +36,18 @@ sanitizer gate still passes.
 
 ## Plan
 
-### Phase 1 — Makefile.docker → Makefile on the standard contract
-- [ ] `git mv Makefile.docker Makefile`. Update every doc/pointer that names `Makefile.docker`
-      (gltron `CLAUDE.md`, `README`, `INSTALL`, any task) in the same change.
-- [ ] Adopt the standard structure from the exemplar **without losing gltron's specifics**:
-      add `PODMAN_RUN_FLAGS` (nested), a shared `SHELL_RUN_FLAGS` feeding `shell` + a new
-      `shell-exec SCRIPT=|CMD=`, `image-export`/`image-import`, and keep `help` as `.DEFAULT_GOAL`.
-      **Preserve** the X11/Wayland/`USE_X` display mounts, `USE_GRAPHICS`, `RUN_SANITIZERS`, the
-      `build`/`appimage` targets, and the `/gltron` mount root.
-- [ ] Keep `format` (gltron already ships `entrypoint/format.sh`); wire the advisory `tools/lint.sh`
-      as a `lint` target too (optional, mirrors the exemplar's `lint.sh`).
+### Phase 1 — Makefile.docker → Makefile on the standard contract  — DONE 2026-10-17
+- [x] `git mv Makefile.docker Makefile`; repointed `CLAUDE.md`, `README`, `INSTALL` (task-doc
+      mentions of `Makefile.docker` are historical and left).
+- [x] Adopted the standard structure: `PODMAN_RUN_FLAGS` (nested), shared `SHELL_RUN_FLAGS` feeding
+      `shell` + new `shell-exec SCRIPT=|CMD=`, `image-export`/`image-import`, `help` as
+      `.DEFAULT_GOAL`. Preserved the X11/Wayland/`USE_X` mounts, `USE_GRAPHICS`, `RUN_SANITIZERS`,
+      `build`/`appimage`, and the `/gltron` mount root.
+- [x] **`make format`** works and is portable: runs `entrypoint/format.sh` in the gltron image when
+      built (reproducible), else on the host with its clang-format; no `-f`, no sanitizer-gate
+      rebuild. Fixed `format.sh` to `cd` to the repo root (`/gltron` in-container, git toplevel on
+      host) — it previously `find`-ed `nebu src/` from the wrong cwd and silently formatted nothing.
+- [ ] (optional) wire the advisory `tools/lint.sh` as a `lint` target, mirroring the exemplar.
 
 ### Phase 2 — Emacs C support (clangd + eglot) + update-emacs-packages
 - [ ] Vendor `entrypoint/dotfiles/.emacs.d/` from the exemplar (`init.el`, `preferences.el`,

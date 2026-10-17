@@ -50,9 +50,9 @@ CMake options:
 
 Container build:
 
-A Fedora-based podman dev container is available via Makefile.docker:
+A Fedora-based podman dev container is available via Makefile:
 
-  make -f Makefile.docker image    # build the image (also builds gltron)
-  make -f Makefile.docker shell    # drop into a shell in the container
-  make -f Makefile.docker build    # rebuild from the mounted source tree
+  make image    # build the image (also builds gltron)
+  make shell    # drop into a shell in the container
+  make build    # rebuild from the mounted source tree
                                    # into ./bld
