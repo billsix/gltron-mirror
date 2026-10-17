@@ -1,0 +1,14 @@
+# out-of-tree build directories
+/bld/
+/bld-appimage/
+/out/
+
+# image-export tarballs (make image-export)
+/gltron-*.tar
+
+# Emacs compiled artifacts. The vendored .emacs.d/elpa/*.el SOURCES are committed
+# (via `make update-emacs-packages`, which strips these first and force-adds the rest);
+# the machine-specific compiled files are not.
+*.elc
+*.eln
+eln-cache/

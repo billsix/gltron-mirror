@@ -2,9 +2,20 @@
 
 USE_GRAPHICS ?= 1
 RUN_SANITIZERS ?= 1
+USE_EMACS ?= 1
 
 CONTAINER_CMD ?= $(shell command -v podman >/dev/null 2>&1 && echo podman || echo docker)
 CONTAINER_NAME = gltron
+
+# USE_EMACS=1 (the default) bind-mounts the vendored .emacs.d/ into the container so
+# an interactive `make shell` can USE its clangd/eglot C config + packages (:U chowns
+# to the container user, :z relabels for SELinux). USE_EMACS=0 skips the mount. To
+# REFRESH the vendored elpa packages, use `make update-emacs-packages`.
+ifeq ($(USE_EMACS),1)
+  ELPA_MOUNT = -v $(CURDIR)/entrypoint/dotfiles/.emacs.d/:/root/.emacs.d/:U,z
+else
+  ELPA_MOUNT =
+endif
 
 # Extra flags for every container `run`. Auto-set when running nested inside a
 # runClaudeInContainer/runCrushInContainer sandbox (which exports NESTED_PODMAN=1,
@@ -32,6 +43,7 @@ WAYLAND_FLAGS_FOR_CONTAINER = -e "WAYLAND_DISPLAY=${WAYLAND_DISPLAY}" \
 # drift). shell is interactive; shell-exec runs a script/command with no TTY.
 SHELL_RUN_FLAGS = --entrypoint /bin/bash \
 	$(FILES_TO_MOUNT) \
+	$(ELPA_MOUNT) \
 	$(USE_X) \
 	$(WAYLAND_FLAGS_FOR_CONTAINER)
 SHELL_EXEC_ARGS = -c 'cd /gltron && $(if $(CMD),$(CMD),exec bash $(SCRIPT))'
@@ -45,6 +57,7 @@ image: ## Build podman image (builds gltron via CMake at image-build time; RUN_S
 	$(CONTAINER_CMD) build \
 	                 --build-arg USE_GRAPHICS=$(USE_GRAPHICS) \
 	                 --build-arg RUN_SANITIZERS=$(RUN_SANITIZERS) \
+	                 --build-arg USE_EMACS=$(USE_EMACS) \
 	                 -t $(CONTAINER_NAME) \
 	                 .
 
@@ -108,6 +121,27 @@ image-export: ## Export the OCI image to a timestamped tar in the repo root
 .PHONY: image-import
 image-import: ## Import an OCI image tar: make image-import FILE=foo.tar
 	$(CONTAINER_CMD) load -i $(FILE)
+
+# Refresh the vendored Emacs packages. Forces USE_EMACS=1 and rebuilds the image
+# first (RUN_SANITIZERS=0 -- an emacs refresh should not drag in the sanitizer
+# gate). Then, in the container, wipes ONLY the elpa/ subtree (init.el /
+# preferences.el / helm.el / install-melpa-packages.el are hand-written config,
+# left untouched) and reinstalls from MELPA into the host's bind-mounted
+# .emacs.d/elpa. Finally strips compiled *.elc/*.eln (machine-specific) and
+# force-stages the elpa tree. Needs network. Mirrors billsEmacsConfigs/c.
+.PHONY: update-emacs-packages
+update-emacs-packages: ## USE_EMACS=1: rebuild image, wipe+reinstall elpa, strip *.elc/*.eln, git add -f
+	$(MAKE) image USE_EMACS=1 RUN_SANITIZERS=0
+	$(CONTAINER_CMD) run --rm $(PODMAN_RUN_FLAGS) \
+		-v $(CURDIR)/entrypoint/dotfiles/.emacs.d/:/root/.emacs.d/:U,z \
+		--entrypoint /bin/bash \
+		$(CONTAINER_NAME) \
+		-c 'mkdir -p /root/.emacs.d/elpa; find /root/.emacs.d/elpa -mindepth 1 -delete; \
+		    emacs --batch --load /root/.emacs.d/install-melpa-packages.el'
+	mkdir -p $(CURDIR)/entrypoint/dotfiles/.emacs.d/elpa && cd $(CURDIR)/entrypoint/dotfiles/.emacs.d/elpa && \
+		find . \( -iname '*.elc' -o -iname '*.eln' \) -delete && \
+		git add -A -f .
+	@echo "Done: reinstalled packages, stripped *.elc/*.eln, staged elpa -- review and commit."
 
 .PHONY: help
 help:

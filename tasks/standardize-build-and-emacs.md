@@ -49,16 +49,21 @@ sanitizer gate still passes.
       host) — it previously `find`-ed `nebu src/` from the wrong cwd and silently formatted nothing.
 - [ ] (optional) wire the advisory `tools/lint.sh` as a `lint` target, mirroring the exemplar.
 
-### Phase 2 — Emacs C support (clangd + eglot) + update-emacs-packages
-- [ ] Vendor `entrypoint/dotfiles/.emacs.d/` from the exemplar (`init.el`, `preferences.el`,
-      `helm.el`, `install-melpa-packages.el`), adjusted for gltron (clangd/eglot for C; the
-      `compile_commands.json` gltron's CMake already emits is the clangd input).
-- [ ] Add `ARG USE_EMACS=0` to the `Dockerfile` (Makefile passes `1` by default per fleet
-      convention), installing `emacs` + running the melpa install script when on; ensure
-      `clang-tools-extra` (clangd) is in the dnf list (`entrypoint/01-install-base.sh`).
-- [ ] Add the `ELPA_MOUNT` + **`update-emacs-packages`** target (copy the exemplar's: force
-      `USE_EMACS=1`, rebuild image, wipe+reinstall `elpa/`, strip `*.elc`/`*.eln`, `git add -f` the
-      elpa tree). This is the target the billsEmacsConfigs top-level script will call.
+### Phase 2 — Emacs C support (clangd + eglot) + update-emacs-packages  — infra DONE 2026-10-17
+- [x] Vendored `entrypoint/dotfiles/.emacs.d/` from the exemplar (`init.el`, `preferences.el`,
+      `helm.el`, `install-melpa-packages.el`). Adjusted for gltron: `my-lsp-root` → `/gltron/`, and
+      `lsp-clients-clangd-args '("--compile-commands-dir=/gltron/bld")'` so clangd finds the
+      `compile_commands.json` gltron's CMake writes to `bld/` (run `make build` first).
+- [x] `ARG USE_EMACS=0` in the `Dockerfile` (Makefile passes `1`): COPYs `install-melpa-packages.el`
+      and, when on, installs `emacs` + runs the MELPA install at image-build. `clang-tools-extra`
+      (clangd) **and** `emacs` were already unconditional in `entrypoint/01-install-base.sh`.
+- [x] `ELPA_MOUNT` (bind-mounts the vendored `.emacs.d` into `shell`/`shell-exec` when `USE_EMACS=1`)
+      + the **`update-emacs-packages`** target (rebuild `USE_EMACS=1 RUN_SANITIZERS=0`, wipe+reinstall
+      `elpa/`, strip `*.elc`/`*.eln`, `git add -f`). `.gitignore` added for compiled artifacts + build
+      dirs. This is the target the billsEmacsConfigs top-level script invokes.
+- [ ] **Verify:** `make image USE_EMACS=1` builds green (automated, in progress); `make
+      update-emacs-packages` populates + stages `elpa/`. "clangd resolves a symbol in an interactive
+      `make shell` emacs" needs a GUI session — the maintainer's hands-on check.
 
 ### Phase 3 — verify
 - [ ] Nested: `make image`, `make shell` (emacs opens a C file, clangd resolves a symbol / jumps to
