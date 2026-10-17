@@ -14,12 +14,11 @@
 #include <base/nebu_debug_memory.h>
 
 void initArtpacks(void) {
-  const char* art_path;
   nebu_List* artList;
   nebu_List* p;
   int i;
 
-  art_path = getDirectory(PATH_ART);
+  const char* const art_path = getDirectory(PATH_ART);
   artList = readDirectoryContents(art_path, nullptr);
   if (artList->next == nullptr) {
     fprintf(stderr, "[fatal] no art files found...exiting\n");

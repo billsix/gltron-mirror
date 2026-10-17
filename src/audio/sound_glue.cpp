@@ -150,8 +150,8 @@ void Audio_Idle(void) {
 
   /* camera.cam and camera.target are float[3]; HMM has no array-ctor so spell
      out the components. */
-  const float* cam = gPlayerVisuals[0].camera.cam;
-  const float* tgt = gPlayerVisuals[0].camera.target;
+  const float* const cam = gPlayerVisuals[0].camera.cam;
+  const float* const tgt = gPlayerVisuals[0].camera.target;
   listener._location = HMM_V3(cam[0], cam[1], cam[2]);
   HMM_Vec3 v1 = HMM_V3(tgt[0], tgt[1], tgt[2]);
   HMM_Vec3 v2 = HMM_V3(cam[0], cam[1], cam[2]);

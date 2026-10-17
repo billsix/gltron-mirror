@@ -80,12 +80,11 @@ void Sound_setFxVolume(float volume) {
 }
 
 void Sound_initTracks(void) {
-  const char* music_path;
   nebu_List* soundList;
   nebu_List* p;
   int i;
 
-  music_path = getDirectory(PATH_MUSIC);
+  const char* const music_path = getDirectory(PATH_MUSIC);
   soundList = readDirectoryContents(music_path, nullptr);
   if (soundList->next == nullptr) {
     fprintf(stderr, "[sound] no music files found...exiting\n");

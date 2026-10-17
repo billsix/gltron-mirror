@@ -148,10 +148,9 @@ int c_timedemo(lua_State* L) {
 }
 
 int c_SetCallback(lua_State* L) {
-  const char* name;
   int top = lua_gettop(L);
   if (lua_isstring(L, top)) {
-    name = lua_tostring(L, top);
+    const char* const name = lua_tostring(L, top);
     setCallback(name);
     // printf("enabling callback-set '%s'\n", name);
   } else {

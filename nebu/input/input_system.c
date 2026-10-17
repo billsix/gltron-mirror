@@ -71,7 +71,7 @@ void nebu_Input_Init(void) {
 
     if (n_joysticks) SDL_SetJoystickEventsEnabled(true);
   } else {
-    const char* s = SDL_GetError();
+    const char* const s = SDL_GetError();
     fprintf(stderr, "[init] couldn't initialize joysticks: %s\n", s);
   }
   for (i = 0; i < eMaxKeyState; i++) {
