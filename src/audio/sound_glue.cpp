@@ -24,6 +24,10 @@ extern "C" {
 
 #include "base/nebu_debug_memory.h"
 
+// Length of the heap buffers that hold a sound source's name; shared by the
+// allocation and the snprintf bound so the size lives in exactly one place.
+static const size_t kSoundSourceNameLen = 32;
+
 static Sound::System* sound = NULL;
 static Sound::SourceMusic* music = NULL;
 static Sound::SourceSample* sample_crash = NULL;
@@ -236,8 +240,8 @@ void Audio_LoadMusic(char* name) {
   if (getSettingi("loopMusic")) music->SetLoop(255);
   music->SetType(Sound::eSoundMusic);
 
-  char* sname = new char[32];
-  snprintf(sname, 32, "music");
+  char* sname = new char[kSoundSourceNameLen];
+  snprintf(sname, kSoundSourceNameLen, "music");
   music->SetName(sname);
   sound->AddSource(music);
 }
@@ -268,8 +272,8 @@ void Audio_LoadPlayers(void) {
       players[i]->SetType(Sound::eSoundFX);
       sound->AddSource(players[i]);
 
-      char* name = new char[32];
-      snprintf(name, 32, "player %d", i);
+      char* name = new char[kSoundSourceNameLen];
+      snprintf(name, kSoundSourceNameLen, "player %d", i);
       players[i]->SetName(name);
 
     } else {
@@ -277,8 +281,8 @@ void Audio_LoadPlayers(void) {
       players[i]->SetType(Sound::eSoundFX);
       sound->AddSource(players[i]);
 
-      char* name = new char[32];
-      snprintf(name, 32, "player %d", i);
+      char* name = new char[kSoundSourceNameLen];
+      snprintf(name, kSoundSourceNameLen, "player %d", i);
       players[i]->SetName(name);
     }
   }
@@ -287,8 +291,8 @@ void Audio_LoadPlayers(void) {
   recognizerEngine->Start();
   sound->AddSource(recognizerEngine);
 
-  char* name = new char[32];
-  snprintf(name, 32, "recognizer");
+  char* name = new char[kSoundSourceNameLen];
+  snprintf(name, kSoundSourceNameLen, "recognizer");
   recognizerEngine->SetName(name);
 }
 
