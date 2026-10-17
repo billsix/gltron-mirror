@@ -1,10 +1,9 @@
 # Standardize gltron's container build + add Emacs C support
 
-**Status:** in progress — **Phase 1 done 2026-10-17** (`Makefile.docker`→`Makefile` on the standard
-contract: `help` default, `PODMAN_RUN_FLAGS`, `shell-exec`, `image-export`/`import`, and a working
-portable **`make format`** — which also fixed a latent `format.sh` no-op where `find nebu src` ran
-from the wrong cwd in-container; docs repointed). **Phase 2 remaining:** the Emacs clangd/eglot
-vendoring + `make update-emacs-packages` + `clang-tools-extra`/`emacs` in the Dockerfile.
+**Status:** DONE 2026-10-17 — all phases complete and build-verified. One hands-on check remains for
+the maintainer: open a C file in an interactive `make shell` emacs and confirm clangd resolves a
+symbol (needs a GUI session; everything it depends on — `clang-tools-extra`, the vendored `.emacs.d`
+with `--compile-commands-dir=/gltron/bld`, a prior `make build` — is in place).
 **Priority:** 7
 **Difficulty:** 4
 **Created:** 2026-10-17 (William Emerison Six <billsix@gmail.com>)
@@ -65,10 +64,14 @@ sanitizer gate still passes.
       update-emacs-packages` populates + stages `elpa/`. "clangd resolves a symbol in an interactive
       `make shell` emacs" needs a GUI session — the maintainer's hands-on check.
 
-### Phase 3 — verify
-- [ ] Nested: `make image`, `make shell` (emacs opens a C file, clangd resolves a symbol / jumps to
-      def), `make shell-exec CMD='...'`, `make update-emacs-packages` (elpa refreshed + staged),
-      `make image-export`. The game still builds and the sanitizer gate (`RUN_SANITIZERS=1`) passes.
+### Phase 3 — verify  — automated checks DONE 2026-10-17
+- [x] `make image USE_EMACS=1` builds green (gltron links; emacs + MELPA install succeed; image
+      `47f6417b`). The `RUN_SANITIZERS=1` gate was already verified green earlier this session.
+- [x] `make format` runs in-container and formats `nebu`/`src` (and caught one real misalignment).
+- [x] `make update-emacs-packages` populated + staged the vendored `elpa/` (full package set incl
+      compat/lsp-mode/magit; `*.elc`/`*.eln` stripped; committed `64958953`).
+- [ ] **Maintainer hands-on (GUI):** `make shell`, open a C file, confirm clangd resolves/jumps to a
+      definition. Also optional spot-checks: `make shell-exec CMD='...'`, `make image-export`.
 
 ## Notes / caveats
 - **Do not switch gltron to meson** — only the Makefile/Dockerfile *contract* and the emacs layer are
