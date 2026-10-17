@@ -130,7 +130,7 @@ void gltron_Mesh_SetMaterialAlpha(gltron_Mesh* pMesh, float fAlpha) {
   }
 }
 
-void gltron_Mesh_SetMaterialColor(gltron_Mesh* pMesh, char* name,
+void gltron_Mesh_SetMaterialColor(gltron_Mesh* pMesh, const char* name,
                                   ColorType eType, float pColor[4]) {
   int i;
 

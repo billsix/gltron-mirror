@@ -12,7 +12,7 @@
 
 static int coffset;
 
-char* credits[] = {
+const char* credits[] = {
     "",
     "   GLtron is written by "
     "\x03"

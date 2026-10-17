@@ -38,7 +38,7 @@ void initArtpacks(void) {
 
 void artpack_LoadSurfaces(void) {
   // char *pHUDNames[eHUDElementCount] = {
-  char* pHUDNames[] = {
+  const char* pHUDNames[] = {
       "hud-speed.png", "hud-mask-speed.png", "hud-mask-turbo.png",
       "hud-ai.png",    "hud-map.png",        "hud-scores.png",
       "hud-fps.png",   "hud-buster.png",     "hud-mask-buster.png"};

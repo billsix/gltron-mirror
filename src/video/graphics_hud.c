@@ -182,7 +182,7 @@ void drawCircle(float phiStart, float phiEnd, int nSegments, float r1, float r2,
 void drawRect(float width, float height, float* colors);
 
 static void getColor(lua_State* l, float* out) {
-  char* names[] = {"r", "g", "b"};
+  const char* names[] = {"r", "g", "b"};
   int i;
   for (i = 0; i < 3; i++) {
     lua_pushstring(l, names[i]);

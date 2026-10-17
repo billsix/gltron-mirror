@@ -41,7 +41,7 @@
 void goto_installpath(const char* argv0) {
   char temppath[PATH_MAX];
   char datapath[PATH_MAX];
-  char* home;
+  const char* home;
 
   home = getenv("HOME");
   if (!home) {

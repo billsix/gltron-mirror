@@ -123,7 +123,7 @@ void nebu_Video_GetDisplayDepth(int* r, int* g, int* b, int* a) {
   SDL_GL_GetAttribute(SDL_GL_ALPHA_SIZE, a);
 }
 
-int nebu_Video_Create(char* name) {
+int nebu_Video_Create(const char* name) {
   assert(window_id == 0);
   assert(width != 0 && height != 0);
 

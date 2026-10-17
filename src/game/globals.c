@@ -29,7 +29,7 @@ int gpTokenLightcycles[LC_LOD];
 float rec_outline_color[] = {0.8f, 0.0, 0.0};
 float rec_spec_color[] = {0.05f, 0.14f, 0.05f, 0.50f};
 
-char* lc_lod_names[] = {"lightcycle-high.obj", "lightcycle-med.obj",
+const char* lc_lod_names[] = {"lightcycle-high.obj", "lightcycle-med.obj",
                         "lightcycle-low.obj"};
 
 float camAngle = 0;

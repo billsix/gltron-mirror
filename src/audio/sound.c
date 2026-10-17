@@ -9,7 +9,7 @@
 
 #define NUM_GAME_FX 3
 
-static char* game_fx_names[] = {
+static const char* game_fx_names[] = {
 
 #if 1
     "game_engine.wav", "game_crash.wav", "game_recognizer.wav"
