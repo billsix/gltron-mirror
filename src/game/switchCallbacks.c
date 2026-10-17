@@ -6,8 +6,8 @@
 
 #include "base/nebu_debug_memory.h"
 
-Callbacks* last_callback = NULL;
-Callbacks* current_callback = NULL;
+Callbacks* last_callback = nullptr;
+Callbacks* current_callback = nullptr;
 
 void game_Callbacks_ExitCurrent(void) {
   /* called when the window is recreated */

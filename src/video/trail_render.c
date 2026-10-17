@@ -4,7 +4,7 @@
 #include "game/game.h"
 #include "configuration/settings.h"
 
-void trailStatesNormal(Player* pPlayer, int texture) {
+void trailStatesNormal(Player* pPlayer, int textureId) {
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_NORMAL_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -16,7 +16,7 @@ void trailStatesNormal(Player* pPlayer, int texture) {
   glEnable(GL_TEXTURE_2D);
   // glDisable(GL_TEXTURE_2D);
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  glBindTexture(GL_TEXTURE_2D, texture);
+  glBindTexture(GL_TEXTURE_2D, (GLuint)textureId);
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 
   {
@@ -64,7 +64,7 @@ void trailRender(TrailMesh* pMesh) {
 
   nebu_Video_CheckErrors("after trail va setup");
 
-  glDrawElements(GL_TRIANGLES, pMesh->iUsed, GL_UNSIGNED_SHORT,
+  glDrawElements(GL_TRIANGLES, (GLsizei)pMesh->iUsed, GL_UNSIGNED_SHORT,
                  pMesh->pIndices);
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_NORMAL_ARRAY);

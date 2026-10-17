@@ -110,7 +110,7 @@ extern int* quadBufIndex;
 #endif
 
 #define LC_LOD 3
-extern char* lc_lod_names[];
+extern const char* lc_lod_names[];
 
 extern int gTokenRecognizer;
 extern int gTokenRecognizerQuad;

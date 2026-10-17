@@ -233,9 +233,9 @@ static int agressive_action[8][4] = {{2, 0, 2, 2}, {0, 1, 1, 2}, {0, 1, 1, 2},
                                      {0, 1, 1, 2}, {0, 2, 2, 1}, {0, 2, 2, 1},
                                      {0, 2, 2, 1}, {1, 1, 1, 0}};
 
-int evasive_action[8][4] = {{1, 1, 2, 2}, {1, 1, 2, 0}, {1, 1, 2, 0},
-                            {1, 1, 2, 0}, {2, 0, 1, 1}, {2, 0, 1, 1},
-                            {2, 0, 1, 1}, {2, 2, 1, 1}};
+static int evasive_action[8][4] = {{1, 1, 2, 2}, {1, 1, 2, 0}, {1, 1, 2, 0},
+                                   {1, 1, 2, 0}, {2, 0, 1, 1}, {2, 0, 1, 1},
+                                   {2, 0, 1, 1}, {2, 2, 1, 1}};
 
 void ai_action(int action, int player, AI_Distances* distances,
                AI_Parameters* pAIParameters) {

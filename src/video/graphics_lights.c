@@ -44,7 +44,7 @@ void setupLights(eLightEnvironment eType) {
       glLightfv(GL_LIGHT1, GL_SPECULAR, gray66);
       glLightfv(GL_LIGHT1, GL_DIFFUSE, gray66);
 
-      for (i = 2; i < 8; i++) glDisable(GL_LIGHT0 + i);
+      for (i = 2; i < 8; i++) glDisable((GLenum)(GL_LIGHT0 + i));
 
       // glPopMatrix();
 
@@ -62,7 +62,7 @@ void setupLights(eLightEnvironment eType) {
       glLightfv(GL_LIGHT0, GL_SPECULAR, white);
       glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
 
-      for (i = 1; i < 8; i++) glDisable(GL_LIGHT0 + i);
+      for (i = 1; i < 8; i++) glDisable((GLenum)(GL_LIGHT0 + i));
 
       glPopMatrix();
       break;

@@ -214,7 +214,7 @@ void bufferPlayerTrail(Player* p, QuadBuffer* qb) {
 void drawTrails(QuadBuffer* q, int* index) {
   int i;
 
-  if (index == NULL) {
+  if (index == nullptr) {
     for (i = 0; i < q->current; i++) renderQuad(q->quads + i);
   } else {
     for (i = 0; i < q->current; i++) {
@@ -226,10 +226,10 @@ void drawTrails(QuadBuffer* q, int* index) {
 }
 
 void doTrails(Player* p) {
-  static QuadBuffer* q = NULL;
+  static QuadBuffer* q = nullptr;
   int size;
   int* index;
-  if (q == NULL) {
+  if (q == nullptr) {
     size = getTrailCount() + 12;
     // printf("allocating QuadBuffer, size %d\n", size);
     q = createQuadBuffer(size);
@@ -255,7 +255,7 @@ void doTrails(Player* p) {
     glEnable(GL_BLEND);
     drawTrails(q, index);
     glDisable(GL_BLEND);
-    if (index != NULL) free(index);
+    if (index != nullptr) free(index);
   } else {
     /* draw non-transparent trails first (unsorted), then draw
        bows */
@@ -265,7 +265,7 @@ void doTrails(Player* p) {
       bufferPlayerTrail(game->player + i, q);
     }
 
-    drawTrails(q, NULL);
+    drawTrails(q, nullptr);
 
     for (i = 0; i < game->players; i++) {
       bufferPlayerBow(game->player + i, q);
@@ -275,7 +275,7 @@ void doTrails(Player* p) {
     glEnable(GL_BLEND);
     drawTrails(q, index);
     glDisable(GL_BLEND);
-    if (index != NULL) free(index);
+    if (index != nullptr) free(index);
   }
 
   /*

@@ -5,7 +5,7 @@
 
 namespace Sound {
 int SourceCopy::Mix(Uint8* data, int len) {
-  if (_source->_buffer == NULL) return 0;
+  if (_source->_buffer == nullptr) return 0;
 
   float volume = _source->GetVolume();
   int buffersize = _source->_buffersize;
@@ -14,11 +14,11 @@ int SourceCopy::Mix(Uint8* data, int len) {
   assert(len < buffersize);
 
   if (len < buffersize - _position) {
-    SDL_MixAudio(data, buffer + _position, SDL_AUDIO_S16, len, volume);
+    SDL_MixAudio(data, buffer + _position, SDL_AUDIO_S16, (Uint32)len, volume);
     _position += len;
   } else {
     SDL_MixAudio(data, buffer + _position, SDL_AUDIO_S16,
-                 buffersize - _position, volume);
+                 (Uint32)(buffersize - _position), volume);
     len -= buffersize - _position;
 
     printf("end of sample reached!\n");
@@ -26,7 +26,8 @@ int SourceCopy::Mix(Uint8* data, int len) {
       if (_loop != 255) _loop--;
 
       _position = 0;
-      SDL_MixAudio(data, buffer + _position, SDL_AUDIO_S16, len, volume);
+      SDL_MixAudio(data, buffer + _position, SDL_AUDIO_S16, (Uint32)len,
+                   volume);
       _position += len;
     } else {
       _isPlaying = 0;

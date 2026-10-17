@@ -21,8 +21,8 @@
 #include "base/nebu_debug_memory.h"
 
 // local resources
-nebu_2d* pBackground = NULL;
-nebu_Font* pFont = NULL;
+nebu_2d* pBackground = nullptr;
+nebu_Font* pFont = nullptr;
 
 void drawMenu(Visual* d);
 
@@ -40,7 +40,7 @@ void drawGuiBackground(void) {
 }
 
 void displayGui(void) {
-  scripting_GetGlobal("gui_hide_background", NULL);
+  scripting_GetGlobal("gui_hide_background", nullptr);
   if (!scripting_IsNil()) {
     scripting_Pop();
     // _32bit_warning_Display();
@@ -78,8 +78,8 @@ void idleGui(void) {
   nebu_System_PostRedisplay(); /* animate menu */
 }
 
-void keyboardConfigure(int state, int key, int x, int y) {
-  if (state != NEBU_INPUT_KEYSTATE_DOWN) return;
+void keyboardConfigure(int keyState, int key, int x, int y) {
+  if (keyState != NEBU_INPUT_KEYSTATE_DOWN) return;
 
   if (key != 27) /* don't allow escape */
   {
@@ -101,10 +101,10 @@ void keyboardConfigure(int state, int key, int x, int y) {
   nebu_System_ExitLoop(eSRC_GUI_Prompt_Escape);
 }
 
-void keyboardGui(int state, int key, int x, int y) {
+void keyboardGui(int keyState, int key, int x, int y) {
   char* pMenuName;
 
-  if (state == NEBU_INPUT_KEYSTATE_UP) return;
+  if (keyState == NEBU_INPUT_KEYSTATE_UP) return;
 
   scripting_Run("return Menu.current");
   scripting_GetStringResult(&pMenuName);
@@ -181,7 +181,8 @@ void initGui(void) {
 
 void gui_LoadResources(void) {
   char font_path[PATH_MAX];
-  sprintf(font_path, "%s%c%s", DATA_DIR, SEPARATOR, "data/babbage.ftx");
+  snprintf(font_path, sizeof font_path, "%s%c%s", DATA_DIR, SEPARATOR,
+           "data/babbage.ftx");
   pFont = nebu_Font_Load(font_path, PATH_ART);
   {
     char* path = nebu_FS_GetPath(PATH_ART, "gui.png");
@@ -195,11 +196,11 @@ void gui_LoadResources(void) {
 void gui_ReleaseResources() {
   if (pFont) {
     nebu_Font_Free(pFont);
-    pFont = NULL;
+    pFont = nullptr;
   }
   if (pBackground) {
     nebu_2d_Free(pBackground);
-    pBackground = NULL;
+    pBackground = nullptr;
   }
 }
 
@@ -208,9 +209,9 @@ void exitGui(void) {
   updateSettingsCache();  // GUI can change settings
 }
 
-void guiMouse(int buttons, int state, int x, int y) {
+void guiMouse(int buttons, int mouseState, int x, int y) {
   fprintf(stderr, "Mouse buttons: %d, State %d, Position (%d, %d)\n", buttons,
-          state, x, y);
+          mouseState, x, y);
 
   /* fprintf(stderr, "testing for state == %d\n", SYSTEM_MOUSEPRESSED); */
 }
@@ -296,9 +297,9 @@ void drawMenu(Visual* d) {
       int time = nebu_Time_GetElapsed() & 4095;
       t = sinf(time * M_PI / 2048.0) / 2.0f + 0.5f;
 
-      scripting_GetGlobal("menu_item_active1", NULL);
+      scripting_GetGlobal("menu_item_active1", nullptr);
       scripting_GetFloatArrayResult(active1, 4);
-      scripting_GetGlobal("menu_item_active2", NULL);
+      scripting_GetGlobal("menu_item_active2", nullptr);
       scripting_GetFloatArrayResult(active2, 4);
 
       for (j = 0; j < 4; j++) {
@@ -309,7 +310,7 @@ void drawMenu(Visual* d) {
          t, color[0], color[1], color[2]); */
     } else {
       float color[4];
-      scripting_GetGlobal("menu_item", NULL);
+      scripting_GetGlobal("menu_item", nullptr);
       scripting_GetFloatArrayResult(color, 4);
       glColor4fv(color);
     }
@@ -353,10 +354,10 @@ void drawMenu(Visual* d) {
 }
 
 Callbacks configureCallbacks = {
-    displayConfigure,        idleGui,
-    keyboardConfigure,       initGui,
-    NULL /* exit */,         NULL /* mouse button */,
-    NULL /* mouse motion */, "configure"};
+    displayConfigure,           idleGui,
+    keyboardConfigure,          initGui,
+    nullptr /* exit */,         nullptr /* mouse button */,
+    nullptr /* mouse motion */, "configure"};
 
 Callbacks guiCallbacks = {displayGui, idleGui,  keyboardGui,    initGui,
                           exitGui,    guiMouse, guiMouseMotion, "gui"};

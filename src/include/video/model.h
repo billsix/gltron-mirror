@@ -46,7 +46,7 @@ void gltron_Mesh_Free(gltron_Mesh* pMesh);
 typedef enum ColorType { eAmbient = 0, eDiffuse, eSpecular } ColorType;
 
 void gltron_Mesh_SetMaterialAlpha(gltron_Mesh* pMesh, float fAlpha);
-void gltron_Mesh_SetMaterialColor(gltron_Mesh* pMesh, char* name,
+void gltron_Mesh_SetMaterialColor(gltron_Mesh* pMesh, const char* name,
                                   ColorType eType, float pColor[4]);
 
 void gltron_Mesh_ComputeBBox(gltron_Mesh* pMesh);

@@ -52,7 +52,7 @@ void game_CreatePlayers(int players, Game** ppGame, Game2** ppGame2) {
   (*ppGame)->players = players;
   (*ppGame)->running = 0;
   (*ppGame)->winner = -1;
-  (*ppGame)->player = (Player*)malloc(players * sizeof(Player));
+  (*ppGame)->player = (Player*)malloc((size_t)players * sizeof(Player));
   for (i = 0; i < players; i++) {
     Player* p = (*ppGame)->player + i;
     p->ai = (AI*)malloc(sizeof(AI));
@@ -91,7 +91,7 @@ void resetPlayerData(void) {
   int not_playing = 0;
 
   int* startIndex;
-  startIndex = malloc(game->players * sizeof(int));
+  startIndex = malloc((size_t)game->players * sizeof(int));
   nebu_RandomPermutation(game->players, startIndex);
 
   for (i = 0; i < game->players; i++) {
@@ -193,7 +193,7 @@ void game_ResetData(void) {
   /* TODO: fix that */
   game2->players = game->players;
   /* event management */
-  game2->events.next = NULL;
+  game2->events.next = nullptr;
   /* TODO: free any old events that might have gotten left */
 
   scripting_Run("console_Clear()");

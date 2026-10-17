@@ -82,8 +82,8 @@ gltron_Mesh* gltron_Mesh_LoadFromFile(const char* filename,
   vec3* pVertices = malloc(sizeof(vec3) * MAX_VERTICES);
   vec3* pNormals = malloc(sizeof(vec3) * MAX_NORMALS);
 
-  quadFace* pqFaces = NULL;
-  face* pFaces = NULL;
+  quadFace* pqFaces = nullptr;
+  face* pFaces = nullptr;
   int iFaceSize = 0;
 
   gltron_Mesh* pMesh = malloc(sizeof(gltron_Mesh));
@@ -109,9 +109,9 @@ gltron_Mesh* gltron_Mesh_LoadFromFile(const char* filename,
       exit(1);
   }
 
-  if ((f = gzopen(filename, "r")) == 0) {
+  if ((f = gzopen(filename, "r")) == nullptr) {
     fprintf(stderr, "*** could not open file '%s'\n", filename);
-    return NULL;
+    return nullptr;
   }
 
   while (gzgets(f, buf, sizeof(buf))) {
@@ -154,7 +154,7 @@ gltron_Mesh* gltron_Mesh_LoadFromFile(const char* filename,
   // printf("vertices: %d, normals: %d, faces: %d\n", iVertex, iNormal, iFace);
 
   // count each material
-  pMesh->pnFaces = malloc(sizeof(int) * pMesh->nMaterials);
+  pMesh->pnFaces = malloc(sizeof(int) * (size_t)pMesh->nMaterials);
   for (i = 0; i < pMesh->nMaterials; i++) {
     pMesh->pnFaces[i] = 0;
   }
@@ -177,10 +177,10 @@ gltron_Mesh* gltron_Mesh_LoadFromFile(const char* filename,
   // initialize lookup[ vertex ][ normal ] table
   {
     int nVertices = 0;
-    int** lookup = malloc(sizeof(int*) * iVertex);
+    int** lookup = malloc(sizeof(int*) * (size_t)iVertex);
 
     for (i = 0; i < iVertex; i++) {
-      lookup[i] = malloc(sizeof(int) * iNormal);
+      lookup[i] = malloc(sizeof(int) * (size_t)iNormal);
       for (j = 0; j < iNormal; j++) {
         lookup[i][j] = -1;
       }
@@ -216,8 +216,8 @@ gltron_Mesh* gltron_Mesh_LoadFromFile(const char* filename,
     // now that we know everything, build vertexarray based mesh
     // copy normals & vertices indexed by lookup-table
     pMesh->nVertices = nVertices;
-    pMesh->pVertices = malloc(sizeof(GLfloat) * 3 * nVertices);
-    pMesh->pNormals = malloc(sizeof(GLfloat) * 3 * nVertices);
+    pMesh->pVertices = malloc(sizeof(GLfloat) * 3 * (size_t)nVertices);
+    pMesh->pNormals = malloc(sizeof(GLfloat) * 3 * (size_t)nVertices);
     for (i = 0; i < iVertex; i++) {
       for (j = 0; j < iNormal; j++) {
         int vertex = lookup[i][j];
@@ -232,13 +232,13 @@ gltron_Mesh* gltron_Mesh_LoadFromFile(const char* filename,
 
     // build indices (per Material)
     {
-      int* face;
-      face = malloc(sizeof(int) * pMesh->nMaterials);
-      pMesh->ppIndices = malloc(sizeof(GLshort*) * pMesh->nMaterials);
+      int* faceCount;
+      faceCount = malloc(sizeof(int) * (size_t)pMesh->nMaterials);
+      pMesh->ppIndices = malloc(sizeof(GLshort*) * (size_t)pMesh->nMaterials);
       for (i = 0; i < pMesh->nMaterials; i++) {
-        pMesh->ppIndices[i] =
-            malloc(sizeof(GLshort) * iFaceSize * pMesh->pnFaces[i]);
-        face[i] = 0;
+        pMesh->ppIndices[i] = malloc(sizeof(GLshort) * (size_t)iFaceSize *
+                                     (size_t)pMesh->pnFaces[i]);
+        faceCount[i] = 0;
       }
       switch (iType) {
         case TRI_MESH:
@@ -247,10 +247,10 @@ gltron_Mesh* gltron_Mesh_LoadFromFile(const char* filename,
             for (j = 0; j < iFaceSize; j++) {
               int vertex = pFaces[i].vertex[j] - 1;
               int normal = pFaces[i].normal[j] - 1;
-              pMesh->ppIndices[material][iFaceSize * face[material] + j] =
-                  lookup[vertex][normal];
+              pMesh->ppIndices[material][iFaceSize * faceCount[material] + j] =
+                  (unsigned short)lookup[vertex][normal];
             }
-            face[material] = face[material] + 1;
+            faceCount[material] = faceCount[material] + 1;
           }
           break;
         case QUAD_MESH:
@@ -259,14 +259,14 @@ gltron_Mesh* gltron_Mesh_LoadFromFile(const char* filename,
             for (j = 0; j < iFaceSize; j++) {
               int vertex = pqFaces[i].vertex[j] - 1;
               int normal = pqFaces[i].normal[j] - 1;
-              pMesh->ppIndices[material][iFaceSize * face[material] + j] =
-                  lookup[vertex][normal];
+              pMesh->ppIndices[material][iFaceSize * faceCount[material] + j] =
+                  (unsigned short)lookup[vertex][normal];
             }
-            face[material] = face[material] + 1;
+            faceCount[material] = faceCount[material] + 1;
           }
           break;
       }
-      free(face);
+      free(faceCount);
     }
     // printf("[scenegraph] vertices: %d, faces: %d\n", nVertices, iFace);
 

@@ -28,11 +28,11 @@ file_handle file_open(const char* path, const char* mode) {
 int file_close(file_handle file) { return fclose(file); }
 
 int file_read(file_handle file, void* data, unsigned int size) {
-  return fread(data, 1, size, file);
+  return (int)fread(data, 1, size, file);
 }
 
 char* file_gets(file_handle file, char* data, unsigned int size) {
-  return fgets(data, size, file);
+  return fgets(data, (int)size, file);
 }
 
 #endif

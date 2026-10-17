@@ -41,7 +41,7 @@ game_level* game_CreateLevel(void) {
   game_level* l;
 
   l = malloc(sizeof(game_level));
-  scripting_GetGlobal("level", NULL);
+  scripting_GetGlobal("level", nullptr);
   // get scalability flag
   scripting_GetValue("scalable");
   scripting_GetIntegerResult(&l->scalable);
@@ -49,7 +49,7 @@ game_level* game_CreateLevel(void) {
   scripting_GetValue("spawn");
   scripting_GetArraySize(&l->nSpawnPoints);
   // copy spawnpoints into vec2's
-  l->spawnPoints = malloc(l->nSpawnPoints * sizeof(game_spawnpoint));
+  l->spawnPoints = malloc((size_t)l->nSpawnPoints * sizeof(game_spawnpoint));
 
   // fixme, use scalability
   for (i = 0; i < l->nSpawnPoints; i++) {
@@ -70,7 +70,7 @@ game_level* game_CreateLevel(void) {
   scripting_GetValue("boundary");
   scripting_GetArraySize(&l->nBoundaries);
   // copy boundaries into segments
-  l->boundaries = malloc(l->nBoundaries * sizeof(segment2));
+  l->boundaries = malloc((size_t)l->nBoundaries * sizeof(segment2));
   for (i = 0; i < l->nBoundaries; i++) {
     scripting_GetArrayIndex(i + 1);
 

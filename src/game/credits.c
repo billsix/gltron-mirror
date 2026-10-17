@@ -12,7 +12,7 @@
 
 static int coffset;
 
-char* credits[] = {
+const char* credits[] = {
     "",
     "   GLtron is written by "
     "\x03"
@@ -33,17 +33,17 @@ char* credits[] = {
     // "Thanks to my sponsors:",
     // "  3dfx:              Voodoo5 5500 graphics card",
     // "  Right Hemisphere:  3D exploration software",
-    NULL};
+    nullptr};
 
-void mouseCredits(int buttons, int state, int x, int y) {
-  if (state == SYSTEM_MOUSEPRESSED) {
+void mouseCredits(int buttons, int mouseState, int x, int y) {
+  if (mouseState == SYSTEM_MOUSEPRESSED) {
     nebu_System_Exit();
     nebu_System_ExitLoop(eSRC_Quit);
   }
 }
 
-void keyCredits(int state, int k, int x, int y) {
-  if (state == NEBU_INPUT_KEYSTATE_UP) return;
+void keyCredits(int keyState, int k, int x, int y) {
+  if (keyState == NEBU_INPUT_KEYSTATE_UP) return;
   nebu_System_Exit();
   nebu_System_ExitLoop(eSRC_Quit);
 }
@@ -61,7 +61,7 @@ void drawCredits(void) {
   float h = gScreen->vp_h / 36.0f;
   int i;
   float colors[][3] = {{1.0, 0.0, 0.0}, {1.0, 1.0, 1.0}};
-  time = nebu_Time_GetElapsed() - coffset;
+  time = (int)(nebu_Time_GetElapsed() - (unsigned int)coffset);
 
   glClearColor(.0, .0, .0, .0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -69,7 +69,7 @@ void drawCredits(void) {
   rasonly(gScreen);
   for (i = 0; i < time / 250; i++) {
     glColor3fv(colors[i % 2]);
-    if (credits[i] == NULL) break;
+    if (credits[i] == nullptr) break;
     y = gScreen->vp_h - 3.0f * h * (i + 1) / 2;
     drawText((nebu_Font*)resource_Get(gTokenGameFont, eRT_Font), x, y, h,
              credits[i]);
@@ -80,13 +80,13 @@ void displayCredits(void) {
   nebu_System_SwapBuffers();
 }
 
-void initCredits(void) { coffset = nebu_Time_GetElapsed(); }
+void initCredits(void) { coffset = (int)nebu_Time_GetElapsed(); }
 
 Callbacks creditsCallbacks = {displayCredits,
                               idleCredits,
                               keyCredits,
                               initCredits,
-                              NULL /* exit */,
+                              nullptr /* exit */,
                               mouseCredits,
-                              NULL /* mouse motion */,
+                              nullptr /* mouse motion */,
                               "credits"};

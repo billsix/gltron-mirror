@@ -113,7 +113,7 @@ void initPause(void) {
 void exitPause(void) {}
 
 Callbacks pauseCallbacks = {displayGame, idlePause, keyboardPause, initPause,
-                            exitPause,   gameMouse, NULL,          "pause"};
+                            exitPause,   gameMouse, nullptr,       "pause"};
 
 void keyboardPrompt(int state, int key, int x, int y) {
   if (state == NEBU_INPUT_KEYSTATE_UP) return;
@@ -137,6 +137,6 @@ Callbacks promptCallbacks = {displayGame,
                              keyboardPrompt,
                              initPrompt,
                              exitPrompt,
-                             NULL /* mouse button */,
-                             NULL /* mouse motion */,
+                             nullptr /* mouse button */,
+                             nullptr /* mouse motion */,
                              "prompt"};

@@ -23,6 +23,12 @@ introduce a modern renderer abstraction unless explicitly asked.**
   CMake build against the mounted source tree (writes to `./bld/`).
   CMake natively emits `compile_commands.json`. `clang-tidy` and
   `clang-format` are configured (`.clang-tidy`, `.clang-format`).
+- **Sanitizer gate** at image-build time: `make -f Makefile.docker image`
+  (`RUN_SANITIZERS=1`, the default; `RUN_SANITIZERS=0` skips) also compiles gltron
+  under **UBSan-trap** and **ASan** and runs it headless (Xvfb + Mesa llvmpipe, in
+  timedemo mode), failing the image on any UB or memory error. Needs
+  `USE_GRAPHICS=1`. Script: `tools/sanitizer-gate.sh`; headless-GL recipe + rationale
+  in `tasks/archive/2026/10/17/add-sanitizer-gate.md`.
 
 ## Layout
 
@@ -58,6 +64,7 @@ was reconciled + archived 2026-08-27 (its deletions were already executed).
 
 Active:
 
+- [Promote static analysis to a fatal gate](tasks/lint-fatal-gate.md) — **proposed, needs go-ahead**; drive the advisory clang-tidy/Cppcheck findings to an enforced gate, the static-analysis counterpart to the compiler `-Werror` gate the modernization sweep landed. First decision: which checks to enforce vs disable (teaching-artifact churn risk).
 - [OpenGL fixed-function → 3.3 core profile port](tasks/opengl-core-profile-port.md) — **not started**, surface at session start and ask Bill before beginning.
 - [SDL2 → SDL3 port](tasks/sdl3-port.md) — **shipped 2026-05-08** on Linux; macOS not retested (work remains).
 - [Post-round camera bug](tasks/post-round-camera-bug.md) — **fix applied (staged), runtime-unconfirmed**; root cause was glance-state (`bIsGlancing`) leaking into the observer camera on a crash-while-glancing. Runtime confirmation is tracked in [Verify post-round camera fix](tasks/verify-post-round-camera-fix.md) (reported 2026-05-08, diagnosed/fixed 2026-08-03).
@@ -73,6 +80,8 @@ alternatives, deletions) live in the archived task docs:
 - SDL window architecture cleanup — `tasks/archive/2026/05/10/sdl-window-architecture.md`
 - Replace nebu math with HandmadeMath (all 5 phases) — `tasks/archive/2026/05/10/handmademath-port.md` (its one live follow-up is split into `tasks/verify-handmademath-audio-pitch.md`)
 - Modernization survey — `tasks/archive/2026/08/27/modernization-survey.md`
+- ASan + UBSan(trap) sanitizer gate — `tasks/archive/2026/10/17/add-sanitizer-gate.md`
+- Behavior-preserving C modernization sweep (C23 pin, `-Werror` warning gate clean under clang+gcc, 493→0 first-party warnings; nullptr/attributes; no third_party edits) — `tasks/archive/2026/10/17/c-modernization-sweep.md` (follow-up: `tasks/lint-fatal-gate.md`)
 
 When starting a new task, add a one-line entry under "Active" here pointing
 at a `tasks/<slug>.md` file, and keep the task file updated with status,
@@ -82,8 +91,24 @@ its entry to the "Completed" list.
 
 ## Conventions
 
-- C11 (bumped from C99 by the HandmadeMath port), 2-space indent, formatted with
-  the project `.clang-format`.
+- **C23** (`CMAKE_C_STANDARD 23`, extensions on → `gnu23`; bumped from C11 by the
+  behaviour-preserving modernization sweep 2026-10-17). 2-space indent, formatted with
+  the project `.clang-format`. Builds clean under both clang and gcc.
+- **Warning gate (enforced).** `gltron_warnings` applies the raised first-party warning
+  set (`-Wall -Wextra -Wpedantic -Wshadow -Wvla -Wwrite-strings -Wformat=2
+  -Wsign-conversion`, plus C-only and clang-only extras) with `-Werror`, **on by default**
+  (`-DGLTRON_WARN=OFF` for a quiet build; `-DGLTRON_WERROR=OFF` to downgrade to warnings).
+  Scoped to first-party code only — vendored/system headers come in as `SYSTEM` includes.
+  Deliberately **not** `-Wconversion` (dropped int→float) and `-Wno-unused-parameter`
+  (callback signatures). A new warning in code you touch is yours to fix at the source.
+- **Static analysis is advisory, not a gate.** `tools/lint.sh` runs clang-tidy
+  (bug-finding checks) + Cppcheck over first-party sources and always exits 0 — the project
+  `.clang-tidy` produces thousands of `readability-*` style findings on this deliberately-old
+  code, so it is NOT fatal. The compiler `-Werror` gate above is the enforced tier-(a).
+- **Error strategy: `assert(0)` / `assert(cond)` for unreachable/invariant failures**
+  (e.g. `src/filesystem/path.c`), and a returned `NULL`/`nullptr` with the owner contract
+  stated for allocators (e.g. `getPossiblePath` = caller frees, nullptr on failure). This
+  is gltron's chosen convention — don't replace the `assert`s with another scheme.
 - Don't add new abstractions or "modernize" code as drive-by cleanup — the
   codebase is intentionally a teaching artifact. Match the surrounding style.
 - Prefer minimal, surgical fixes over refactors. If you spot something worth

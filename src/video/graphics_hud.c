@@ -12,7 +12,7 @@
 
 #include "base/nebu_debug_memory.h"
 
-void getPauseString(char* buf, float* color);
+void getPauseString(char* buf, size_t bufsize, float* color);
 
 void hud_MaskSetup(int maskId, int maskIndex) {
   glEnable(GL_BLEND);
@@ -42,7 +42,7 @@ int getFPS(void) {
   /* draws FPS in upper left corner of Display d */
   static int fps_h[FPS_HSIZE];
   static int pos = -FPS_HSIZE;
-  static int fps_min = 0;
+  [[maybe_unused]] static int fps_min = 0;
   static int fps_avg = 0;
 
   int dt = nebu_Time_GetTimeForLastFrame();
@@ -76,7 +76,7 @@ void drawHUD(Player* p, PlayerVisual* pV) {
   char pause_message[128];
   float pause_color[3];
 
-  getPauseString(pause_message, pause_color);
+  getPauseString(pause_message, sizeof pause_message, pause_color);
 
   glDisable(GL_DEPTH_TEST);
   glDepthMask(GL_FALSE);
@@ -97,8 +97,8 @@ void drawHUD(Player* p, PlayerVisual* pV) {
           - pause message r,g,b colors
   */
 
-  sprintf(
-      temp,
+  snprintf(
+      temp, sizeof temp,
       "drawHUD(%d, %d, %d, \"%s\", %f, %f, %f, %f, %d, \"%s\", %f, %f, %f)",
       pV->display.vp_w, pV->display.vp_h,
       gSettingsCache.show_scores ? p->data->score : -1,
@@ -117,16 +117,15 @@ void drawHUD(Player* p, PlayerVisual* pV) {
   glEnable(GL_DEPTH_TEST);
 }
 
-void getPauseString(char* buf, float* color) {
+void getPauseString(char* buf, size_t bufsize, float* color) {
   char pause[] = "Game is paused";
-  char winner[] = "Player %d wins!";
   char nowinner[] = "No one wins!";
   char starting[] = "Press a key to start";
   static float d = 0;
   static int lt = 0;
   int now;
 
-  now = nebu_Time_GetElapsed();
+  now = (int)nebu_Time_GetElapsed();
   d += (now - lt) / 500.0f;
   lt = now;
   /* printf("%.5f\n", delta); */
@@ -150,23 +149,23 @@ void getPauseString(char* buf, float* color) {
       color[2] =
           ((player_color[2] + ((sinf(d) + 1) / 2) * (1 - player_color[2])));
 
-      sprintf(buf, winner, game->winner + 1);
+      snprintf(buf, bufsize, "Player %d wins!", game->winner + 1);
     } else {
       color[0] = 1.0f;
       color[1] = (sinf(d) + 1) / 2;
       color[2] = (sinf(d) + 1) / 2;
-      sprintf(buf, "%s", nowinner);
+      snprintf(buf, bufsize, "%s", nowinner);
     }
   } else if (game->pauseflag & PAUSE_GAME_SUSPENDED) {
     color[0] = 1.0f;
     color[1] = (sinf(d) + 1) / 2;
     color[2] = (sinf(d) + 1) / 2;
-    sprintf(buf, "%s", pause);
+    snprintf(buf, bufsize, "%s", pause);
   } else if (game->pauseflag & PAUSE_GAME_STARTING) {
     color[0] = 1.0f;
     color[1] = (sinf(d) + 1) / 2;
     color[2] = (sinf(d) + 1) / 2;
-    sprintf(buf, "%s", starting);
+    snprintf(buf, bufsize, "%s", starting);
   } else {
     // game is running
     color[0] = 0;
@@ -183,7 +182,7 @@ void drawCircle(float phiStart, float phiEnd, int nSegments, float r1, float r2,
 void drawRect(float width, float height, float* colors);
 
 static void getColor(lua_State* l, float* out) {
-  char* names[] = {"r", "g", "b"};
+  const char* names[] = {"r", "g", "b"};
   int i;
   for (i = 0; i < 3; i++) {
     lua_pushstring(l, names[i]);
@@ -312,7 +311,7 @@ int c_drawTextFitIntoRect(lua_State* l) {
   box.vMax.X = width;
   box.vMax.Y = height;
   nebu_Font_RenderToBox((nebu_Font*)resource_Get(gTokenGameFont, eRT_Font),
-                        text, strlen(text), &box, flags);
+                        text, (int)strlen(text), &box, flags);
   free(text);
 
   return 0;
@@ -367,8 +366,8 @@ void drawCircle(float phiStart, float phiEnd, int nSegments, float r1, float r2,
 
   if (nSegments < 1) return;
 
-  pVertices = (float*)malloc((nSegments + 1) * 2 * 3 * sizeof(float));
-  pColors = (float*)malloc((nSegments + 1) * 2 * 3 * sizeof(float));
+  pVertices = (float*)malloc((size_t)((nSegments + 1) * 2 * 3) * sizeof(float));
+  pColors = (float*)malloc((size_t)((nSegments + 1) * 2 * 3) * sizeof(float));
 
   for (i = 0; i < nSegments + 1; i++) {
     float t = i / (float)nSegments;
@@ -385,16 +384,17 @@ void drawCircle(float phiStart, float phiEnd, int nSegments, float r1, float r2,
     rgb_interpolate(pColors + 3 * (2 * i + 1), t, c3, c4);
   }
 
-  pIndices = (unsigned int*)malloc((nSegments) * 2 * 3 * sizeof(unsigned int));
+  pIndices = (unsigned int*)malloc((size_t)((nSegments) * 2 * 3) *
+                                   sizeof(unsigned int));
 
   for (i = 0; i < nSegments; i++) {
-    pIndices[3 * (2 * i + 0) + 0] = (i + 0) * 2 + 0;
-    pIndices[3 * (2 * i + 0) + 1] = (i + 0) * 2 + 1;
-    pIndices[3 * (2 * i + 0) + 2] = (i + 1) * 2 + 0;
+    pIndices[3 * (2 * i + 0) + 0] = (unsigned int)((i + 0) * 2 + 0);
+    pIndices[3 * (2 * i + 0) + 1] = (unsigned int)((i + 0) * 2 + 1);
+    pIndices[3 * (2 * i + 0) + 2] = (unsigned int)((i + 1) * 2 + 0);
 
-    pIndices[3 * (2 * i + 1) + 0] = (i + 1) * 2 + 0;
-    pIndices[3 * (2 * i + 1) + 1] = (i + 0) * 2 + 1;
-    pIndices[3 * (2 * i + 1) + 2] = (i + 1) * 2 + 1;
+    pIndices[3 * (2 * i + 1) + 0] = (unsigned int)((i + 1) * 2 + 0);
+    pIndices[3 * (2 * i + 1) + 1] = (unsigned int)((i + 0) * 2 + 1);
+    pIndices[3 * (2 * i + 1) + 2] = (unsigned int)((i + 1) * 2 + 1);
   }
 
   glVertexPointer(3, GL_FLOAT, 0, pVertices);

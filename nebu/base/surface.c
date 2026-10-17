@@ -13,7 +13,8 @@ nebu_Surface* nebu_Surface_Create(int width, int height, int format) {
   pSurface->w = width;
   pSurface->h = height;
   pSurface->format = format;
-  pSurface->data = malloc(width * height * nebu_Surface_FormatSize[format]);
+  pSurface->data =
+      malloc((size_t)(width * height * nebu_Surface_FormatSize[format]));
   return pSurface;
 }
 
@@ -30,7 +31,7 @@ nebu_Surface* nebu_Surface_LoadPNG(const char* filename) {
 
   png_texture* pTex;
   pTex = load_png_texture(filename);
-  if (!pTex) return NULL;
+  if (!pTex) return nullptr;
 
   pSurface = (nebu_Surface*)malloc(sizeof(nebu_Surface));
   pSurface->w = pTex->width;
@@ -77,11 +78,11 @@ int nebu_Surface_SaveBMP(nebu_Surface* pSurface, const char* filename) {
 
     temp = SDL_CreateSurface(x, y, SDL_PIXELFORMAT_RGB24);
 
-    if (temp == NULL) return -1;
+    if (temp == nullptr) return -1;
 
     for (i = 0; i < y; i++)
       memcpy(((char*)temp->pixels) + temp->pitch * i,
-             pixels + 3 * x * (y - i - 1), x * 3);
+             pixels + 3 * x * (y - i - 1), (size_t)(x * 3));
 
     SDL_SaveBMP(temp, filename);
     SDL_DestroySurface(temp);
@@ -94,23 +95,20 @@ int nebu_Surface_SavePNG(nebu_Surface* pSurface, const char* filename) {
   png_infop info_ptr;
   png_byte** row_ptrs;
   int i;
-  int png_format, bitdepth, bytesperpixel;
+  int png_format, bitdepth;
 
   switch (pSurface->format) {
     case NEBU_SURFACE_FMT_RGB:
       png_format = PNG_COLOR_TYPE_RGB;
       bitdepth = 8;
-      bytesperpixel = 3;
       break;
     case NEBU_SURFACE_FMT_RGBA:
       png_format = PNG_COLOR_TYPE_RGBA;
       bitdepth = 8;
-      bytesperpixel = 4;
       break;
     case NEBU_SURFACE_FMT_ALPHA:
       png_format = PNG_COLOR_TYPE_GRAY;
       bitdepth = 8;
-      bytesperpixel = 1;
       break;
     default:
       fprintf(stderr, "[savepng] unsupported format\n");
@@ -122,26 +120,28 @@ int nebu_Surface_SavePNG(nebu_Surface* pSurface, const char* filename) {
     return -1;
   }
 
-  if (!(png_ptr =
-            png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL))) {
+  if (!(png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr,
+                                          nullptr, nullptr))) {
     return -1;
   }
 
   if (!(info_ptr = png_create_info_struct(png_ptr))) {
-    png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
+    png_destroy_write_struct(&png_ptr, (png_infopp) nullptr);
     return -1;
   }
 
-  png_set_write_fn(png_ptr, 0, user_write_data, user_flush_data);
+  png_set_write_fn(png_ptr, nullptr, user_write_data, user_flush_data);
   /* png_init_io(png_ptr, fp); */
 
-  png_set_IHDR(png_ptr, info_ptr, pSurface->w, pSurface->h, bitdepth,
-               png_format, PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
+  png_set_IHDR(png_ptr, info_ptr, (png_uint_32)pSurface->w,
+               (png_uint_32)pSurface->h, bitdepth, png_format,
+               PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
                PNG_FILTER_TYPE_DEFAULT);
   png_write_info(png_ptr, info_ptr);
 
   /* get pointers */
-  if (!(row_ptrs = (png_byte**)malloc(pSurface->h * sizeof(png_byte*)))) {
+  if (!(row_ptrs =
+            (png_byte**)malloc((size_t)pSurface->h * sizeof(png_byte*)))) {
     png_destroy_write_struct(&png_ptr, &info_ptr);
     return -1;
   }
@@ -166,14 +166,14 @@ void nebu_Surface_Blit(nebu_Surface* pSrcSurface, nebu_Rect* pSrcRect,
   nebu_Rect src, dst;
   int v, srcBpp, srcPitch, dstBpp, dstPitch;
 
-  if (pSrcRect != NULL) {
+  if (pSrcRect != nullptr) {
     src = *pSrcRect;
   } else {
     src.x = src.y = 0;
     src.width = pSrcSurface->w;
     src.height = pSrcSurface->h;
   }
-  if (pDstRect != NULL)
+  if (pDstRect != nullptr)
     dst = *pDstRect;
   else {
     dst.x = dst.y = 0;
@@ -189,6 +189,6 @@ void nebu_Surface_Blit(nebu_Surface* pSrcSurface, nebu_Rect* pSrcRect,
   for (v = 0; v < src.height; v++) {
     memcpy(pDstSurface->data + (v + dst.y) * dstPitch + dst.x * dstBpp,
            pSrcSurface->data + (v + src.y) * srcPitch + src.x * srcBpp,
-           src.width * srcBpp);
+           (size_t)(src.width * srcBpp));
   }
 }

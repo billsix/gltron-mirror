@@ -5,7 +5,7 @@
 
 typedef struct {
   int key;
-  char* name;
+  const char* name;
 } keyname;
 
 typedef struct {

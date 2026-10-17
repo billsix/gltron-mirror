@@ -9,6 +9,7 @@ set -uo pipefail
 
 dnf install -y \
     mesa-dri-drivers \
+    xorg-x11-server-Xvfb \
     libXScrnSaver \
     libXtst \
     libXcomposite \

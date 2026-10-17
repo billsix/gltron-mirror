@@ -14,15 +14,15 @@
 static int seed = 42;
 
 /* Seeds the random number generator with the seed s */
-void nebu_srand(unsigned int s) { seed = s % PERIOD; }
+void nebu_srand(unsigned int s) { seed = (int)(s % PERIOD); }
 
 /* Calculates a new random number */
 int nebu_rand(void) {
-  seed = A * (seed % Q) - R * (long)(seed / Q);
+  seed = (int)(A * (seed % Q) - R * (long)(seed / Q));
   if (seed < 0) seed += PERIOD;
 
   return seed;
 }
 
 /* Bonus function, returns a random number in [0..1) */
-float nebu_randf(void) { return (float)nebu_rand() / PERIOD; }
+float nebu_randf(void) { return (float)nebu_rand() / (float)PERIOD; }

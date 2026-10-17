@@ -7,10 +7,10 @@
 #include "base/nebu_debug_memory.h"
 
 nebu_2d* nebu_2d_LoadPNG(const char* path, int flags) {
-  nebu_2d* p2d = NULL;
+  nebu_2d* p2d = nullptr;
 
   nebu_Surface* pSurface = nebu_Surface_LoadPNG(path);
-  if (!pSurface) return NULL;
+  if (!pSurface) return nullptr;
 
   p2d = nebu_2d_Create(pSurface, flags);
   nebu_Surface_Free(pSurface);
@@ -42,7 +42,7 @@ nebu_2d* nebu_2d_Create(nebu_Surface* pSurface, int flags) {
       break;
     default:
       fprintf(stderr, "[nebu_2d] can't handle format %d\n", pSurface->format);
-      return NULL;
+      return nullptr;
   }
 
   p2d = (nebu_2d*)malloc(sizeof(nebu_2d));
@@ -53,18 +53,18 @@ nebu_2d* nebu_2d_Create(nebu_Surface* pSurface, int flags) {
   while (p2d->tex_w < p2d->w) p2d->tex_w *= 2;
   while (p2d->tex_h < p2d->h) p2d->tex_h *= 2;
 
-  pixels = (unsigned char*)malloc(p2d->tex_w * p2d->tex_h * bpp / 8);
+  pixels = (unsigned char*)malloc((size_t)(p2d->tex_w * p2d->tex_h * bpp / 8));
 
-  memset(pixels, 0, p2d->tex_w * p2d->tex_h * bpp / 8);
+  memset(pixels, 0, (size_t)(p2d->tex_w * p2d->tex_h * bpp / 8));
   for (y = 0; y < p2d->h; y++) {
     memcpy(pixels + y * bpp / 8 * p2d->tex_w,
-           pSurface->data + y * bpp / 8 * p2d->w, bpp / 8 * p2d->w);
+           pSurface->data + y * bpp / 8 * p2d->w, (size_t)(bpp / 8 * p2d->w));
   }
 
-  glGenTextures(1, &p2d->tex_id);
-  glBindTexture(GL_TEXTURE_2D, p2d->tex_id);
+  glGenTextures(1, (GLuint*)&p2d->tex_id);
+  glBindTexture(GL_TEXTURE_2D, (GLuint)p2d->tex_id);
   glTexImage2D(GL_TEXTURE_2D, 0, target_format, p2d->tex_w, p2d->tex_h, 0,
-               source_format, GL_UNSIGNED_BYTE, pixels);
+               (GLenum)source_format, GL_UNSIGNED_BYTE, pixels);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -78,7 +78,7 @@ nebu_2d* nebu_2d_Create(nebu_Surface* pSurface, int flags) {
 }
 
 void nebu_2d_Free(nebu_2d* p2d) {
-  glDeleteTextures(1, &p2d->tex_id);
+  glDeleteTextures(1, (const GLuint*)&p2d->tex_id);
   free(p2d);
 }
 
@@ -102,7 +102,7 @@ void nebu_2d_Draw(const nebu_2d* p2d) {
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-  glBindTexture(GL_TEXTURE_2D, p2d->tex_id);
+  glBindTexture(GL_TEXTURE_2D, (GLuint)p2d->tex_id);
   glEnable(GL_TEXTURE_2D);
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 

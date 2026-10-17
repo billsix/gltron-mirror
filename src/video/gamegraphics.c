@@ -106,7 +106,7 @@ float getDirAngle(int time, Player* p) {
 
 void doCycleTurnRotation(PlayerVisual* pV, Player* p) {
   int neigung_dir = -1;
-  int time = game2->time.current - p->data->turn_time;
+  int time = (int)(game2->time.current - p->data->turn_time);
   float dirAngle = getDirAngle(time, p);
 
   glRotatef(dirAngle, 0, 0, 1);
@@ -127,7 +127,7 @@ void doCycleTurnRotation(PlayerVisual* pV, Player* p) {
 
 void drawCycleShadow(PlayerVisual* pV, Player* p, int lod, int drawTurn) {
   gltron_Mesh* cycle;
-  int turn_time = game2->time.current - p->data->turn_time;
+  int turn_time = (int)(game2->time.current - p->data->turn_time);
 
   if (turn_time < TURN_LENGTH && !drawTurn) return;
 
@@ -174,7 +174,7 @@ void drawCycle(int player, int lod, int drawTurn) {
   float x, y;
 
   unsigned int spoke_time = game2->time.current - pV->spoke_time;
-  int turn_time = game2->time.current - p->data->turn_time;
+  int turn_time = (int)(game2->time.current - p->data->turn_time);
 
   if (turn_time < TURN_LENGTH && !drawTurn) return;
 
@@ -407,7 +407,7 @@ void drawWorld(int player) {
                       &iOffset);
         bowGeometry(game->player + i, gPlayerVisuals + i, &mesh, &vOffset,
                     &iOffset);
-        trailStatesNormal(game->player + i, gScreen->textures[TEX_DECAL]);
+        trailStatesNormal(game->player + i, (int)gScreen->textures[TEX_DECAL]);
         trailRender(&mesh);
         trailStatesRestore();
       }

@@ -17,8 +17,8 @@ void loadDefaultMaterial(gltron_Mesh_Material* pMaterial) {
   memcpy(pMaterial->diffuse, diffuse, sizeof(diffuse));
   memcpy(pMaterial->specular, specular, sizeof(specular));
   pMaterial->shininess = shininess;
-  pMaterial->name = NULL;
-  pMaterial->map_diffuse = NULL;
+  pMaterial->name = nullptr;
+  pMaterial->map_diffuse = nullptr;
 }
 
 void readMaterialLibraryFromFile(char* filename, gltron_Mesh* pMesh) {
@@ -33,12 +33,12 @@ void readMaterialLibraryFromFile(char* filename, gltron_Mesh* pMesh) {
   int i;
 
   path = getPath(PATH_DATA, filename);
-  if (path == NULL) {
+  if (path == nullptr) {
     fprintf(stderr, "** could not optain path to file '%s'\n", filename);
     return;
   }
 
-  if ((f = gzopen(path, "r")) == 0) {
+  if ((f = gzopen(path, "r")) == nullptr) {
     fprintf(stderr, "** could not open file '%s'\n", filename);
     free(path);
     return;
@@ -87,7 +87,8 @@ void readMaterialLibraryFromFile(char* filename, gltron_Mesh* pMesh) {
   }
 
   pMesh->nMaterials = iMaterial + 1;
-  pMesh->pMaterials = malloc(sizeof(gltron_Mesh_Material) * pMesh->nMaterials);
+  pMesh->pMaterials =
+      malloc(sizeof(gltron_Mesh_Material) * (size_t)pMesh->nMaterials);
   for (i = 0; i < pMesh->nMaterials; i++) {
     memcpy(pMesh->pMaterials + i, pMaterials + i, sizeof(gltron_Mesh_Material));
   }
@@ -130,12 +131,12 @@ void gltron_Mesh_SetMaterialAlpha(gltron_Mesh* pMesh, float fAlpha) {
   }
 }
 
-void gltron_Mesh_SetMaterialColor(gltron_Mesh* pMesh, char* name,
+void gltron_Mesh_SetMaterialColor(gltron_Mesh* pMesh, const char* name,
                                   ColorType eType, float pColor[4]) {
   int i;
 
   for (i = 0; i < pMesh->nMaterials; i++) {
-    if (name == NULL ||
+    if (name == nullptr ||
         strstr(pMesh->pMaterials[i].name, name) == pMesh->pMaterials[i].name) {
       switch (eType) {
         case eAmbient:

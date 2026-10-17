@@ -19,13 +19,14 @@
     getNextFilename - find the next free filename in series.
  */
 static char* getNextFilename(const char* suffix, int* start_at) {
-  char* path = NULL;
+  char* path = nullptr;
   char fname[PATH_MAX];
   do {
-    if (path != NULL) free(path);
+    if (path != nullptr) free(path);
 
     (*start_at)++;
-    sprintf(fname, "%s-%s-%d%s", SCREENSHOT_PREFIX, VERSION, *start_at, suffix);
+    snprintf(fname, sizeof fname, "%s-%s-%d%s", SCREENSHOT_PREFIX, VERSION,
+             *start_at, suffix);
     path = getPossiblePath(PATH_SNAPSHOTS, fname);
   } while (nebu_FS_Test(path));
 

@@ -13,17 +13,19 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     Debug Release RelWithDebInfo MinSizeRel)
 endif()
 
-set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 # GNU/POSIX extensions enabled to match the autotools default (no -std flag),
-# which is what code like nebu/filesystem/findpath.c relies on for realpath().
-# C11 is needed for HandmadeMath's _Generic shorthand
-# (see docs/plans/handmademath-port.md).
+# which is what code like nebu/filesystem/findpath.c relies on for realpath();
+# with the C23 pin the effective flag is gnu23. C11-or-later is also needed for
+# HandmadeMath's _Generic shorthand (see docs/plans/handmademath-port.md). The
+# CXX standard is intentionally left unpinned here (C-only pin).
 set(CMAKE_C_EXTENSIONS ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-option(GLTRON_WARN "Enable -Wall -Werror" OFF)
+option(GLTRON_WARN "Enable the first-party warning gate" ON)
+option(GLTRON_WERROR "Treat first-party warnings as errors" ON)
 option(GLTRON_NETWORK "Enable experimental networking (requires SDL3_net)" OFF)
 set(GLTRON_SNAPSHOT_DIR "~" CACHE STRING "Screenshot directory (compiled in)")
 set(GLTRON_PREFERENCES_DIR "~" CACHE STRING "Preferences directory (compiled in)")
@@ -45,13 +47,16 @@ find_package(Lua 5.4 REQUIRED)
 # CMake's FindLua exposes variables, not a target. Wrap them so existing
 # `target_link_libraries(... lua)` lines keep working.
 add_library(lua INTERFACE)
-target_include_directories(lua INTERFACE ${LUA_INCLUDE_DIR})
+# SYSTEM: Lua is an external dependency; don't apply our raised warnings to its headers.
+target_include_directories(lua SYSTEM INTERFACE ${LUA_INCLUDE_DIR})
 target_link_libraries(lua INTERFACE ${LUA_LIBRARIES})
 
 # Vendored single-header math library. See third_party/HandmadeMath/ and
 # docs/plans/handmademath-port.md.
 add_library(handmademath INTERFACE)
-target_include_directories(handmademath INTERFACE
+# SYSTEM: vendored single-header; consuming it must not trip our raised warnings
+# (e.g. gcc -Wpedantic on its GNU extensions). We never modify third_party/.
+target_include_directories(handmademath SYSTEM INTERFACE
   ${CMAKE_SOURCE_DIR}/third_party/HandmadeMath)
 
 if(GLTRON_NETWORK)
@@ -74,11 +79,26 @@ else()
     PATH_SEPARATOR='/' SEPARATOR='/')
 endif()
 
-# Common warning flags applied to first-party code only (not vendored libs).
+# The first-party warning gate, applied to first-party code only (not vendored
+# libs — they come in as PUBLIC deps, never through this target). On by default;
+# -DGLTRON_WARN=OFF gives a quiet quick build. -Werror is behind GLTRON_WERROR,
+# flipped on once the tree is warning-clean (the C modernization sweep).
+#
+# Deliberately NOT the -Wconversion umbrella: the sweep keeps sign/narrowing
+# conversions but drops int->float (intentional int-coord->float graphics/audio
+# math). -Wno-unused-parameter: callback signatures (Lua/libpng/SDL) are
+# externally dictated. -Wshorten-64-to-32 / -Wimplicit-int-conversion are
+# clang-only; -Wstrict-prototypes / -Wold-style-definition are C-only.
 add_library(gltron_warnings INTERFACE)
 if(GLTRON_WARN)
   target_compile_options(gltron_warnings INTERFACE
-    $<$<COMPILE_LANGUAGE:C,CXX>:-Wall -Werror>)
+    $<$<COMPILE_LANGUAGE:C,CXX>:-Wall;-Wextra;-Wpedantic;-Wshadow;-Wvla;-Wwrite-strings;-Wformat=2;-Wsign-conversion;-Wno-unused-parameter>
+    $<$<COMPILE_LANGUAGE:C>:-Wstrict-prototypes;-Wold-style-definition>
+    $<$<AND:$<COMPILE_LANGUAGE:C>,$<C_COMPILER_ID:Clang>>:-Wshorten-64-to-32;-Wimplicit-int-conversion>
+    $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CXX_COMPILER_ID:Clang>>:-Wshorten-64-to-32;-Wimplicit-int-conversion>)
+  if(GLTRON_WERROR)
+    target_compile_options(gltron_warnings INTERFACE $<$<COMPILE_LANGUAGE:C,CXX>:-Werror>)
+  endif()
 endif()
 
 add_subdirectory(nebu)

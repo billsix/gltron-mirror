@@ -18,7 +18,7 @@ typedef struct {
   int token;
 } Token;
 
-static nebu_List* pTokenList = NULL;
+static nebu_List* pTokenList = nullptr;
 static int nextToken = 1;
 
 static Token* findToken(int token) {
@@ -29,7 +29,7 @@ static Token* findToken(int token) {
     Token* pToken = (Token*)p->data;
     if (pToken->token == token) return pToken;
   }
-  return NULL;
+  return nullptr;
 }
 
 static void release(Token* pToken) {
@@ -51,14 +51,14 @@ static void release(Token* pToken) {
       assert(0);
       break;
   }
-  pToken->data = NULL;
+  pToken->data = nullptr;
 }
 
 void resource_Release(int token) { release(findToken(token)); }
 
 void resource_Free(int token) {
   nebu_List* p;
-  nebu_List* pPrev = NULL;
+  nebu_List* pPrev = nullptr;
   assert(pTokenList);
   for (p = pTokenList; p->next; p = p->next) {
     Token* pToken = (Token*)p->data;
@@ -94,13 +94,13 @@ void resource_FreeAll(void) {
     free(p->data);
   }
   nebu_List_Free(pTokenList);
-  pTokenList = NULL;
+  pTokenList = nullptr;
 }
 
 void* resource_Get(int token, int type) {
   Token* pToken = findToken(token);
   assert(pToken);
-  if (!pToken) return NULL;
+  if (!pToken) return nullptr;
   assert(pToken->type == type);
   if (pToken->data) return pToken->data;
 
@@ -129,13 +129,13 @@ void* resource_Get(int token, int type) {
 
 static Token* findIdenticalToken(char* filename, int type) {
   nebu_List* p;
-  if (!pTokenList) return NULL;
+  if (!pTokenList) return nullptr;
   for (p = pTokenList; p->next; p = p->next) {
     Token* pToken = (Token*)p->data;
     if (pToken->type == type && strcmp(filename, pToken->filename) == 0)
       return pToken;
   }
-  return NULL;
+  return nullptr;
 }
 
 int resource_GetToken(char* filename, int type) {
@@ -144,7 +144,7 @@ int resource_GetToken(char* filename, int type) {
   assert(!findIdenticalToken(filename, type));
 
   pToken = (Token*)malloc(sizeof(Token));
-  pToken->data = NULL;
+  pToken->data = nullptr;
   pToken->filename = (char*)malloc(strlen(filename) + 1);
   strcpy(pToken->filename, filename);
   pToken->type = type;

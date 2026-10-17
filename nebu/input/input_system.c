@@ -52,7 +52,7 @@ void nebu_Input_Init(void) {
       int n;
       char* endptr;
       errno = 0;
-      n = strtol(NEBU_MAX_JOY, &endptr, 10);
+      n = (int)strtol(NEBU_MAX_JOY, &endptr, 10);
       if (n < 0) n = 0;
       if (n > MAX_JOY) n = MAX_JOY;
       if (!*endptr && !errno) max_joy = n;
@@ -141,7 +141,7 @@ void SystemMouseMotion(int x, int y) {
 
 const char* nebu_Input_GetKeyname(int key) {
   if (key < SYSTEM_CUSTOM_KEYS)
-    return SDL_GetKeyName(key);
+    return SDL_GetKeyName((SDL_Keycode)key);
   else {
     int i;
 
@@ -153,7 +153,7 @@ const char* nebu_Input_GetKeyname(int key) {
 }
 
 void nebu_Intern_HandleInput(SDL_Event* event) {
-  const char* keyname;
+  const char* key_name;
   int key, state;
   static int joy_axis_state[MAX_JOY] = {0};
   static int joy_lastaxis[MAX_JOY] = {0};
@@ -168,7 +168,7 @@ void nebu_Intern_HandleInput(SDL_Event* event) {
         state = NEBU_INPUT_KEYSTATE_UP;
       }
 
-      keyname = SDL_GetKeyName(event->key.key);
+      key_name = SDL_GetKeyName(event->key.key);
       key = 0;
       switch (event->key.key) {
         case SDLK_SPACE:
@@ -181,7 +181,7 @@ void nebu_Intern_HandleInput(SDL_Event* event) {
           key = 13;
           break;
         default:
-          if (keyname[0] && keyname[1] == 0) key = keyname[0];
+          if (key_name[0] && key_name[1] == 0) key = key_name[0];
           break;
       }
       setKeyState(key, state);

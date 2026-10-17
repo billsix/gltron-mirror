@@ -7,19 +7,19 @@
 #include "video/nebu_renderer_gl.h"
 
 /* globals */
-Game* game = NULL;
-Game2* game2 = NULL;
-Visual* gScreen = NULL;
-video_level* gWorld = NULL;
+Game* game = nullptr;
+Game2* game2 = nullptr;
+Visual* gScreen = nullptr;
+video_level* gWorld = nullptr;
 int gViewportType;
-PlayerVisual* gPlayerVisuals = NULL;
+PlayerVisual* gPlayerVisuals = nullptr;
 Input gInput;
 
 SettingsCache gSettingsCache;
 
 int viewport_content[4]; /* max. 4 individual viewports on the screen */
 
-// nebu_Font *gameFtx = NULL;
+// nebu_Font *gameFtx = nullptr;
 int gTokenGameFont = 0;
 int gpTokenHUD[eHUDElementCount] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 int gTokenRecognizer = 0;
@@ -29,8 +29,8 @@ int gpTokenLightcycles[LC_LOD];
 float rec_outline_color[] = {0.8f, 0.0, 0.0};
 float rec_spec_color[] = {0.05f, 0.14f, 0.05f, 0.50f};
 
-char* lc_lod_names[] = {"lightcycle-high.obj", "lightcycle-med.obj",
-                        "lightcycle-low.obj"};
+const char* lc_lod_names[] = {"lightcycle-high.obj", "lightcycle-med.obj",
+                              "lightcycle-low.obj"};
 
 float camAngle = 0;
 float cam_phi = 0;
@@ -39,7 +39,7 @@ float cam_r_mouse = CAM_CIRCLE_DIST;
 float cam_r_follow = CAM_FOLLOW_DIST;
 float cam_r_circle = CAM_CIRCLE_DIST;
 
-unsigned char* debugtex = NULL;
+unsigned char* debugtex = nullptr;
 int ogl_debugtex;
 int colwidth;
 

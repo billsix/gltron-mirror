@@ -1,0 +1,5 @@
+nebu/filesystem/file_io.c:31:10: warning: implicit conversion loses integer precision: '__size_t' (aka 'unsigned long') to 'int' [-Wshorten-64-to-32]
+nebu/filesystem/file_io.c:35:22: warning: implicit conversion changes signedness: 'unsigned int' to 'int' [-Wsign-conversion]
+nebu/filesystem/filesystem.c:69:39: warning: implicit conversion loses integer precision: '__size_t' (aka 'unsigned long') to 'int' [-Wshorten-64-to-32]
+nebu/filesystem/filesystem.c:70:36: warning: implicit conversion changes signedness: 'int' to '__size_t' (aka 'unsigned long') [-Wsign-conversion]
+nebu/filesystem/findpath.c:75:39: warning: implicit conversion changes signedness: '__ptrdiff_t' (aka 'long') to '__size_t' (aka 'unsigned long') [-Wsign-conversion]

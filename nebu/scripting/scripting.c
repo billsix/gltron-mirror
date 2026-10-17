@@ -93,7 +93,7 @@ int scripting_SetFloat(float f, const char* name, const char* global,
                        const char* s, ...) {
   va_list ap;
 
-  if (global == NULL) {
+  if (global == nullptr) {
     lua_pushnumber(L, f);
     lua_setglobal(L, global);
     return 0;
@@ -160,9 +160,9 @@ int scripting_GetStringResult(char** s) {
   if (lua_isstring(L, -1)) {
     int size;
     status = 0;
-    size = lua_rawlen(L, -1) + 1;
-    *s = malloc(size);
-    memcpy(*s, lua_tostring(L, -1), size);
+    size = (int)(lua_rawlen(L, -1) + 1);
+    *s = malloc((size_t)size);
+    memcpy(*s, lua_tostring(L, -1), (size_t)size);
     /* printf("allocated string '%s' of size %d\n", *s, size); */
   } else
     status = 1;
@@ -174,15 +174,15 @@ int scripting_GetStringResult(char** s) {
 int scripting_CopyStringResult(char* s, int len) {
   int status;
   if (lua_isstring(L, -1)) {
-    int size, copy;
+    [[maybe_unused]] int size, copy;
     status = 0;
-    size = lua_rawlen(L, -1) + 1;
+    size = (int)(lua_rawlen(L, -1) + 1);
     if (size > len) {
       copy = len;
       status = 2;
     } else
       copy = size;
-    memcpy(s, lua_tostring(L, -1), size);
+    memcpy(s, lua_tostring(L, -1), (size_t)size);
   } else
     status = 1;
 

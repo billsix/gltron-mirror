@@ -76,12 +76,12 @@ int crashTestPlayers(int i, const segment2* movement) {
   int j, k;
   int crash = 0;
   Data* data = game->player[i].data;
-  segment2* current = data->trails + data->trailOffset;
+  segment2* cur = data->trails + data->trailOffset;
   // debug: only test player0 against himself
   // j = 0;
   // if(i == 0) {
   for (j = 0; j < game->players; j++) {
-    int crash = 0;
+    int jCrash = 0;
 
     if (game->player[j].data->trail_height < TRAIL_HEIGHT) continue;
 
@@ -102,14 +102,14 @@ int crashTestPlayers(int i, const segment2* movement) {
 							 t1, t2);
 #endif
         if (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 <= 1) {
-          current->vDirection = HMM_SubV2(v, current->vStart);
+          cur->vDirection = HMM_SubV2(v, cur->vStart);
           createEvent(i, EVENT_CRASH);
-          crash = 1;
+          jCrash = 1;
           break;
         }
       }
     }
-    if (crash) break;
+    if (jCrash) break;
   }
   return crash;
 }
@@ -121,13 +121,12 @@ int crashTestWalls(int i, const segment2* movement) {
   int crash = 0;
 
   Data* data = game->player[i].data;
-  segment2* current = data->trails + data->trailOffset;
+  segment2* cur = data->trails + data->trailOffset;
 
   for (j = 0; j < game2->level->nBoundaries; j++) {
-    if (segment2_Intersect(&v, &t1, &t2, current,
-                           game2->level->boundaries + j)) {
+    if (segment2_Intersect(&v, &t1, &t2, cur, game2->level->boundaries + j)) {
       if (t1 >= 0 && t1 < 1 && t2 >= 0 && t2 < 1) {
-        current->vDirection = HMM_SubV2(v, current->vStart);
+        cur->vDirection = HMM_SubV2(v, cur->vStart);
         createEvent(i, EVENT_CRASH);
         crash = 1;
         break;
@@ -308,7 +307,7 @@ void doMovement(int dt) {
       t = dt / 100.0f * data->speed * fs;
 
       {  // movement
-        segment2* current = data->trails + data->trailOffset;
+        segment2* cur = data->trails + data->trailOffset;
         segment2 movement;
         int crash = 0;
         float x, y;
@@ -318,8 +317,8 @@ void doMovement(int dt) {
         movement.vDirection =
             HMM_V2(t * dirsX[data->dir], t * dirsY[data->dir]);
 
-        current->vDirection.X += t * dirsX[data->dir];
-        current->vDirection.Y += t * dirsY[data->dir];
+        cur->vDirection.X += t * dirsX[data->dir];
+        cur->vDirection.Y += t * dirsY[data->dir];
 
         if (!data->wall_buster_enabled) {  // collision detection against
                                            // players
@@ -355,12 +354,12 @@ void doMovement(int dt) {
         game->running--;
         if (game->running <= 1) {  // all dead
           /* find survivor, create winner event */
-          int i;
+          int j;
           float maxSpeed = SPEED_GONE;
-          for (i = 0; i < game->players; i++) {
-            if (game->player[i].data->speed >= maxSpeed) {
-              winner = i;
-              maxSpeed = game->player[i].data->speed;
+          for (j = 0; j < game->players; j++) {
+            if (game->player[j].data->speed >= maxSpeed) {
+              winner = j;
+              maxSpeed = game->player[j].data->speed;
             }
           }
           createEvent(winner, EVENT_STOP);
@@ -376,7 +375,7 @@ int game_ComputeTimeDelta(void) {
   /* check for fast finish */
   if (gSettingsCache.fast_finish != 1) {
     // time since last idle processing
-    return game2->time.dt;
+    return (int)game2->time.dt;
   } else {
     // compute an acceleration factor (speedup time by factor 4/6/12/25)
     // depending on the size of the arena
@@ -395,7 +394,7 @@ int game_ComputeTimeDelta(void) {
         factor = 1;
       }
     }
-    return game2->time.dt * factor;
+    return (int)(game2->time.dt * (unsigned int)factor);
   }
 }
 void game_RunAI(int dt) {
@@ -403,7 +402,7 @@ void game_RunAI(int dt) {
 
   /* run AI */
   for (i = 0; i < game->players; i++) {
-    if (game->player[i].ai != NULL) {
+    if (game->player[i].ai != nullptr) {
       if (game->player[i].ai->active == AI_COMPUTER &&
           PLAYER_IS_ACTIVE(&game->player[i])) {
         doComputer(i, 0);
@@ -446,7 +445,7 @@ void Game_Idle(void) {
     */
 
     /* process any outstanding events (turns, etc) */
-    for (p = &(game2->events); p->next != NULL; p = p->next) {
+    for (p = &(game2->events); p->next != nullptr; p = p->next) {
       if (processEvent((GameEvent*)p->data))
         // a STOP event was encountered, exiting
         // TODO: fix, because this leaks the list element, and also all
@@ -456,12 +455,12 @@ void Game_Idle(void) {
 
     /* free list items (processed events are already freed in processEvents */
     p = game2->events.next;
-    while (p != NULL) {
+    while (p != nullptr) {
       nebu_List* l = p;
       p = p->next;
       free(l);
     }
-    game2->events.next = NULL;
+    game2->events.next = nullptr;
 
     doMovement(t); /* this can generate new events */
 
@@ -487,7 +486,7 @@ void Game_Idle(void) {
 void createEvent(int player, event_type_e eventType) {
   GameEvent* e = (GameEvent*)malloc(sizeof(GameEvent));
   // store event information
-  e->type = eventType;
+  e->type = (int)eventType;
   getPositionFromIndex(&e->x, &e->y, player);
   e->player = player;
   e->timestamp = game2->time.current;

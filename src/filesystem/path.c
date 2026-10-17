@@ -24,21 +24,28 @@ static char scripts_dir[PATH_MAX];
 static char level_dir[PATH_MAX];
 
 void initDirectories(void) {
+  // PREF_DIR/SNAP_DIR are compile-time macros; the leading '~' means "under the
+  // home directory", so &X[1] is the intentional skip of that '~'.
   if (PREF_DIR[0] != '~')
-    sprintf(preferences_dir, PREF_DIR);
+    snprintf(preferences_dir, sizeof preferences_dir, "%s", PREF_DIR);
   else
-    sprintf(preferences_dir, "%s%s", getHome(), PREF_DIR + 1);
+    snprintf(preferences_dir, sizeof preferences_dir, "%s%s", getHome(),
+             &PREF_DIR[1]);
 
   if (SNAP_DIR[0] != '~')
-    sprintf(snapshots_dir, SNAP_DIR);
+    snprintf(snapshots_dir, sizeof snapshots_dir, "%s", SNAP_DIR);
   else
-    sprintf(snapshots_dir, "%s%s", getHome(), SNAP_DIR + 1);
+    snprintf(snapshots_dir, sizeof snapshots_dir, "%s%s", getHome(),
+             &SNAP_DIR[1]);
 
-  sprintf(data_dir, "%s%c%s", DATA_DIR, SEPARATOR, "data");
-  sprintf(art_dir, "%s%c%s", DATA_DIR, SEPARATOR, "art/default");
-  sprintf(scripts_dir, "%s%c%s", DATA_DIR, SEPARATOR, "scripts");
-  sprintf(music_dir, "%s%c%s", DATA_DIR, SEPARATOR, "music");
-  sprintf(level_dir, "%s%c%s", DATA_DIR, SEPARATOR, "levels");
+  snprintf(data_dir, sizeof data_dir, "%s%c%s", DATA_DIR, SEPARATOR, "data");
+  snprintf(art_dir, sizeof art_dir, "%s%c%s", DATA_DIR, SEPARATOR,
+           "art/default");
+  snprintf(scripts_dir, sizeof scripts_dir, "%s%c%s", DATA_DIR, SEPARATOR,
+           "scripts");
+  snprintf(music_dir, sizeof music_dir, "%s%c%s", DATA_DIR, SEPARATOR, "music");
+  snprintf(level_dir, sizeof level_dir, "%s%c%s", DATA_DIR, SEPARATOR,
+           "levels");
 
   /*
 printf("directories:\n"
@@ -59,6 +66,7 @@ printf("directories:\n"
 
 char* getPath(ePathLocation eLocation, const char* filename) {
   char* path = getPossiblePath(eLocation, filename);
+  if (path == nullptr) return nullptr;
   if (nebu_FS_Test(path)) return path;
 
   fprintf(stderr, "*** failed to locate file '%s' at '%s' (type %d)\n",
@@ -66,12 +74,17 @@ char* getPath(ePathLocation eLocation, const char* filename) {
   assert(0);
 
   free(path);
-  return NULL;
+  return nullptr;
 }
 
-char* getPossiblePath(ePathLocation eLocation, const char* filename) {
+// Builds a candidate path into a freshly allocated PATH_MAX buffer.
+// Caller frees. Returns nullptr on allocation failure.
+[[nodiscard]] char* getPossiblePath(ePathLocation eLocation,
+                                    const char* filename) {
   char* path = malloc(PATH_MAX);
-  sprintf(path, "%s%c%s", getDirectory(eLocation), SEPARATOR, filename);
+  if (path == nullptr) return nullptr;
+  snprintf(path, PATH_MAX, "%s%c%s", getDirectory(eLocation), SEPARATOR,
+           filename);
   return path;
 }
 
@@ -102,5 +115,5 @@ const char* getDirectory(ePathLocation eLocation) {
       fprintf(stderr, "invalid path type\n");
       assert(0);
   }
-  return NULL;
+  return nullptr;
 }

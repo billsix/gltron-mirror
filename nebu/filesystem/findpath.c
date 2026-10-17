@@ -41,7 +41,7 @@
 void goto_installpath(const char* argv0) {
   char temppath[PATH_MAX];
   char datapath[PATH_MAX];
-  char* home;
+  const char* home;
 
   home = getenv("HOME");
   if (!home) {
@@ -72,7 +72,7 @@ void goto_installpath(const char* argv0) {
 
       /* Fill in the rest of the filename */
       if (last > (path + 1)) {
-        strncat(temppath, path, (last - path));
+        strncat(temppath, path, (size_t)(last - path));
         strcat(temppath, "/");
       }
       strcat(temppath, "./");

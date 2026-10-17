@@ -4,6 +4,10 @@
 **Priority:** 7
 **Difficulty:** 4
 **Created:** 2026-06-13
+**Related:** `tasks/archive/2026/10/17/c-modernization-sweep.md` (done 2026-10-17) pinned
+`-std=c23` and its **Phase 4 was the execution arm** of this investigation (C23 idioms:
+`nullptr`, standard attributes). This doc stays the C23 decision record. (back-pointer added
+2026-10-17, repointed to archive on completion, William Emerison Six <billsix@gmail.com>)
 
 ## Goal
 

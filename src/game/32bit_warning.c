@@ -84,6 +84,6 @@ Callbacks _32bit_warningCallbacks = {_32bit_warning_Display,  // display
                                      _32bit_warning_Key,      // keyboard
                                      _32bit_warning_Init,     // init
                                      _32bit_warning_Exit,     // exit
-                                     NULL,                    // mouse
-                                     NULL,                    // mouseMotion
+                                     nullptr,                 // mouse
+                                     nullptr,                 // mouseMotion
                                      "32bit_warning"};

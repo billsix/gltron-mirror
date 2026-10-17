@@ -54,7 +54,7 @@ void drawText(nebu_Font* ftx, float x, float y, float size, const char* text) {
 
   glTranslatef(x, y, 0);
   glScalef(size, size, size);
-  nebu_Font_Render(ftx, text, strlen(text));
+  nebu_Font_Render(ftx, text, (int)strlen(text));
 
   glPopMatrix();
   glDisable(GL_TEXTURE_2D);

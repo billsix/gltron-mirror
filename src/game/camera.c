@@ -191,10 +191,10 @@ void playerCamera(Player* p, int player) {
   int dt;
 
   if (game2->time.dt == 0) {
-    dt = nebu_Time_GetElapsed() - last;
-    last = nebu_Time_GetElapsed();
+    dt = (int)(nebu_Time_GetElapsed() - (unsigned int)last);
+    last = (int)nebu_Time_GetElapsed();
   } else {
-    dt = game2->time.dt;
+    dt = (int)game2->time.dt;
   }
 
   cam = &gPlayerVisuals[player].camera;
@@ -236,7 +236,7 @@ void playerCamera(Player* p, int player) {
 
   /* if the cam is coupled to player movement, change the phi accordingly */
   if (cam->type.coupled) {
-    int time = game2->time.current - p->data->turn_time;
+    int time = (int)(game2->time.current - p->data->turn_time);
     if (time < TURN_LENGTH) {
       int dir, ldir;
       dir = p->data->dir;

@@ -9,7 +9,7 @@ typedef struct Callbacks {
   void (*exit)(void);
   void (*mouse)(int, int, int, int);
   void (*mouseMotion)(int, int);
-  char* name;
+  const char* name;
 } Callbacks;
 
 #endif
