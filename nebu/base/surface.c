@@ -31,7 +31,7 @@ nebu_Surface* nebu_Surface_LoadPNG(const char* filename) {
 
   png_texture* pTex;
   pTex = load_png_texture(filename);
-  if (!pTex) return NULL;
+  if (!pTex) return nullptr;
 
   pSurface = (nebu_Surface*)malloc(sizeof(nebu_Surface));
   pSurface->w = pTex->width;
@@ -78,7 +78,7 @@ int nebu_Surface_SaveBMP(nebu_Surface* pSurface, const char* filename) {
 
     temp = SDL_CreateSurface(x, y, SDL_PIXELFORMAT_RGB24);
 
-    if (temp == NULL) return -1;
+    if (temp == nullptr) return -1;
 
     for (i = 0; i < y; i++)
       memcpy(((char*)temp->pixels) + temp->pitch * i,
@@ -120,17 +120,17 @@ int nebu_Surface_SavePNG(nebu_Surface* pSurface, const char* filename) {
     return -1;
   }
 
-  if (!(png_ptr =
-            png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL))) {
+  if (!(png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr,
+                                          nullptr, nullptr))) {
     return -1;
   }
 
   if (!(info_ptr = png_create_info_struct(png_ptr))) {
-    png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
+    png_destroy_write_struct(&png_ptr, (png_infopp) nullptr);
     return -1;
   }
 
-  png_set_write_fn(png_ptr, 0, user_write_data, user_flush_data);
+  png_set_write_fn(png_ptr, nullptr, user_write_data, user_flush_data);
   /* png_init_io(png_ptr, fp); */
 
   png_set_IHDR(png_ptr, info_ptr, (png_uint_32)pSurface->w,
@@ -166,14 +166,14 @@ void nebu_Surface_Blit(nebu_Surface* pSrcSurface, nebu_Rect* pSrcRect,
   nebu_Rect src, dst;
   int v, srcBpp, srcPitch, dstBpp, dstPitch;
 
-  if (pSrcRect != NULL) {
+  if (pSrcRect != nullptr) {
     src = *pSrcRect;
   } else {
     src.x = src.y = 0;
     src.width = pSrcSurface->w;
     src.height = pSrcSurface->h;
   }
-  if (pDstRect != NULL)
+  if (pDstRect != nullptr)
     dst = *pDstRect;
   else {
     dst.x = dst.y = 0;

@@ -18,7 +18,7 @@
 void loadLevel(void) {
   char *path, *level;
 
-  scripting_GetGlobal("settings", "current_level", NULL);
+  scripting_GetGlobal("settings", "current_level", nullptr);
   scripting_GetStringResult(&level);
   fprintf(stderr, "[status] loading level '%s'\n", level);
 
@@ -96,4 +96,4 @@ void gameMouse(int buttons, int state, int x, int y) {
 }
 
 Callbacks gameCallbacks = {displayGame, GameMode_Idle, keyGame, enterGame,
-                           exitGame,    gameMouse,     NULL,    "game"};
+                           exitGame,    gameMouse,     nullptr, "game"};

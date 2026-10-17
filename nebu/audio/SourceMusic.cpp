@@ -10,7 +10,7 @@ namespace Sound {
 SourceMusic::SourceMusic(System* system) {
   _system = system;
 
-  _sample = NULL;
+  _sample = nullptr;
 
   _sample_buffersize = 8192;
   _buffersize = 20 * _sample_buffersize;
@@ -20,7 +20,7 @@ SourceMusic::SourceMusic(System* system) {
   _decoded = 0;
   _read = 0;
 
-  _filename = NULL;
+  _filename = nullptr;
 }
 
 SourceMusic::~SourceMusic() {
@@ -29,7 +29,7 @@ SourceMusic::~SourceMusic() {
 
   if (_sample) {
     Sound_FreeSample(_sample);
-    _sample = NULL;
+    _sample = nullptr;
   }
 
   if (_filename) delete _filename;
@@ -48,7 +48,7 @@ void SourceMusic::CreateSample(void) {
   _sample = Sound_NewSampleFromFile(_filename, _system->GetAudioInfo(),
                                     (Uint32)_sample_buffersize);
 
-  if (_sample == NULL) {
+  if (_sample == nullptr) {
     fprintf(stderr, "[error] failed loading sample from %s: %s\n", _filename,
             Sound_GetError());
     return;
@@ -69,14 +69,14 @@ void SourceMusic::CleanUp(void) {
   _read = 0;
   _decoded = 0;
 
-  if (_sample != NULL) {
+  if (_sample != nullptr) {
     Sound_FreeSample(_sample);
-    _sample = NULL;
+    _sample = nullptr;
   }
 }
 
 int SourceMusic::Mix(Uint8* data, int len) {
-  if (_sample == NULL) return 0;
+  if (_sample == nullptr) return 0;
   /* SDL3 SDL_TryWaitSemaphore returns true if it acquired the semaphore. */
   if (!SDL_TryWaitSemaphore(_sem)) {
     fprintf(stderr, "semaphore locked, skipping mix\n");
@@ -107,7 +107,7 @@ int SourceMusic::Mix(Uint8* data, int len) {
 }
 
 void SourceMusic::Idle(void) {
-  if (_sample == NULL) return;
+  if (_sample == nullptr) return;
 
   // printf("idling\n");
   while (_isPlaying &&

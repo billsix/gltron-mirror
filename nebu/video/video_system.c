@@ -8,8 +8,8 @@
 
 /* SDL2 Change: We no longer use a Surface for the screen.
    We need a Window handle and a GL Context handle. */
-static SDL_Window* gWindow = NULL;
-static SDL_GLContext gContext = NULL;
+static SDL_Window* gWindow = nullptr;
+static SDL_GLContext gContext = nullptr;
 
 static int width = 0;
 static int height = 0;
@@ -101,13 +101,13 @@ void createWindow(void) {
 
   gWindow = SDL_CreateWindow("GLTron", width, height, window_flags);
 
-  if (gWindow == NULL) {
+  if (gWindow == nullptr) {
     fprintf(stderr, "[system] Couldn't create window: %s\n", SDL_GetError());
     exit(1);
   }
 
   gContext = SDL_GL_CreateContext(gWindow);
-  if (gContext == NULL) {
+  if (gContext == nullptr) {
     fprintf(stderr, "[system] Couldn't create GL context: %s\n",
             SDL_GetError());
     exit(1);
@@ -163,8 +163,8 @@ void nebu_Video_Destroy(int id) {
   if (id == window_id) {
     if (gContext) SDL_GL_DestroyContext(gContext);
     if (gWindow) SDL_DestroyWindow(gWindow);
-    gContext = NULL;
-    gWindow = NULL;
+    gContext = nullptr;
+    gWindow = nullptr;
   } else {
     assert(0);
   }

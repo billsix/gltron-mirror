@@ -29,18 +29,23 @@ void initDirectories(void) {
   if (PREF_DIR[0] != '~')
     snprintf(preferences_dir, sizeof preferences_dir, "%s", PREF_DIR);
   else
-    snprintf(preferences_dir, sizeof preferences_dir, "%s%s", getHome(), &PREF_DIR[1]);
+    snprintf(preferences_dir, sizeof preferences_dir, "%s%s", getHome(),
+             &PREF_DIR[1]);
 
   if (SNAP_DIR[0] != '~')
     snprintf(snapshots_dir, sizeof snapshots_dir, "%s", SNAP_DIR);
   else
-    snprintf(snapshots_dir, sizeof snapshots_dir, "%s%s", getHome(), &SNAP_DIR[1]);
+    snprintf(snapshots_dir, sizeof snapshots_dir, "%s%s", getHome(),
+             &SNAP_DIR[1]);
 
   snprintf(data_dir, sizeof data_dir, "%s%c%s", DATA_DIR, SEPARATOR, "data");
-  snprintf(art_dir, sizeof art_dir, "%s%c%s", DATA_DIR, SEPARATOR, "art/default");
-  snprintf(scripts_dir, sizeof scripts_dir, "%s%c%s", DATA_DIR, SEPARATOR, "scripts");
+  snprintf(art_dir, sizeof art_dir, "%s%c%s", DATA_DIR, SEPARATOR,
+           "art/default");
+  snprintf(scripts_dir, sizeof scripts_dir, "%s%c%s", DATA_DIR, SEPARATOR,
+           "scripts");
   snprintf(music_dir, sizeof music_dir, "%s%c%s", DATA_DIR, SEPARATOR, "music");
-  snprintf(level_dir, sizeof level_dir, "%s%c%s", DATA_DIR, SEPARATOR, "levels");
+  snprintf(level_dir, sizeof level_dir, "%s%c%s", DATA_DIR, SEPARATOR,
+           "levels");
 
   /*
 printf("directories:\n"
@@ -61,7 +66,7 @@ printf("directories:\n"
 
 char* getPath(ePathLocation eLocation, const char* filename) {
   char* path = getPossiblePath(eLocation, filename);
-  if (path == NULL) return NULL;
+  if (path == nullptr) return nullptr;
   if (nebu_FS_Test(path)) return path;
 
   fprintf(stderr, "*** failed to locate file '%s' at '%s' (type %d)\n",
@@ -69,15 +74,17 @@ char* getPath(ePathLocation eLocation, const char* filename) {
   assert(0);
 
   free(path);
-  return NULL;
+  return nullptr;
 }
 
 // Builds a candidate path into a freshly allocated PATH_MAX buffer.
-// Caller frees. Returns NULL on allocation failure.
-char* getPossiblePath(ePathLocation eLocation, const char* filename) {
+// Caller frees. Returns nullptr on allocation failure.
+[[nodiscard]] char* getPossiblePath(ePathLocation eLocation,
+                                    const char* filename) {
   char* path = malloc(PATH_MAX);
-  if (path == NULL) return NULL;
-  snprintf(path, PATH_MAX, "%s%c%s", getDirectory(eLocation), SEPARATOR, filename);
+  if (path == nullptr) return nullptr;
+  snprintf(path, PATH_MAX, "%s%c%s", getDirectory(eLocation), SEPARATOR,
+           filename);
   return path;
 }
 
@@ -108,5 +115,5 @@ const char* getDirectory(ePathLocation eLocation) {
       fprintf(stderr, "invalid path type\n");
       assert(0);
   }
-  return NULL;
+  return nullptr;
 }

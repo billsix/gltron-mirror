@@ -13,18 +13,18 @@ void freeTextureData(texture* tex) {
 }
 
 texture* loadTextureData(const char* filename) {
-  texture* tex = NULL;
+  texture* tex = nullptr;
   char* path;
   printf("%s \n", filename);
   printf("BILL \n");
   path = nebu_FS_GetPath(PATH_ART, filename);
   printf("%s \n", path);
-  if (path != NULL) {
+  if (path != nullptr) {
     tex = LOAD_TEX(path);
     free(path);
   }
 
-  if (tex == NULL) {
+  if (tex == nullptr) {
     fprintf(stderr, "fatal: failed loading texture %s, exiting...\n", filename);
     exit(1); /* OK: critical, installation corrupt */
   }

@@ -21,8 +21,8 @@
 #include "base/nebu_debug_memory.h"
 
 // local resources
-nebu_2d* pBackground = NULL;
-nebu_Font* pFont = NULL;
+nebu_2d* pBackground = nullptr;
+nebu_Font* pFont = nullptr;
 
 void drawMenu(Visual* d);
 
@@ -40,7 +40,7 @@ void drawGuiBackground(void) {
 }
 
 void displayGui(void) {
-  scripting_GetGlobal("gui_hide_background", NULL);
+  scripting_GetGlobal("gui_hide_background", nullptr);
   if (!scripting_IsNil()) {
     scripting_Pop();
     // _32bit_warning_Display();
@@ -196,11 +196,11 @@ void gui_LoadResources(void) {
 void gui_ReleaseResources() {
   if (pFont) {
     nebu_Font_Free(pFont);
-    pFont = NULL;
+    pFont = nullptr;
   }
   if (pBackground) {
     nebu_2d_Free(pBackground);
-    pBackground = NULL;
+    pBackground = nullptr;
   }
 }
 
@@ -297,9 +297,9 @@ void drawMenu(Visual* d) {
       int time = nebu_Time_GetElapsed() & 4095;
       t = sinf(time * M_PI / 2048.0) / 2.0f + 0.5f;
 
-      scripting_GetGlobal("menu_item_active1", NULL);
+      scripting_GetGlobal("menu_item_active1", nullptr);
       scripting_GetFloatArrayResult(active1, 4);
-      scripting_GetGlobal("menu_item_active2", NULL);
+      scripting_GetGlobal("menu_item_active2", nullptr);
       scripting_GetFloatArrayResult(active2, 4);
 
       for (j = 0; j < 4; j++) {
@@ -310,7 +310,7 @@ void drawMenu(Visual* d) {
          t, color[0], color[1], color[2]); */
     } else {
       float color[4];
-      scripting_GetGlobal("menu_item", NULL);
+      scripting_GetGlobal("menu_item", nullptr);
       scripting_GetFloatArrayResult(color, 4);
       glColor4fv(color);
     }
@@ -354,10 +354,10 @@ void drawMenu(Visual* d) {
 }
 
 Callbacks configureCallbacks = {
-    displayConfigure,        idleGui,
-    keyboardConfigure,       initGui,
-    NULL /* exit */,         NULL /* mouse button */,
-    NULL /* mouse motion */, "configure"};
+    displayConfigure,           idleGui,
+    keyboardConfigure,          initGui,
+    nullptr /* exit */,         nullptr /* mouse button */,
+    nullptr /* mouse motion */, "configure"};
 
 Callbacks guiCallbacks = {displayGui, idleGui,  keyboardGui,    initGui,
                           exitGui,    guiMouse, guiMouseMotion, "gui"};

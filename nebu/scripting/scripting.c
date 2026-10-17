@@ -93,7 +93,7 @@ int scripting_SetFloat(float f, const char* name, const char* global,
                        const char* s, ...) {
   va_list ap;
 
-  if (global == NULL) {
+  if (global == nullptr) {
     lua_pushnumber(L, f);
     lua_setglobal(L, global);
     return 0;

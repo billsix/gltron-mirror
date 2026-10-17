@@ -188,7 +188,7 @@ int c_loadDirectory(lua_State* L) {
 
   dirPath =
       getDirectory((ePathLocation)dir);  // PATH_ART or PATH_LEVEL or PATH_MUSIC
-  files = readDirectoryContents(dirPath, NULL);
+  files = readDirectoryContents(dirPath, nullptr);
 
   lua_newtable(L);
   for (p = files; p->next; p = p->next) {
@@ -212,7 +212,7 @@ static const char* art_dirs[2];
 
 int c_setArtPath(lua_State* l) {
   char* artpack;
-  scripting_GetGlobal("settings", "current_artpack", NULL);
+  scripting_GetGlobal("settings", "current_artpack", nullptr);
   scripting_GetStringResult(&artpack);
   fprintf(stderr, "[status] loading artpack '%s'\n", artpack);
 

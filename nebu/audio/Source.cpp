@@ -2,8 +2,8 @@
 
 namespace Sound {
 Source::Source() {
-  _name = NULL;
-  _system = NULL;
+  _name = nullptr;
+  _system = nullptr;
   _isPlaying = 0;
   _loop = 0;
   _removable = 0;

@@ -82,8 +82,8 @@ gltron_Mesh* gltron_Mesh_LoadFromFile(const char* filename,
   vec3* pVertices = malloc(sizeof(vec3) * MAX_VERTICES);
   vec3* pNormals = malloc(sizeof(vec3) * MAX_NORMALS);
 
-  quadFace* pqFaces = NULL;
-  face* pFaces = NULL;
+  quadFace* pqFaces = nullptr;
+  face* pFaces = nullptr;
   int iFaceSize = 0;
 
   gltron_Mesh* pMesh = malloc(sizeof(gltron_Mesh));
@@ -109,9 +109,9 @@ gltron_Mesh* gltron_Mesh_LoadFromFile(const char* filename,
       exit(1);
   }
 
-  if ((f = gzopen(filename, "r")) == 0) {
+  if ((f = gzopen(filename, "r")) == nullptr) {
     fprintf(stderr, "*** could not open file '%s'\n", filename);
-    return NULL;
+    return nullptr;
   }
 
   while (gzgets(f, buf, sizeof(buf))) {

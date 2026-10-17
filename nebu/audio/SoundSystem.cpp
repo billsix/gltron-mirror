@@ -7,7 +7,7 @@
 namespace Sound {
 System::System(SDL_AudioSpec* spec) {
   _spec = spec;
-  _sources.next = NULL;
+  _sources.next = nullptr;
 
   _info.format = _spec->format;
   _info.freq = spec->freq;
@@ -36,7 +36,7 @@ void System::Callback(Uint8* data, int len) {
 
   nebu_List* p;
   [[maybe_unused]] int sources_mixed = 0;
-  for (p = &_sources; p->next != NULL; p = p->next) {
+  for (p = &_sources; p->next != nullptr; p = p->next) {
     Source* s = (Source*)p->data;
     if (s->IsPlaying()) {
       // fprintf(stderr, "mixing source\n");
@@ -54,7 +54,7 @@ void System::AddSource(Source* source) { nebu_List_AddTail(&_sources, source); }
 void System::Idle(void) {
   /* idle processing */
   nebu_List* p;
-  for (p = &_sources; p->next != NULL; p = p->next) {
+  for (p = &_sources; p->next != nullptr; p = p->next) {
     Source* source = (Source*)p->data;
     // check if source is removable & has stopped playing
     if (source->IsRemovable() && !source->IsPlaying()) {
@@ -64,7 +64,7 @@ void System::Idle(void) {
       p->next = p->next->next;
       delete tmp;
       delete source;
-      if (p->next == NULL) break;
+      if (p->next == nullptr) break;
     } else {
       source->Idle();
     }

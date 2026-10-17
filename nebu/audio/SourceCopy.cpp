@@ -5,7 +5,7 @@
 
 namespace Sound {
 int SourceCopy::Mix(Uint8* data, int len) {
-  if (_source->_buffer == NULL) return 0;
+  if (_source->_buffer == nullptr) return 0;
 
   float volume = _source->GetVolume();
   int buffersize = _source->_buffersize;

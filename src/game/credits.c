@@ -33,7 +33,7 @@ const char* credits[] = {
     // "Thanks to my sponsors:",
     // "  3dfx:              Voodoo5 5500 graphics card",
     // "  Right Hemisphere:  3D exploration software",
-    NULL};
+    nullptr};
 
 void mouseCredits(int buttons, int mouseState, int x, int y) {
   if (mouseState == SYSTEM_MOUSEPRESSED) {
@@ -69,7 +69,7 @@ void drawCredits(void) {
   rasonly(gScreen);
   for (i = 0; i < time / 250; i++) {
     glColor3fv(colors[i % 2]);
-    if (credits[i] == NULL) break;
+    if (credits[i] == nullptr) break;
     y = gScreen->vp_h - 3.0f * h * (i + 1) / 2;
     drawText((nebu_Font*)resource_Get(gTokenGameFont, eRT_Font), x, y, h,
              credits[i]);
@@ -86,7 +86,7 @@ Callbacks creditsCallbacks = {displayCredits,
                               idleCredits,
                               keyCredits,
                               initCredits,
-                              NULL /* exit */,
+                              nullptr /* exit */,
                               mouseCredits,
-                              NULL /* mouse motion */,
+                              nullptr /* mouse motion */,
                               "credits"};

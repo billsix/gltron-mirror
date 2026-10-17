@@ -94,7 +94,7 @@ video_level* video_CreateLevel(void) {
 
   l = malloc(sizeof(video_level));
 
-  scripting_GetGlobal("level", NULL);
+  scripting_GetGlobal("level", nullptr);
   // get scalability flag
   scripting_GetValue("scalable");
   scripting_GetIntegerResult(&l->scalable);

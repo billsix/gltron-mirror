@@ -17,8 +17,8 @@ void loadDefaultMaterial(gltron_Mesh_Material* pMaterial) {
   memcpy(pMaterial->diffuse, diffuse, sizeof(diffuse));
   memcpy(pMaterial->specular, specular, sizeof(specular));
   pMaterial->shininess = shininess;
-  pMaterial->name = NULL;
-  pMaterial->map_diffuse = NULL;
+  pMaterial->name = nullptr;
+  pMaterial->map_diffuse = nullptr;
 }
 
 void readMaterialLibraryFromFile(char* filename, gltron_Mesh* pMesh) {
@@ -33,12 +33,12 @@ void readMaterialLibraryFromFile(char* filename, gltron_Mesh* pMesh) {
   int i;
 
   path = getPath(PATH_DATA, filename);
-  if (path == NULL) {
+  if (path == nullptr) {
     fprintf(stderr, "** could not optain path to file '%s'\n", filename);
     return;
   }
 
-  if ((f = gzopen(path, "r")) == 0) {
+  if ((f = gzopen(path, "r")) == nullptr) {
     fprintf(stderr, "** could not open file '%s'\n", filename);
     free(path);
     return;
@@ -136,7 +136,7 @@ void gltron_Mesh_SetMaterialColor(gltron_Mesh* pMesh, const char* name,
   int i;
 
   for (i = 0; i < pMesh->nMaterials; i++) {
-    if (name == NULL ||
+    if (name == nullptr ||
         strstr(pMesh->pMaterials[i].name, name) == pMesh->pMaterials[i].name) {
       switch (eType) {
         case eAmbient:

@@ -49,7 +49,7 @@ void saveSettings(void) {
 #else
   {
     char* path = getPossiblePath(PATH_PREFERENCES, RC_NAME);
-    if (path == NULL) return;
+    if (path == nullptr) return;
     scripting_RunFormat("file = io.open(\"%s\", \"w\")", path);
     scripting_Run("io.output(file)");
     free(path);
@@ -67,7 +67,7 @@ int getVideoSettingi(const char* name) { return (int)getVideoSettingf(name); }
 
 float getSettingf(const char* name) {
   float value;
-  if (scripting_GetGlobal("settings", name, NULL)) {
+  if (scripting_GetGlobal("settings", name, nullptr)) {
     /* does not exit, return default */
     fprintf(stderr, "error accessing setting '%s'!\n", name);
     assert(0);
@@ -83,7 +83,7 @@ float getSettingf(const char* name) {
 
 float getVideoSettingf(const char* name) {
   float value;
-  if (scripting_GetGlobal("video", "settings", name, NULL)) {
+  if (scripting_GetGlobal("video", "settings", name, nullptr)) {
     /* does not exit, return default */
     fprintf(stderr, "error accessing setting '%s'!\n", name);
     assert(0);
@@ -99,14 +99,14 @@ float getVideoSettingf(const char* name) {
 
 int isSetting(const char* name) {
   int isValid;
-  scripting_GetGlobal("settings", name, NULL);
+  scripting_GetGlobal("settings", name, nullptr);
   isValid = !scripting_IsNil();
   scripting_Pop();
   return isValid;
 }
 
 void setSettingf(const char* name, float f) {
-  scripting_SetFloat(f, name, "settings", NULL);
+  scripting_SetFloat(f, name, "settings", nullptr);
 }
 
 void setSettingi(const char* name, int i) { setSettingf(name, (float)i); }
@@ -145,6 +145,6 @@ void updateSettingsCache(void) {
   gSettingsCache.playEffects = getSettingi("playEffects");
   gSettingsCache.playMusic = getSettingi("playMusic");
 
-  scripting_GetGlobal("clear_color", NULL);
+  scripting_GetGlobal("clear_color", nullptr);
   scripting_GetFloatArrayResult(gSettingsCache.clear_color, 4);
 }

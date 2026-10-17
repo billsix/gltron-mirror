@@ -127,19 +127,19 @@ nebu_Mesh* nebu_Mesh_Create(int flags, int nVertices, int nTriangles) {
   if (flags & NEBU_MESH_POSITION)
     pMesh->pVertices = (float*)malloc(3 * sizeof(float) * (size_t)nVertices);
   else
-    pMesh->pVertices = NULL;
+    pMesh->pVertices = nullptr;
 
   if (flags & NEBU_MESH_NORMAL)
     pMesh->pNormals = (float*)malloc(3 * sizeof(float) * (size_t)nVertices);
   else
-    pMesh->pNormals = NULL;
+    pMesh->pNormals = nullptr;
 
   for (i = 0; i < NEBU_MESH_TEXCOORD_MAXCOUNT; i++) {
     if (flags & (NEBU_MESH_TEXCOORD0 << i))
       pMesh->pTexCoords[i] =
           (float*)malloc(2 * sizeof(float) * (size_t)nVertices);
     else
-      pMesh->pTexCoords[i] = NULL;
+      pMesh->pTexCoords[i] = nullptr;
   }
 
   pMesh->pTriangles = (int*)malloc(3 * sizeof(int) * (size_t)nTriangles);

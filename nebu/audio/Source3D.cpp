@@ -156,7 +156,7 @@ void Source3D::GetModifiers(float& fPan, float& fVolume, float& fShift) {
 }
 
 int Source3D::Mix(Uint8* data, int len) {
-  if (_source->_buffer == NULL) return 0;
+  if (_source->_buffer == nullptr) return 0;
 
   if (_source->IsPlaying()) {
     // TODO: find out if source volume is handled correctly

@@ -15,7 +15,8 @@ typedef enum ePathLocation {
 
 const char* getDirectory(ePathLocation eLocation);
 char* getPath(ePathLocation eLocation, const char* filename);
-char* getPossiblePath(ePathLocation eLocation, const char* filename);
+[[nodiscard]] char* getPossiblePath(ePathLocation eLocation,
+                                    const char* filename);
 void initDirectories(void);
 
 #endif

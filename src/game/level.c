@@ -41,7 +41,7 @@ game_level* game_CreateLevel(void) {
   game_level* l;
 
   l = malloc(sizeof(game_level));
-  scripting_GetGlobal("level", NULL);
+  scripting_GetGlobal("level", nullptr);
   // get scalability flag
   scripting_GetValue("scalable");
   scripting_GetIntegerResult(&l->scalable);

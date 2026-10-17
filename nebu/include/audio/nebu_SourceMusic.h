@@ -17,7 +17,7 @@ class SourceMusic : public Source {
 
  protected:
   virtual void Reset(void) {
-    if (_sample != NULL) {
+    if (_sample != nullptr) {
       CleanUp();
       CreateSample();
       // fprintf(stderr, "sample resetted\n");

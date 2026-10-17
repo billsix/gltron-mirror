@@ -195,13 +195,13 @@ void video_ResetData(void) {
     {
       char name[32];
       snprintf(name, sizeof name, "model_diffuse_%d", i);
-      scripting_GetGlobal(name, NULL);
+      scripting_GetGlobal(name, nullptr);
       scripting_GetFloatArrayResult(pV->pColorDiffuse, 4);
       snprintf(name, sizeof name, "model_specular_%d", i);
-      scripting_GetGlobal(name, NULL);
+      scripting_GetGlobal(name, nullptr);
       scripting_GetFloatArrayResult(pV->pColorSpecular, 4);
       snprintf(name, sizeof name, "trail_diffuse_%d", i);
-      scripting_GetGlobal(name, NULL);
+      scripting_GetGlobal(name, nullptr);
       scripting_GetFloatArrayResult(pV->pColorAlpha, 4);
     }
   }
@@ -251,7 +251,7 @@ static void autoConfigureDisplay(void) {
               a game without human players. For now
               just show a single viewport.
       */
-      /* fall thru */
+      [[fallthrough]];
     case 1:
       vp = VP_SINGLE;
       break;

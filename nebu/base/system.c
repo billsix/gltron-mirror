@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-Callbacks* current = 0;
+Callbacks* current = nullptr;
 Callbacks default_callbacks;
 
 static int return_code = -1;
@@ -88,7 +88,7 @@ int nebu_System_MainLoop() {
     if (current && current->idle && idle) current->idle();
   }
   if (current && current->exit) (current->exit)();
-  current = NULL;
+  current = nullptr;
   return return_code;
 }
 

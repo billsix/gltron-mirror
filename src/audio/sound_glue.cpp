@@ -28,12 +28,12 @@ extern "C" {
 // allocation and the snprintf bound so the size lives in exactly one place.
 static const size_t kSoundSourceNameLen = 32;
 
-static Sound::System* sound = NULL;
-static Sound::SourceMusic* music = NULL;
-static Sound::SourceSample* sample_crash = NULL;
-static Sound::SourceSample* sample_engine = NULL;
-static Sound::SourceSample* sample_recognizer = NULL;
-static SDL_AudioStream* audio_stream = NULL;
+static Sound::System* sound = nullptr;
+static Sound::SourceMusic* music = nullptr;
+static Sound::SourceSample* sample_crash = nullptr;
+static Sound::SourceSample* sample_engine = nullptr;
+static Sound::SourceSample* sample_recognizer = nullptr;
+static SDL_AudioStream* audio_stream = nullptr;
 
 static Sound::Source3D* players[PLAYERS];
 static Sound::Source3D* recognizerEngine;
@@ -46,12 +46,12 @@ static Sound::Source3D* recognizerEngine;
   const char** ext;
 
   printf("Supported sound formats:\n");
-  if (rc == NULL)
+  if (rc == nullptr)
     printf(" * Apparently, NONE!\n");
   else {
-    for (i = rc; *i != NULL; i++) {
+    for (i = rc; *i != nullptr; i++) {
       printf(" * %s\n", (*i)->description);
-      for (ext = (*i)->extensions; *ext != NULL; ext++)
+      for (ext = (*i)->extensions; *ext != nullptr; ext++)
         printf("   File extension \"%s\"\n", *ext);
       printf("   Written by %s.\n   %s\n\n", (*i)->author, (*i)->url);
     } /* for */
@@ -191,7 +191,7 @@ void Audio_Init(void) {
 
   audio_stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK,
                                            spec, sound->GetCallback(), sound);
-  if (audio_stream == NULL) {
+  if (audio_stream == nullptr) {
     fprintf(stderr, "[error] %s\n", SDL_GetError());
     sound->SetStatus(Sound::eUninitialized);
   } else {
@@ -209,29 +209,29 @@ void Audio_Quit(void) {
   if (audio_stream) {
     SDL_PauseAudioStreamDevice(audio_stream);
     SDL_DestroyAudioStream(audio_stream);
-    audio_stream = NULL;
+    audio_stream = nullptr;
   }
   Sound_Quit();
   if (sound) {
     delete sound;
-    sound = NULL;
+    sound = nullptr;
   }
   if (sample_crash) {
     delete sample_crash;
-    sample_crash = NULL;
+    sample_crash = nullptr;
   }
   if (sample_engine) {
     delete sample_engine;
-    sample_engine = NULL;
+    sample_engine = nullptr;
   }
   if (sample_recognizer) {
     delete sample_recognizer;
-    sample_recognizer = NULL;
+    sample_recognizer = nullptr;
   }
 }
 
 void Audio_LoadMusic(char* name) {
-  if (music != NULL) {
+  if (music != nullptr) {
     music->Stop();
     music->SetRemovable();
   }

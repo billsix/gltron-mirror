@@ -7,10 +7,10 @@
 #include "base/nebu_debug_memory.h"
 
 nebu_2d* nebu_2d_LoadPNG(const char* path, int flags) {
-  nebu_2d* p2d = NULL;
+  nebu_2d* p2d = nullptr;
 
   nebu_Surface* pSurface = nebu_Surface_LoadPNG(path);
-  if (!pSurface) return NULL;
+  if (!pSurface) return nullptr;
 
   p2d = nebu_2d_Create(pSurface, flags);
   nebu_Surface_Free(pSurface);
@@ -42,7 +42,7 @@ nebu_2d* nebu_2d_Create(nebu_Surface* pSurface, int flags) {
       break;
     default:
       fprintf(stderr, "[nebu_2d] can't handle format %d\n", pSurface->format);
-      return NULL;
+      return nullptr;
   }
 
   p2d = (nebu_2d*)malloc(sizeof(nebu_2d));

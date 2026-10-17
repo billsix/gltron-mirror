@@ -40,17 +40,17 @@ static int segment2_findT(float* t, const segment2* s, vec2 v) {
 static vec2* segment2_IntersectParallel(vec2* pOut, float* t1, float* t2,
                                         const segment2* s1,
                                         const segment2* s2) {
-  // if the lines don't overlap, return NULL
+  // if the lines don't overlap, return nullptr
   // else find t2 for t1 == 0
   // if t2 in [0,1] return t2, t1 = 0
   // else find t1 for t2 == 0 and t2 == 1
-  // if t1 < 0 return NULL (no intersection)
+  // if t1 < 0 return nullptr (no intersection)
   // else return the smaller t1 and the corresponding t2
 
   float t;
 
   if (segment2_findT(t2, s2, s1->vStart)) {
-    return NULL;
+    return nullptr;
   }
 
   if (*t2 >= 0 && *t2 <= 1) {
@@ -58,13 +58,13 @@ static vec2* segment2_IntersectParallel(vec2* pOut, float* t1, float* t2,
     *t1 = 0;
     return pOut;
   }
-  if (segment2_findT(t1, s1, s2->vStart)) return NULL;
-  if (*t1 < 0) return NULL;
+  if (segment2_findT(t1, s1, s2->vStart)) return nullptr;
+  if (*t1 < 0) return nullptr;
   vec2 vEnd2 = HMM_AddV2(s2->vStart, s2->vDirection);
-  if (segment2_findT(&t, s1, vEnd2)) return NULL;
+  if (segment2_findT(&t, s1, vEnd2)) return nullptr;
   assert(t >= 0);
 
-  if (*t1 > 1 && t > 1) return NULL;
+  if (*t1 > 1 && t > 1) return nullptr;
   if (t < *t1) {
     *t1 = t;
     *t2 = 1;

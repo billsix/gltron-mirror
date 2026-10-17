@@ -193,7 +193,7 @@ void game_ResetData(void) {
   /* TODO: fix that */
   game2->players = game->players;
   /* event management */
-  game2->events.next = NULL;
+  game2->events.next = nullptr;
   /* TODO: free any old events that might have gotten left */
 
   scripting_Run("console_Clear()");

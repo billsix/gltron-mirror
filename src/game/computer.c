@@ -39,7 +39,7 @@ void doComputerSimple(int player, int target, AI_Distances* distances) {
 
   me = &(game->player[player]);
   him = &(game->player[target]);
-  if (me->ai == NULL) {
+  if (me->ai == nullptr) {
     printf("This player has no AI data!\n");
     return;
   }
@@ -167,7 +167,7 @@ void doComputer(int player, int target) {
   ai_getDistances(player, &distances);
   ai_getClosestOpponent(player, &opponent, &d);
   if (opponent == -1 || d > OPP_MAX_DIST || distances.front < d ||
-      game->player[opponent].ai == NULL ||
+      game->player[opponent].ai == nullptr ||
       game->player[opponent].ai->active == 1 ||
       gSettingsCache.ai_level == 0 /* dumb setting */) {
     // only fight humans

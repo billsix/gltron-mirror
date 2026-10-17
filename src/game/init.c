@@ -81,7 +81,7 @@ void initConfiguration(int argc, const char* argv[]) {
   {
     char* path;
     path = getPossiblePath(PATH_PREFERENCES, RC_NAME);
-    if (path != NULL) {
+    if (path != nullptr) {
       if (nebu_FS_Test(path)) {
         printf("[status] loading settings from %s\n", path);
         scripting_RunFile(path);
@@ -98,7 +98,7 @@ void initConfiguration(int argc, const char* argv[]) {
   {
     float ini_version = 0, app_version;
     if (isSetting("version")) ini_version = getSettingf("version");
-    scripting_GetGlobal("app_version", NULL);
+    scripting_GetGlobal("app_version", nullptr);
     scripting_GetFloatResult(&app_version);
     if (ini_version < app_version) {
       /* load some more defaults from config file */
@@ -114,12 +114,12 @@ void initConfiguration(int argc, const char* argv[]) {
   }
   {
     int isValid = 1;
-    scripting_GetGlobal("save_completed", NULL);
+    scripting_GetGlobal("save_completed", nullptr);
     if (scripting_IsNil()) {
       isValid = 0;
     }
     scripting_Pop();
-    scripting_GetGlobal("settings", "keys", NULL);
+    scripting_GetGlobal("settings", "keys", nullptr);
     if (!scripting_IsTable()) {
       isValid = 0;
     }

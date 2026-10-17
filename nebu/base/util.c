@@ -32,8 +32,8 @@ void nebu_Clamp(float* f, float min, float max) {
 
 nebu_List* nebu_List_Create(void) {
   nebu_List* p = (nebu_List*)malloc(sizeof(nebu_List));
-  p->data = NULL;
-  p->next = NULL;
+  p->data = nullptr;
+  p->next = nullptr;
   return p;
 }
 
@@ -50,9 +50,9 @@ void nebu_List_Free(nebu_List* l) {
 void nebu_List_AddTail(nebu_List* l, void* data) {
   nebu_List* p;
 
-  for (p = l; p->next != NULL; p = p->next);
+  for (p = l; p->next != nullptr; p = p->next);
   p->next = (nebu_List*)malloc(sizeof(nebu_List));
-  p->next->next = NULL;
+  p->next->next = nullptr;
   p->data = data;
 }
 

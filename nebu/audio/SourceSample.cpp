@@ -10,7 +10,7 @@ namespace Sound {
 SourceSample::SourceSample(System* system) {
   _system = system;
 
-  _buffer = NULL;
+  _buffer = nullptr;
   _buffersize = 8192;
 
   _position = 0;
@@ -26,7 +26,7 @@ SourceSample::~SourceSample() {
 void SourceSample::Load(char* filename) {
   Sound_Sample* sample = Sound_NewSampleFromFile(
       filename, _system->GetAudioInfo(), (Uint32)_buffersize);
-  if (sample == NULL) {
+  if (sample == nullptr) {
     fprintf(stderr, "[error] failed loading sample from '%s': %s\n", filename,
             Sound_GetError());
     return;
@@ -44,7 +44,7 @@ void SourceSample::Load(char* filename) {
 }
 
 int SourceSample::Mix(Uint8* data, int len) {
-  if (_buffer == NULL) return 0;
+  if (_buffer == nullptr) return 0;
 
   assert(len < _buffersize);
 

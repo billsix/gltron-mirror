@@ -33,47 +33,50 @@ png_texture* load_png_texture(const char* filename) {
 
   f = fopen(filename, "rb");
   // fprintf(stderr, "[load_png_texture] opening %s\n", filename);
-  if (f == NULL) {
+  if (f == nullptr) {
     fprintf(stderr, ERR_PREFIX "can't open file %s\n", filename);
     fprintf(stderr, ERR_PREFIX "errno: %d - %s", errno, strerror(errno));
 
-    return NULL;
+    return nullptr;
   }
 
-  png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0);
+  png_ptr =
+      png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 
-  if (!png_ptr) return NULL;
+  if (!png_ptr) return nullptr;
 
   info_ptr = png_create_info_struct(png_ptr);
   if (!info_ptr) {
-    png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
-    return NULL;
+    png_destroy_read_struct(&png_ptr, (png_infopp) nullptr,
+                            (png_infopp) nullptr);
+    return nullptr;
   }
 
   /*  png_init_io(png_ptr, f);
           fprintf(stderr, "png, after init io \n");  */
 
   /* I need to do this, otherwise it crashes on win32 */
-  png_set_read_fn(png_ptr, 0, user_read_data);
+  png_set_read_fn(png_ptr, nullptr, user_read_data);
   /* fprintf(stderr, "png, after init user_read_data\n"); */
 
   png_read_info(png_ptr, info_ptr);
   /* fprintf(stderr, "png, after read info \n"); */
-  png_get_IHDR(png_ptr, info_ptr, &x, &y, &bpc, &color_type, 0, 0, 0);
+  png_get_IHDR(png_ptr, info_ptr, &x, &y, &bpc, &color_type, nullptr, nullptr,
+               nullptr);
 
   if (color_type != PNG_COLOR_TYPE_RGB &&
       color_type != PNG_COLOR_TYPE_RGB_ALPHA) {
-    png_destroy_read_struct(&png_ptr, &info_ptr, 0);
+    png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
     fprintf(stderr, ERR_PREFIX "wrong png_color_type\n");
     fclose(f);
-    return NULL;
+    return nullptr;
   }
 
   if (bpc != 8) {
-    png_destroy_read_struct(&png_ptr, &info_ptr, 0);
+    png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
     fprintf(stderr, ERR_PREFIX "wrong bitdepth: %d\n", bpc);
     fclose(f);
-    return NULL;
+    return nullptr;
   }
 
   switch (color_type) {
@@ -85,7 +88,7 @@ png_texture* load_png_texture(const char* filename) {
       break;
     default:
       fprintf(stderr, "unknown png color type\n");
-      return NULL;
+      return nullptr;
   }
 
   tex = (png_texture*)malloc(sizeof(png_texture));
@@ -100,7 +103,7 @@ png_texture* load_png_texture(const char* filename) {
     row_pointers[i] = tex->data + (y - i - 1) * (unsigned int)zsize * x;
 
   png_read_image(png_ptr, row_pointers);
-  png_destroy_read_struct(&png_ptr, &info_ptr, 0);
+  png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
 
   free(row_pointers);
   fclose(f);
@@ -123,7 +126,7 @@ png_texture* mipmap_png_texture(png_texture* source, int level, int clamp_u,
   int x, y;
   int fx, fy;
 
-  if (level != 1) return NULL;
+  if (level != 1) return nullptr;
   mip = (png_texture*)malloc(sizeof(png_texture));
   mip->channels = source->channels;
   fx = (source->width > 1) ? 2 : 1;

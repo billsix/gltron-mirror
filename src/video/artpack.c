@@ -20,14 +20,14 @@ void initArtpacks(void) {
   int i;
 
   art_path = getDirectory(PATH_ART);
-  artList = readDirectoryContents(art_path, NULL);
-  if (artList->next == NULL) {
+  artList = readDirectoryContents(art_path, nullptr);
+  if (artList->next == nullptr) {
     fprintf(stderr, "[fatal] no art files found...exiting\n");
     exit(1); /* OK: critical, installation corrupt */
   }
 
   i = 1;
-  for (p = artList; p->next != NULL; p = p->next) {
+  for (p = artList; p->next != nullptr; p = p->next) {
     scripting_RunFormat("artpacks[%d] = \"%s\"", i, (char*)p->data);
     free(p->data);
     i++;
@@ -74,7 +74,7 @@ void loadArt(void) {
 
   // load custom artpack settings
   path = nebu_FS_GetPath(PATH_ART, "artpack.lua");
-  if (path != NULL) {
+  if (path != nullptr) {
     scripting_RunFile(path);
     free(path);
   }

@@ -402,7 +402,7 @@ void game_RunAI(int dt) {
 
   /* run AI */
   for (i = 0; i < game->players; i++) {
-    if (game->player[i].ai != NULL) {
+    if (game->player[i].ai != nullptr) {
       if (game->player[i].ai->active == AI_COMPUTER &&
           PLAYER_IS_ACTIVE(&game->player[i])) {
         doComputer(i, 0);
@@ -445,7 +445,7 @@ void Game_Idle(void) {
     */
 
     /* process any outstanding events (turns, etc) */
-    for (p = &(game2->events); p->next != NULL; p = p->next) {
+    for (p = &(game2->events); p->next != nullptr; p = p->next) {
       if (processEvent((GameEvent*)p->data))
         // a STOP event was encountered, exiting
         // TODO: fix, because this leaks the list element, and also all
@@ -455,12 +455,12 @@ void Game_Idle(void) {
 
     /* free list items (processed events are already freed in processEvents */
     p = game2->events.next;
-    while (p != NULL) {
+    while (p != nullptr) {
       nebu_List* l = p;
       p = p->next;
       free(l);
     }
-    game2->events.next = NULL;
+    game2->events.next = nullptr;
 
     doMovement(t); /* this can generate new events */
 
