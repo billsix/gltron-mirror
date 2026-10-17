@@ -9,7 +9,7 @@
 
 static float alpha = 0;
 
-const static float rec_scale_factor = 0.25f;
+static const float rec_scale_factor = 0.25f;
 
 static float xv[] = {0.5f, 0.3245f, 0.6f, 0.5f, 0.68f, -0.3f};
 static float yv[] = {0.8f, 1.0f, 0.0f, 0.2f, 0.2f, 0.0f};

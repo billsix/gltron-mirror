@@ -14,7 +14,7 @@
 static int seed = 42;
 
 /* Seeds the random number generator with the seed s */
-void nebu_srand(unsigned int s) { seed = s % PERIOD; }
+void nebu_srand(unsigned int s) { seed = (int)(s % PERIOD); }
 
 /* Calculates a new random number */
 int nebu_rand(void) {

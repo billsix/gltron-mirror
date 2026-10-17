@@ -232,13 +232,13 @@ gltron_Mesh* gltron_Mesh_LoadFromFile(const char* filename,
 
     // build indices (per Material)
     {
-      int* face;
-      face = malloc(sizeof(int) * (size_t)pMesh->nMaterials);
+      int* faceCount;
+      faceCount = malloc(sizeof(int) * (size_t)pMesh->nMaterials);
       pMesh->ppIndices = malloc(sizeof(GLshort*) * (size_t)pMesh->nMaterials);
       for (i = 0; i < pMesh->nMaterials; i++) {
         pMesh->ppIndices[i] = malloc(sizeof(GLshort) * (size_t)iFaceSize *
                                      (size_t)pMesh->pnFaces[i]);
-        face[i] = 0;
+        faceCount[i] = 0;
       }
       switch (iType) {
         case TRI_MESH:
@@ -247,10 +247,10 @@ gltron_Mesh* gltron_Mesh_LoadFromFile(const char* filename,
             for (j = 0; j < iFaceSize; j++) {
               int vertex = pFaces[i].vertex[j] - 1;
               int normal = pFaces[i].normal[j] - 1;
-              pMesh->ppIndices[material][iFaceSize * face[material] + j] =
+              pMesh->ppIndices[material][iFaceSize * faceCount[material] + j] =
                   (unsigned short)lookup[vertex][normal];
             }
-            face[material] = face[material] + 1;
+            faceCount[material] = faceCount[material] + 1;
           }
           break;
         case QUAD_MESH:
@@ -259,14 +259,14 @@ gltron_Mesh* gltron_Mesh_LoadFromFile(const char* filename,
             for (j = 0; j < iFaceSize; j++) {
               int vertex = pqFaces[i].vertex[j] - 1;
               int normal = pqFaces[i].normal[j] - 1;
-              pMesh->ppIndices[material][iFaceSize * face[material] + j] =
+              pMesh->ppIndices[material][iFaceSize * faceCount[material] + j] =
                   (unsigned short)lookup[vertex][normal];
             }
-            face[material] = face[material] + 1;
+            faceCount[material] = faceCount[material] + 1;
           }
           break;
       }
-      free(face);
+      free(faceCount);
     }
     // printf("[scenegraph] vertices: %d, faces: %d\n", nVertices, iFace);
 

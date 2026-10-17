@@ -25,7 +25,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 option(GLTRON_WARN "Enable the first-party warning gate" ON)
-option(GLTRON_WERROR "Treat first-party warnings as errors" OFF)
+option(GLTRON_WERROR "Treat first-party warnings as errors" ON)
 option(GLTRON_NETWORK "Enable experimental networking (requires SDL3_net)" OFF)
 set(GLTRON_SNAPSHOT_DIR "~" CACHE STRING "Screenshot directory (compiled in)")
 set(GLTRON_PREFERENCES_DIR "~" CACHE STRING "Preferences directory (compiled in)")
@@ -47,13 +47,16 @@ find_package(Lua 5.4 REQUIRED)
 # CMake's FindLua exposes variables, not a target. Wrap them so existing
 # `target_link_libraries(... lua)` lines keep working.
 add_library(lua INTERFACE)
-target_include_directories(lua INTERFACE ${LUA_INCLUDE_DIR})
+# SYSTEM: Lua is an external dependency; don't apply our raised warnings to its headers.
+target_include_directories(lua SYSTEM INTERFACE ${LUA_INCLUDE_DIR})
 target_link_libraries(lua INTERFACE ${LUA_LIBRARIES})
 
 # Vendored single-header math library. See third_party/HandmadeMath/ and
 # docs/plans/handmademath-port.md.
 add_library(handmademath INTERFACE)
-target_include_directories(handmademath INTERFACE
+# SYSTEM: vendored single-header; consuming it must not trip our raised warnings
+# (e.g. gcc -Wpedantic on its GNU extensions). We never modify third_party/.
+target_include_directories(handmademath SYSTEM INTERFACE
   ${CMAKE_SOURCE_DIR}/third_party/HandmadeMath)
 
 if(GLTRON_NETWORK)

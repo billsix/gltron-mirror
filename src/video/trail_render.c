@@ -4,7 +4,7 @@
 #include "game/game.h"
 #include "configuration/settings.h"
 
-void trailStatesNormal(Player* pPlayer, int texture) {
+void trailStatesNormal(Player* pPlayer, int textureId) {
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_NORMAL_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -16,7 +16,7 @@ void trailStatesNormal(Player* pPlayer, int texture) {
   glEnable(GL_TEXTURE_2D);
   // glDisable(GL_TEXTURE_2D);
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  glBindTexture(GL_TEXTURE_2D, (GLuint)texture);
+  glBindTexture(GL_TEXTURE_2D, (GLuint)textureId);
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 
   {
