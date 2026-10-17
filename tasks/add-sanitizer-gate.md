@@ -1,7 +1,48 @@
 # Add an ASan + UBSan(trap) build gate
 
-**Status:** proposed — needs go-ahead
+**Status:** in progress — started 2026-10-17 (gate wired; authoritative image build pending)
 **Created:** 2026-06-16
+**Started:** 2026-10-17 (William Emerison Six <billsix@gmail.com>) — gate-first for
+`tasks/c-modernization-sweep.md` (its decision 4)
+
+## Decisions (settled 2026-10-17 — the no-source-edit route; resolves the three
+## "decisions for Bill" below)
+
+1. **Xvfb + software GL**, not the build-only floor. **Proven feasible first:** a
+   probe in the image showed `xvfb-run -s "-screen 0 1024x768x24" glxinfo` under
+   `LIBGL_ALWAYS_SOFTWARE=1` reports `llvmpipe … OpenGL 4.5 (Compatibility Profile)`,
+   which covers gltron's fixed-function needs.
+2. **`timeout`-based bounded run — NO source hook.** The `GLTRON_FRAME_LIMIT` hook in
+   `timedemo.c`/`gltron.c` is *not* added (teaching-artifact rule: no drive-by source
+   edits; that hook still needs explicit go-ahead). Instead the gate gets real
+   game-logic coverage (AI/physics/camera/render, not just the menu) by enabling
+   **timedemo mode in the THROWAWAY install tree only** — `sed 's/^timedemo = nil/
+   timedemo = 1/'` on the gate's own installed `scripts/main.lua`, never the committed
+   source. A clean `timeout` kill is a pass.
+3. **Env `ASAN_OPTIONS=detect_leaks=0`** (+ `abort_on_error=1`), not a source
+   `__asan_default_options`. No source edit; LSan off so the gate targets corruption,
+   not gltron's by-design exit leaks. A `tools/asan-gate.supp` is wired in if present
+   (none committed yet — add only if a run shows Mesa/SDL/Lua noise).
+
+## Progress (2026-10-17)
+
+- **Feasibility de-risked:** headless software GL confirmed (decision 1). The stale
+  prebuilt image was Fedora 43 / clang 21 and predated SDL3, so a local sanitizer
+  build couldn't run against it → **rebuilding the image to Fedora 44 first** (the
+  current `Dockerfile` already targets `fedora:44`; clang 22 / gcc 16 / SDL3 present).
+- **Gate implemented (staged, not yet verified by a full build):**
+  - `tools/sanitizer-gate.sh` — builds gltron under UBSan-trap then ASan, installs
+    each to a private prefix with its own data tree, flips timedemo on in that tree,
+    runs headless under Xvfb+llvmpipe with a `timeout` cap, and classifies exit
+    ({0,124,143}=pass; SIGILL/SIGABRT/other=fail). Multi-step failure propagation per
+    the shared shell-gate convention; portable (SRC_DIR arg, no hardcoded abs paths).
+  - `entrypoint/02-install-graphics.sh` — adds `xorg-x11-server-Xvfb`.
+  - `Dockerfile` — `ARG RUN_SANITIZERS=0` + a guarded gate RUN after the main build.
+  - `Makefile.docker` — `RUN_SANITIZERS ?= 1`, threaded into the `image` target.
+- **Pending:** run `make -f Makefile.docker image RUN_SANITIZERS=1` end-to-end to
+  confirm both sanitizer builds compile/link and the headless timedemo run is clean
+  (or surfaces real findings). ASan-through-uninstrumented-Mesa may need
+  `-shared-libasan`/a supp file — handle if the build surfaces it.
 
 ## Goal
 
@@ -186,15 +227,13 @@ arrangement. Trap-mode UBSan needs no extra packages; ASan's runtime ships with
 clang. The only possible new dep is Xvfb (above) for the headless run — add it as
 a tracked temporary (or permanent, if the gate is kept) Dockerfile change.
 
-## Open questions / decisions for Bill
+## Open questions / decisions for Bill — RESOLVED 2026-10-17 (see Decisions, top)
 
-1. Is the **Xvfb + software-GL automated run** worth the Dockerfile weight, or do
-   we settle for the **sanitized-build-only** floor?
-2. If we do the real run: OK to add the small **frame-limit / headless-exit**
-   source hook in `timedemo.c` + `gltron.c` (the only clean way to bound the
-   run), or stick with the `timeout`-based interim that needs no source edit?
-3. LSan/leak handling via **source `__asan_default_options`** vs **env
-   `ASAN_OPTIONS`** (env preferred given teaching-artifact edit rules)?
+1. Xvfb + software-GL run — **yes** (proven feasible), not the build-only floor.
+2. Frame-limit source hook — **no**; use the `timeout` interim + timedemo-in-the-
+   install-tree. The source hook remains available as a future upgrade if deeper,
+   deterministic coverage is wanted (would need go-ahead).
+3. Leak handling — **env `ASAN_OPTIONS`**, no source edit.
 
 ## Acceptance
 

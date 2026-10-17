@@ -1,6 +1,10 @@
 FROM registry.fedoraproject.org/fedora:44
 
 ARG USE_GRAPHICS=1
+# Run the UBSan(trap)+ASan sanitizer gate at image-build time. Default off here
+# (fast path); Makefile.docker passes 1. Requires USE_GRAPHICS=1 (needs Xvfb + Mesa
+# for the headless GL run). See tools/sanitizer-gate.sh and tasks/add-sanitizer-gate.md.
+ARG RUN_SANITIZERS=0
 
 # System-package installation lives in per-group scripts (entrypoint/0N-install-*.sh),
 # host-runnable with no container runtime; the scripts take no options -- WHICH optional
@@ -47,6 +51,12 @@ RUN cmake -S /gltron -B /bld -G Ninja \
     && cmake --build /bld -j \
     && cmake --install /bld \
     && (cd /bld && ctest --output-on-failure)
+
+# Sanitizer gate: compile under UBSan(trap) + ASan and exercise gltron headless,
+# failing the image on any UB/memory error. No-op unless RUN_SANITIZERS=1.
+RUN if [ "$RUN_SANITIZERS" = "1" ]; then \
+        bash /gltron/tools/sanitizer-gate.sh /gltron ; \
+    fi
 
 COPY .clang-format /gltron/
 

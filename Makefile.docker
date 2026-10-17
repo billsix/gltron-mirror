@@ -1,6 +1,7 @@
 .DEFAULT_GOAL := shell
 
 USE_GRAPHICS ?= 1
+RUN_SANITIZERS ?= 1
 
 CONTAINER_CMD ?= $(shell command -v podman >/dev/null 2>&1 && echo podman || echo docker)
 CONTAINER_NAME = gltron
@@ -29,6 +30,7 @@ image: ## Build podman image (also builds gltron via CMake at image-build time)
 	# build the container
 	$(CONTAINER_CMD) build \
                          --build-arg USE_GRAPHICS=$(USE_GRAPHICS) \
+                         --build-arg RUN_SANITIZERS=$(RUN_SANITIZERS) \
                          -t $(CONTAINER_NAME) \
                          .
 
