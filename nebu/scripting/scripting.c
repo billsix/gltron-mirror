@@ -174,7 +174,7 @@ int scripting_GetStringResult(char** s) {
 int scripting_CopyStringResult(char* s, int len) {
   int status;
   if (lua_isstring(L, -1)) {
-    [[maybe_unused]] int size, copy;
+    int size, copy;
     status = 0;
     size = (int)(lua_rawlen(L, -1) + 1);
     if (size > len) {
@@ -182,7 +182,7 @@ int scripting_CopyStringResult(char* s, int len) {
       status = 2;
     } else
       copy = size;
-    memcpy(s, lua_tostring(L, -1), (size_t)size);
+    memcpy(s, lua_tostring(L, -1), (size_t)copy);
   } else
     status = 1;
 

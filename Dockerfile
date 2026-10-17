@@ -5,6 +5,10 @@ ARG USE_GRAPHICS=1
 # (fast path); Makefile.docker passes 1. Requires USE_GRAPHICS=1 (needs Xvfb + Mesa
 # for the headless GL run). See tools/sanitizer-gate.sh and tasks/add-sanitizer-gate.md.
 ARG RUN_SANITIZERS=0
+# Install Emacs + its vendored C LSP config (clangd via lsp-mode). Default off
+# here (fast path); the Makefile passes 1. clangd itself (clang-tools-extra) is
+# always installed by 01-install-base.sh so it is available regardless.
+ARG USE_EMACS=0
 
 # System-package installation lives in per-group scripts (entrypoint/0N-install-*.sh),
 # host-runnable with no container runtime; the scripts take no options -- WHICH optional
@@ -20,6 +24,18 @@ RUN --mount=type=cache,target=/var/cache/libdnf5 \
     /usr/local/bin/01-install-base.sh && \
     if [ "$USE_GRAPHICS" = "1" ]; then /usr/local/bin/02-install-graphics.sh; fi && \
     echo 'set debuginfod enabled off' > /root/.gdbinit
+
+# Emacs + vendored MELPA packages, only when USE_EMACS=1. Pre-populates
+# ~/.emacs.d/elpa at build time; the Makefile bind-mounts the host .emacs.d
+# (with its committed elpa/) over this at run time, and `make update-emacs-packages`
+# refreshes it. Mirrors billsEmacsConfigs/c.
+COPY entrypoint/dotfiles/.emacs.d/install-melpa-packages.el /root/.emacs.d/install-melpa-packages.el
+RUN --mount=type=cache,target=/var/cache/libdnf5 \
+    --mount=type=cache,target=/var/lib/dnf \
+    if [ "$USE_EMACS" = "1" ]; then \
+        dnf install -y emacs && \
+        emacs --batch --load /root/.emacs.d/install-melpa-packages.el ; \
+    fi
 
 COPY .clang-tidy /gltron/.clang-tidy
 COPY CMake /gltron/CMake/

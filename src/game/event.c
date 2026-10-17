@@ -109,7 +109,10 @@ int crashTestPlayers(int i, const segment2* movement) {
         }
       }
     }
-    if (jCrash) break;
+    if (jCrash) {
+      crash = 1;
+      break;
+    }
   }
   return crash;
 }
