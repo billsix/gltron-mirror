@@ -94,18 +94,12 @@ appimage: image ## Build a Linux AppImage via cpack -G External (writes ./out/)
 		         && cp /gltron/bld-appimage/*.appimage /gltron/out/'
 
 .PHONY: format
-format: ## Format all C/C++ with clang-format (uses the gltron image if built, else host clang-format)
-	@if $(CONTAINER_CMD) image inspect $(CONTAINER_NAME) >/dev/null 2>&1; then \
-		echo "formatting in the $(CONTAINER_NAME) image (reproducible)"; \
-		$(CONTAINER_CMD) run --rm $(PODMAN_RUN_FLAGS) \
-			--entrypoint /bin/bash \
-			$(FILES_TO_MOUNT) \
-			$(CONTAINER_NAME) \
-			/usr/local/bin/format.sh; \
-	else \
-		echo "no $(CONTAINER_NAME) image; formatting on host with $$(clang-format --version)"; \
-		bash entrypoint/format.sh; \
-	fi
+format: image ## Format all C/C++ with clang-format in the container (reproducible)
+	$(CONTAINER_CMD) run --rm $(PODMAN_RUN_FLAGS) \
+		--entrypoint /bin/bash \
+		$(FILES_TO_MOUNT) \
+		$(CONTAINER_NAME) \
+		/usr/local/bin/format.sh
 
 .PHONY: image-export
 image-export: ## Export the OCI image to a timestamped tar in the repo root
