@@ -64,7 +64,6 @@ was reconciled + archived 2026-08-27 (its deletions were already executed).
 
 Active:
 
-- [Behavior-preserving C modernization sweep](tasks/c-modernization-sweep.md) — **ready, awaiting go-ahead** (scope settled 2026-10-17); surgical safety/correctness + safe-idiom sweep of first-party code toward the shared C coding standard — pin C23, fix unbounded `sprintf`/unchecked `malloc`, add `bool`/narrow `const`/`static`, wire the warning + clang-tidy gate on by default — explicitly no `third_party/`/HandmadeMath edits, opting out of teaching-artifact hazards. its runtime net (the sanitizer gate, `tasks/archive/2026/10/17/add-sanitizer-gate.md`) landed 2026-10-17; `c23-port-investigation.md` is its C23 decision arm.
 - [Promote static analysis to a fatal gate](tasks/lint-fatal-gate.md) — **proposed, needs go-ahead**; drive the advisory clang-tidy/Cppcheck findings to an enforced gate, the static-analysis counterpart to the compiler `-Werror` gate the modernization sweep landed. First decision: which checks to enforce vs disable (teaching-artifact churn risk).
 - [OpenGL fixed-function → 3.3 core profile port](tasks/opengl-core-profile-port.md) — **not started**, surface at session start and ask Bill before beginning.
 - [SDL2 → SDL3 port](tasks/sdl3-port.md) — **shipped 2026-05-08** on Linux; macOS not retested (work remains).
@@ -82,6 +81,7 @@ alternatives, deletions) live in the archived task docs:
 - Replace nebu math with HandmadeMath (all 5 phases) — `tasks/archive/2026/05/10/handmademath-port.md` (its one live follow-up is split into `tasks/verify-handmademath-audio-pitch.md`)
 - Modernization survey — `tasks/archive/2026/08/27/modernization-survey.md`
 - ASan + UBSan(trap) sanitizer gate — `tasks/archive/2026/10/17/add-sanitizer-gate.md`
+- Behavior-preserving C modernization sweep (C23 pin, `-Werror` warning gate clean under clang+gcc, 493→0 first-party warnings; nullptr/attributes; no third_party edits) — `tasks/archive/2026/10/17/c-modernization-sweep.md` (follow-up: `tasks/lint-fatal-gate.md`)
 
 When starting a new task, add a one-line entry under "Active" here pointing
 at a `tasks/<slug>.md` file, and keep the task file updated with status,
