@@ -24,7 +24,8 @@ set(CMAKE_C_EXTENSIONS ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-option(GLTRON_WARN "Enable -Wall -Werror" OFF)
+option(GLTRON_WARN "Enable the first-party warning gate" ON)
+option(GLTRON_WERROR "Treat first-party warnings as errors" OFF)
 option(GLTRON_NETWORK "Enable experimental networking (requires SDL3_net)" OFF)
 set(GLTRON_SNAPSHOT_DIR "~" CACHE STRING "Screenshot directory (compiled in)")
 set(GLTRON_PREFERENCES_DIR "~" CACHE STRING "Preferences directory (compiled in)")
@@ -75,11 +76,26 @@ else()
     PATH_SEPARATOR='/' SEPARATOR='/')
 endif()
 
-# Common warning flags applied to first-party code only (not vendored libs).
+# The first-party warning gate, applied to first-party code only (not vendored
+# libs — they come in as PUBLIC deps, never through this target). On by default;
+# -DGLTRON_WARN=OFF gives a quiet quick build. -Werror is behind GLTRON_WERROR,
+# flipped on once the tree is warning-clean (the C modernization sweep).
+#
+# Deliberately NOT the -Wconversion umbrella: the sweep keeps sign/narrowing
+# conversions but drops int->float (intentional int-coord->float graphics/audio
+# math). -Wno-unused-parameter: callback signatures (Lua/libpng/SDL) are
+# externally dictated. -Wshorten-64-to-32 / -Wimplicit-int-conversion are
+# clang-only; -Wstrict-prototypes / -Wold-style-definition are C-only.
 add_library(gltron_warnings INTERFACE)
 if(GLTRON_WARN)
   target_compile_options(gltron_warnings INTERFACE
-    $<$<COMPILE_LANGUAGE:C,CXX>:-Wall -Werror>)
+    $<$<COMPILE_LANGUAGE:C,CXX>:-Wall;-Wextra;-Wpedantic;-Wshadow;-Wvla;-Wwrite-strings;-Wformat=2;-Wsign-conversion;-Wno-unused-parameter>
+    $<$<COMPILE_LANGUAGE:C>:-Wstrict-prototypes;-Wold-style-definition>
+    $<$<AND:$<COMPILE_LANGUAGE:C>,$<C_COMPILER_ID:Clang>>:-Wshorten-64-to-32;-Wimplicit-int-conversion>
+    $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CXX_COMPILER_ID:Clang>>:-Wshorten-64-to-32;-Wimplicit-int-conversion>)
+  if(GLTRON_WERROR)
+    target_compile_options(gltron_warnings INTERFACE $<$<COMPILE_LANGUAGE:C,CXX>:-Werror>)
+  endif()
 endif()
 
 add_subdirectory(nebu)
