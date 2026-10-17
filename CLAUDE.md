@@ -23,6 +23,12 @@ introduce a modern renderer abstraction unless explicitly asked.**
   CMake build against the mounted source tree (writes to `./bld/`).
   CMake natively emits `compile_commands.json`. `clang-tidy` and
   `clang-format` are configured (`.clang-tidy`, `.clang-format`).
+- **Sanitizer gate** at image-build time: `make -f Makefile.docker image`
+  (`RUN_SANITIZERS=1`, the default; `RUN_SANITIZERS=0` skips) also compiles gltron
+  under **UBSan-trap** and **ASan** and runs it headless (Xvfb + Mesa llvmpipe, in
+  timedemo mode), failing the image on any UB or memory error. Needs
+  `USE_GRAPHICS=1`. Script: `tools/sanitizer-gate.sh`; headless-GL recipe + rationale
+  in `tasks/add-sanitizer-gate.md`.
 
 ## Layout
 
@@ -74,6 +80,7 @@ alternatives, deletions) live in the archived task docs:
 - SDL window architecture cleanup — `tasks/archive/2026/05/10/sdl-window-architecture.md`
 - Replace nebu math with HandmadeMath (all 5 phases) — `tasks/archive/2026/05/10/handmademath-port.md` (its one live follow-up is split into `tasks/verify-handmademath-audio-pitch.md`)
 - Modernization survey — `tasks/archive/2026/08/27/modernization-survey.md`
+- ASan + UBSan(trap) sanitizer gate — `tasks/add-sanitizer-gate.md`
 
 When starting a new task, add a one-line entry under "Active" here pointing
 at a `tasks/<slug>.md` file, and keep the task file updated with status,
