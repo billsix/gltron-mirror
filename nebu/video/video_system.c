@@ -13,7 +13,8 @@ static SDL_GLContext gContext = nullptr;
 
 static int width = 0;
 static int height = 0;
-static int bitdepth = 0;
+/* vestigial after the SDL3 port: set in nebu_Video_SetDisplay but no longer read; [[maybe_unused]] silences clang 23 -Wunused-but-set-global under the sanitizer gate -Werror */
+[[maybe_unused]] static int bitdepth = 0;
 static int flags = 0;
 static int video_initialized = 0;
 static int window_id = 0;

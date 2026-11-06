@@ -1,4 +1,4 @@
-FROM registry.fedoraproject.org/fedora:44
+FROM registry.fedoraproject.org/fedora:45
 
 ARG USE_GRAPHICS=1
 # Run the UBSan(trap)+ASan sanitizer gate at image-build time. Default off here
