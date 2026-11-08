@@ -31,7 +31,6 @@ dnf install -y --skip-unavailable \
               clang-tools-extra \
               cmake \
               desktop-file-utils \
-              emacs \
               ffmpeg \
               file \
               fuse-libs \

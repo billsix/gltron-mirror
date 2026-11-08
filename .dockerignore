@@ -21,7 +21,7 @@ Makefile
 entrypoint
 !entrypoint/01-install-base.sh
 !entrypoint/02-install-graphics.sh
-!entrypoint/dotfiles/.emacs.d/install-melpa-packages.el
+!entrypoint/03-install-emacs.sh
 
 # Task docs.
 tasks

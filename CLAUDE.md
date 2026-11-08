@@ -22,7 +22,10 @@ introduce a modern renderer abstraction unless explicitly asked.**
   drops into a shell, `make build` re-runs the
   CMake build against the mounted source tree (writes to `./bld/`), and
   `make format` clang-formats the C/C++ (in the image if built, else on the host).
-  `make help` lists all targets. (Renamed from `Makefile.docker` onto the fleet
+  `make help` lists all targets. Under `USE_EMACS=1` the image holds only the Emacs
+  binary (`entrypoint/03-install-emacs.sh`); `make shell` mounts the vendored
+  `entrypoint/dotfiles/.emacs.d/`, and `init.el` byte-compiles its `elpa/` on Emacs's
+  first start. (Renamed from `Makefile.docker` onto the fleet
   Makefile/Dockerfile contract 2026-10-17.)
   CMake natively emits `compile_commands.json`. `clang-tidy` and
   `clang-format` are configured (`.clang-tidy`, `.clang-format`).
@@ -67,7 +70,6 @@ was reconciled + archived 2026-08-27 (its deletions were already executed).
 
 Active:
 
-- [Emacs packages not built in the Dockerfile](tasks/emacs-packages-not-built-in-dockerfile.md) — **in progress**; drop the build-time MELPA install, install only the Emacs binary, byte-compile the vendored `elpa/` at run time.
 - [Promote static analysis to a fatal gate](tasks/lint-fatal-gate.md) — **proposed, needs go-ahead**; drive the advisory clang-tidy/Cppcheck findings to an enforced gate, the static-analysis counterpart to the compiler `-Werror` gate the modernization sweep landed. First decision: which checks to enforce vs disable (teaching-artifact churn risk).
 - [Finish top-level `const` on pointers](tasks/toplevel-const-pointers.md) — **proposed, needs go-ahead**; the 4 file-scope pointer tables (`*const`, moves them to read-only memory) + 37 locals the `63ceb1ee` sweep missed; parameters stay out.
 - [OpenGL fixed-function → 3.3 core profile port](tasks/opengl-core-profile-port.md) — **not started**, surface at session start and ask Bill before beginning.
@@ -88,6 +90,7 @@ alternatives, deletions) live in the archived task docs:
 - ASan + UBSan(trap) sanitizer gate — `tasks/archive/2026/10/17/add-sanitizer-gate.md`
 - Behavior-preserving C modernization sweep (C23 pin, `-Werror` warning gate clean under clang+gcc, 493→0 first-party warnings; nullptr/attributes; no third_party edits) — `tasks/archive/2026/10/17/c-modernization-sweep.md` (follow-up: `tasks/lint-fatal-gate.md`)
 - Standardize the container build + Emacs C support (`Makefile.docker`→`Makefile` on the fleet contract, portable `make format`, Emacs clangd/eglot + `make update-emacs-packages` + vendored `elpa/`) — `tasks/archive/2026/10/17/standardize-build-and-emacs.md` (one maintainer GUI check pending: clangd-in-emacs)
+- Emacs packages not installed or compiled in the Dockerfile (binary-only `03-install-emacs.sh`, run-time compile of the vendored `elpa/`) — `tasks/archive/2026/11/08/emacs-packages-not-built-in-dockerfile.md`
 - Latent bugs from the C sweep (Bug 1: `scripting_CopyStringResult` buffer overflow; Bug 2: `crashTestPlayers` always-0 → gameplay fix, Option A) — `tasks/archive/2026/10/17/latent-bugs-from-c-sweep.md` (one maintainer visual check pending: a round looks right)
 
 When starting a new task, add a one-line entry under "Active" here pointing
