@@ -1,37 +1,26 @@
 # Add a `.dockerignore` and collapse the 22 source `COPY` lines into one
 
-**Status:** proposed — needs go-ahead. Created 2026-11-08 (William Emerison Six <billsix@gmail.com>).
-**Priority:** 6
-**Difficulty:** 2
+Done 2026-11-08 (William Emerison Six <billsix@gmail.com> asked for it), on branch `add-dockerignore`.
 
-## BLUF
+## What changed
 
-The `Dockerfile` lists the source tree one entry at a time (`COPY CMake …`, `COPY art …`, … `COPY tools
-…`, 22 lines, each its own layer), because without a `.dockerignore` a `COPY . /gltron` would also bring
-`.git` (20 MB), `.crush/`, `tasks/`, image tarballs, and host build trees. Add a `.dockerignore` and
-replace the list with one `COPY . /gltron/`: one layer instead of 22, and a new top-level source
-directory can't be forgotten. Done = `make image` succeeds (its in-image `ctest` passes) and the image's
-`/gltron` contains the source the 22 lines copied, minus the excluded files.
+- The `Dockerfile` listed the source tree in 22 `COPY` lines (`.clang-tidy` … `tools`, one layer each)
+  plus a late `COPY .clang-format`. They are now one `COPY . /gltron/`, before the cmake build.
+- The new `.dockerignore` excludes everything outside the build, so an edit there does not re-run the
+  cmake build: `.git`, `.gitattributes`, `.gitignore`, `.dockerignore`, `.claude`, `.crush`,
+  `CLAUDE.md`, `Dockerfile`, `Makefile`, `entrypoint`, `tasks`, `bld`, `bld-appimage`, `out`, `*.tar`.
+- `entrypoint/` is excluded, but the three files the `Dockerfile`'s earlier `COPY`s name are re-included
+  (`!entrypoint/01-install-base.sh`, `!entrypoint/02-install-graphics.sh`,
+  `!entrypoint/dotfiles/.emacs.d/install-melpa-packages.el`). The first version excluded them and podman
+  failed the build: `no items matching glob … (1 filtered out using …/.dockerignore)`. They now also
+  appear under `/gltron/entrypoint/`. That costs no cache: a change to them already re-runs every later
+  layer.
+- `.clang-format` now arrives with the tree, so editing it re-runs the build (it used to be copied
+  after it). It rarely changes.
 
-## Context
+## Verification (2026-11-08, nested podman, default flags incl. `RUN_SANITIZERS=1`)
 
-- Dockerfile contract, `.dockerignore` bullet: the personal overlay (github.com/billsix/dotfiles
-  `.ai-coding-conventions.personal.md`).
-- The `COPY`s are at `Dockerfile` lines ~40–61 and 77 (`.clang-format`). The cmake build + `ctest` run
-  right after them, so **anything not excluded that changes will rebuild the image's C build**. That
-  includes task docs, entrypoint scripts and `entrypoint/dotfiles`, so the ignore file must exclude
-  every non-source path (`tasks/`, `entrypoint/`, `*.md` other than any the build installs,
-  `.crush/`, `.git`, `*.tar`, build dirs). That's the trade-off against today's explicit list.
-- Separate issue, not this task: the `Dockerfile` still runs the MELPA install at build (line ~37);
-  see the conformance snapshot in github.com/billsix/runClaudeInContainer
-  `tasks/reference/emacs-container-contract.md`.
-
-## Plan
-
-1. Before editing, snapshot what the image has: `podman run --rm --entrypoint /bin/bash gltron -c 'cd /gltron && find . -type f | sort' > before.txt`.
-2. Add `.dockerignore` (exclusions above). Replace lines ~40–61 and the `.clang-format` `COPY` with one
-   `COPY . /gltron/` at the same position.
-3. `make image`; produce `after.txt` the same way. `diff before.txt after.txt` must show only files the
-   ignore file deliberately drops, or none. Record the diff here.
-4. If the extra cache invalidation proves annoying (a task-doc edit rebuilding the C build), keep the
-   explicit list and use the `.dockerignore` only for hygiene. Record which choice you made.
+- `make image` succeeded: ctest `100% tests passed, 0 tests failed out of 1`, `sanitizer-gate: ALL PASS`.
+- File list of `/gltron` in the image, before (old `Dockerfile`) vs after: 371 vs 374 files. The diff is
+  exactly the three re-included `entrypoint/` files.
+- `podman history gltron`: 35 lines before, 13 after.
