@@ -37,28 +37,10 @@ RUN --mount=type=cache,target=/var/cache/libdnf5 \
         emacs --batch --load /root/.emacs.d/install-melpa-packages.el ; \
     fi
 
-COPY .clang-tidy /gltron/.clang-tidy
-COPY CMake /gltron/CMake/
-COPY CMakeLists.txt /gltron/CMakeLists.txt
-COPY art /gltron/art/
-COPY packaging /gltron/packaging/
-COPY ChangeLog /gltron/ChangeLog
-COPY COPYING /gltron/COPYING
-COPY CREDITS /gltron/CREDITS
-COPY data /gltron/data/
-COPY docs /gltron/docs/
-COPY INSTALL /gltron/INSTALL
-COPY levels /gltron/levels/
-COPY music /gltron/music/
-COPY nebu /gltron/nebu/
-COPY README /gltron/README
-COPY resource /gltron/resource/
-COPY scripts /gltron/scripts/
-COPY sounds /gltron/sounds/
-COPY src /gltron/src/
-COPY third_party /gltron/third_party/
-COPY TODO /gltron/TODO
-COPY tools /gltron/tools/
+# The source tree, in one layer. .dockerignore drops everything the build does not
+# need (VCS and agent state, tasks/, entrypoint/, the Makefile/Dockerfile, build
+# trees, tarballs), so an edit to those does not re-run the cmake build below.
+COPY . /gltron/
 
 
 RUN cmake -S /gltron -B /bld -G Ninja \
@@ -73,8 +55,6 @@ RUN cmake -S /gltron -B /bld -G Ninja \
 RUN if [ "$RUN_SANITIZERS" = "1" ]; then \
         bash /gltron/tools/sanitizer-gate.sh /gltron ; \
     fi
-
-COPY .clang-format /gltron/
 
 RUN echo "source ~/.extrabashrc" >> ~/.bashrc
 

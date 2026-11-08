@@ -1,0 +1,33 @@
+# Trim the build context. The Dockerfile copies the source tree with one
+# `COPY . /gltron/`, and the cmake build + ctest run right after it, so every path
+# here is one whose edits must NOT rebuild the game: it is not part of the build.
+# Patterns are anchored at the context root (unlike .gitignore).
+
+# VCS metadata and agent state.
+.git
+.gitattributes
+.gitignore
+.dockerignore
+.claude
+.crush
+CLAUDE.md
+
+# Container plumbing: the Makefile mounts the vendored .emacs.d (elpa/) and the
+# entrypoint scripts at run time. The three files the Dockerfile's earlier COPYs name
+# are re-included (an excluded path cannot be COPYed); they also land in /gltron/,
+# which costs nothing, since a change to them already re-runs every later layer.
+Dockerfile
+Makefile
+entrypoint
+!entrypoint/01-install-base.sh
+!entrypoint/02-install-graphics.sh
+!entrypoint/dotfiles/.emacs.d/install-melpa-packages.el
+
+# Task docs.
+tasks
+
+# Out-of-tree build directories and image-export tarballs (see .gitignore).
+bld
+bld-appimage
+out
+*.tar
