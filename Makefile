@@ -9,7 +9,10 @@ CONTAINER_NAME = gltron
 
 # USE_EMACS=1 (the default) bind-mounts the vendored .emacs.d/ into the container so
 # an interactive `make shell` can USE its clangd/eglot C config + packages (:U chowns
-# to the container user, :z relabels for SELinux). USE_EMACS=0 skips the mount. To
+# to the container user, :z relabels for SELinux). The image holds only the Emacs
+# binary; init.el byte-compiles the vendored elpa/ into this mount on Emacs's first
+# start (the .elc files are gitignored). The whole .emacs.d is mounted, not just elpa/,
+# so config edits are live without `make image`. USE_EMACS=0 skips the mount. To
 # REFRESH the vendored elpa packages, use `make update-emacs-packages`.
 ifeq ($(USE_EMACS),1)
   ELPA_MOUNT = -v $(CURDIR)/entrypoint/dotfiles/.emacs.d/:/root/.emacs.d/:U,z
@@ -127,8 +130,9 @@ image-import: ## Import an OCI image tar: make image-import FILE=foo.tar
 # gate). Then, in the container, wipes ONLY the elpa/ subtree (init.el /
 # preferences.el / helm.el / install-melpa-packages.el are hand-written config,
 # left untouched) and reinstalls from MELPA into the host's bind-mounted
-# .emacs.d/elpa. Finally strips compiled *.elc/*.eln (machine-specific) and
-# force-stages the elpa tree. Needs network. Mirrors billsEmacsConfigs/c.
+# .emacs.d/elpa. Finally strips compiled *.elc/*.eln (machine-specific; init.el
+# recompiles them on the next Emacs start) and force-stages the elpa tree. Needs
+# network.
 .PHONY: update-emacs-packages
 update-emacs-packages: ## USE_EMACS=1: rebuild image, wipe+reinstall elpa, strip *.elc/*.eln, git add -f
 	$(MAKE) image USE_EMACS=1 RUN_SANITIZERS=0

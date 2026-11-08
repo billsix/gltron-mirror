@@ -5,9 +5,11 @@ ARG USE_GRAPHICS=1
 # (fast path); Makefile.docker passes 1. Requires USE_GRAPHICS=1 (needs Xvfb + Mesa
 # for the headless GL run). See tools/sanitizer-gate.sh and tasks/add-sanitizer-gate.md.
 ARG RUN_SANITIZERS=0
-# Install Emacs + its vendored C LSP config (clangd via lsp-mode). Default off
-# here (fast path); the Makefile passes 1. clangd itself (clang-tools-extra) is
-# always installed by 01-install-base.sh so it is available regardless.
+# Install the Emacs binary (03-install-emacs.sh). Default off here (fast path); the
+# Makefile passes 1. clangd itself (clang-tools-extra) is always installed by
+# 01-install-base.sh so it is available regardless. Emacs's packages are never
+# installed here: `make shell` bind-mounts the vendored entrypoint/dotfiles/.emacs.d
+# and init.el byte-compiles its elpa/ on Emacs's first start.
 ARG USE_EMACS=0
 
 # System-package installation lives in per-group scripts (entrypoint/0N-install-*.sh),
@@ -15,7 +17,8 @@ ARG USE_EMACS=0
 # groups run is decided here by the ARG `if` blocks. The dnf cache mount, the tsflags
 # `sed`, and keepcache stay in the Dockerfile (build plumbing). 01-install-base.sh also
 # does `dnf upgrade`.
-COPY entrypoint/01-install-base.sh entrypoint/02-install-graphics.sh /usr/local/bin/
+COPY entrypoint/01-install-base.sh entrypoint/02-install-graphics.sh \
+     entrypoint/03-install-emacs.sh /usr/local/bin/
 
 RUN --mount=type=cache,target=/var/cache/libdnf5 \
     --mount=type=cache,target=/var/lib/dnf \
@@ -23,19 +26,8 @@ RUN --mount=type=cache,target=/var/cache/libdnf5 \
     echo "keepcache=True" >> /etc/dnf/dnf.conf && \
     /usr/local/bin/01-install-base.sh && \
     if [ "$USE_GRAPHICS" = "1" ]; then /usr/local/bin/02-install-graphics.sh; fi && \
+    if [ "$USE_EMACS" = "1" ]; then /usr/local/bin/03-install-emacs.sh; fi && \
     echo 'set debuginfod enabled off' > /root/.gdbinit
-
-# Emacs + vendored MELPA packages, only when USE_EMACS=1. Pre-populates
-# ~/.emacs.d/elpa at build time; the Makefile bind-mounts the host .emacs.d
-# (with its committed elpa/) over this at run time, and `make update-emacs-packages`
-# refreshes it. Mirrors billsEmacsConfigs/c.
-COPY entrypoint/dotfiles/.emacs.d/install-melpa-packages.el /root/.emacs.d/install-melpa-packages.el
-RUN --mount=type=cache,target=/var/cache/libdnf5 \
-    --mount=type=cache,target=/var/lib/dnf \
-    if [ "$USE_EMACS" = "1" ]; then \
-        dnf install -y emacs && \
-        emacs --batch --load /root/.emacs.d/install-melpa-packages.el ; \
-    fi
 
 # The source tree, in one layer. .dockerignore drops everything the build does not
 # need (VCS and agent state, tasks/, entrypoint/, the Makefile/Dockerfile, build
