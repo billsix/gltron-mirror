@@ -1,0 +1,28 @@
+# Trim the build context. The Dockerfile copies the source tree with one
+# `COPY . /gltron/`, and the cmake build + ctest run right after it, so every path
+# here is one whose edits must NOT rebuild the game: it is not part of the build.
+# Patterns are anchored at the context root (unlike .gitignore).
+
+# VCS metadata and agent state.
+.git
+.gitattributes
+.gitignore
+.dockerignore
+.claude
+.crush
+CLAUDE.md
+
+# Container plumbing: the Dockerfile COPYs entrypoint/ scripts separately, and the
+# Makefile mounts the vendored .emacs.d (elpa/) at run time.
+Dockerfile
+Makefile
+entrypoint
+
+# Task docs.
+tasks
+
+# Out-of-tree build directories and image-export tarballs (see .gitignore).
+bld
+bld-appimage
+out
+*.tar
