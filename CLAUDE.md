@@ -67,6 +67,7 @@ was reconciled + archived 2026-08-27 (its deletions were already executed).
 
 Active:
 
+- [Emacs packages not built in the Dockerfile](tasks/emacs-packages-not-built-in-dockerfile.md) — **in progress**; drop the build-time MELPA install, install only the Emacs binary, byte-compile the vendored `elpa/` at run time.
 - [Promote static analysis to a fatal gate](tasks/lint-fatal-gate.md) — **proposed, needs go-ahead**; drive the advisory clang-tidy/Cppcheck findings to an enforced gate, the static-analysis counterpart to the compiler `-Werror` gate the modernization sweep landed. First decision: which checks to enforce vs disable (teaching-artifact churn risk).
 - [Finish top-level `const` on pointers](tasks/toplevel-const-pointers.md) — **proposed, needs go-ahead**; the 4 file-scope pointer tables (`*const`, moves them to read-only memory) + 37 locals the `63ceb1ee` sweep missed; parameters stay out.
 - [OpenGL fixed-function → 3.3 core profile port](tasks/opengl-core-profile-port.md) — **not started**, surface at session start and ask Bill before beginning.
